@@ -155,8 +155,11 @@
       <!-- Design Presets -->
       <div class="glass-panel p-1.5 rounded-2xl flex items-center gap-1.5 pointer-events-auto shadow-xl overflow-x-auto max-w-full">
         <span class="text-[11px] text-gray-400 px-2.5 font-medium hidden lg:inline">Vorlagen:</span>
-        <button onclick="applyPreset('classic')" id="preset-classic" class="preset-btn px-3 py-1.5 rounded-xl text-xs transition-all accent-gradient text-studio-950 font-semibold">
-          Klassik (Foto)
+        <button onclick="applyPreset('tealight')" id="preset-tealight" class="preset-btn px-3 py-1.5 rounded-xl text-xs transition-all accent-gradient text-studio-950 font-semibold">
+          Teelicht
+        </button>
+        <button onclick="applyPreset('classic')" id="preset-classic" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+          Klassik
         </button>
         <button onclick="applyPreset('xmas')" id="preset-xmas" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-medium text-amber-200 hover:text-white hover:bg-amber-500/15 border border-amber-400/25 transition-all flex items-center gap-1">
           <span>★ Weihnachten</span>
@@ -181,7 +184,7 @@
             <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse"></span>
             3D-Druck & Kerzen-Check
           </span>
-          <span id="est-weight" class="text-xs font-mono text-champagne-300 font-medium">~145 g PLA</span>
+          <span id="est-weight" class="text-xs font-mono text-champagne-300 font-medium">~80 g PLA</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2 text-xs">
@@ -192,7 +195,7 @@
             </svg>
             <div>
               <div class="font-medium text-teal-200">Öffnung Oben</div>
-              <div id="check-opening-text" class="text-[11px] text-teal-300/80 font-mono">+16 mm Platz</div>
+              <div id="check-opening-text" class="text-[11px] text-teal-300/80 font-mono">+24 mm Platz</div>
             </div>
           </div>
 
@@ -203,14 +206,14 @@
             </svg>
             <div>
               <div class="font-medium text-teal-200">Überhangwinkel</div>
-              <div id="check-overhang-text" class="text-[11px] text-teal-300/80 font-mono">Max. 46° (Stützfrei)</div>
+              <div id="check-overhang-text" class="text-[11px] text-teal-300/80 font-mono">Max. 32° (Stützfrei)</div>
             </div>
           </div>
         </div>
 
         <div class="flex items-center justify-between text-[11px] text-gray-400 pt-0.5">
           <span>Teller-Vertiefung innen: <strong id="tray-inner-dia" class="text-gray-200 font-mono">83.0 mm</strong></span>
-          <span>Außenmaß: <strong id="outer-dims" class="text-gray-200 font-mono">Ø200 × 160 mm</strong></span>
+          <span>Außenmaß: <strong id="outer-dims" class="text-gray-200 font-mono">Ø124 × 110 mm</strong></span>
         </div>
       </div>
     </div>
@@ -303,12 +306,12 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Gesamthöhe der Laterne</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-height">160</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-height">110</span> mm</span>
           </div>
-          <input type="range" id="param-height" min="90" max="280" step="2" value="160" oninput="updateParam('height', this.value)" />
+          <input type="range" id="param-height" min="90" max="280" step="2" value="110" oninput="updateParam('height', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>90 mm (Teelicht)</span>
-            <span>160 mm (Standard)</span>
+            <span>90 mm (Mini)</span>
+            <span>110 mm (Teelicht-Standard)</span>
             <span>280 mm (Groß)</span>
           </div>
         </div>
@@ -317,12 +320,12 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Max. Bauch-Durchmesser (Außen)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyDia">200</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyDia">124</span> mm</span>
           </div>
-          <input type="range" id="param-bellyDia" min="110" max="250" step="2" value="200" oninput="updateParam('bellyDia', this.value)" />
+          <input type="range" id="param-bellyDia" min="110" max="250" step="2" value="124" oninput="updateParam('bellyDia', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>110 mm</span>
-            <span>200 mm (Passt auf Standard-Druckbett)</span>
+            <span>124 mm (Teelicht)</span>
             <span>250 mm</span>
           </div>
         </div>
@@ -331,11 +334,11 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Obere Öffnung (Innendurchmesser)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-topInnerDia">96</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-topInnerDia">62</span> mm</span>
           </div>
-          <input type="range" id="param-topInnerDia" min="60" max="160" step="1" value="96" oninput="updateParam('topInnerDia', this.value)" />
+          <input type="range" id="param-topInnerDia" min="60" max="160" step="1" value="62" oninput="updateParam('topInnerDia', this.value)" />
           <p class="text-[11px] text-gray-400">
-            Muss größer als der Kerzendurchmesser (<span id="hint-candle-dia" class="text-gray-200 font-mono">80 mm</span>) sein, um die Kerze von oben einzusetzen.
+            Muss größer als der Kerzendurchmesser (<span id="hint-candle-dia" class="text-gray-200 font-mono">38 mm</span>) sein, um die Kerze von oben einzusetzen.
           </p>
         </div>
 
@@ -343,18 +346,18 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Basis-Durchmesser (Unten)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseOuterDia">108</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseOuterDia">84</span> mm</span>
           </div>
-          <input type="range" id="param-baseOuterDia" min="75" max="180" step="1" value="108" oninput="updateParam('baseOuterDia', this.value)" />
+          <input type="range" id="param-baseOuterDia" min="75" max="180" step="1" value="84" oninput="updateParam('baseOuterDia', this.value)" />
         </div>
 
         <!-- Belly Vertical Position -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Bauch-Höhenschwerpunkt</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyHeightRatio">46</span> %</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyHeightRatio">47</span> %</span>
           </div>
-          <input type="range" id="param-bellyHeightRatio" min="28" max="72" step="1" value="46" oninput="updateParam('bellyHeightRatio', this.value)" />
+          <input type="range" id="param-bellyHeightRatio" min="28" max="72" step="1" value="47" oninput="updateParam('bellyHeightRatio', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>Tiefer Schwerpunkt (Tropfen)</span>
             <span>Mitte (Kugel)</span>
@@ -366,9 +369,9 @@
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Kurven-Wölbung (3D-Druck-Optimierung)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-curveTension">55</span> %</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-curveTension">52</span> %</span>
           </div>
-          <input type="range" id="param-curveTension" min="25" max="85" step="1" value="55" oninput="updateParam('curveTension', this.value)" />
+          <input type="range" id="param-curveTension" min="25" max="85" step="1" value="52" oninput="updateParam('curveTension', this.value)" />
           <p class="text-[11px] text-gray-400">
             Steuert, wie sanft die Stäbe aus der Bodenplatte aufsteigen. Werte um 45–60 % garantieren stützfreien 3D-Druck ohne Support!
           </p>
@@ -386,9 +389,9 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Anzahl der Stäbe</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribCount">48</span> Stäbe</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribCount">40</span> Stäbe</span>
           </div>
-          <input type="range" id="param-ribCount" min="16" max="80" step="2" value="48" oninput="updateParam('ribCount', this.value)" />
+          <input type="range" id="param-ribCount" min="16" max="80" step="2" value="40" oninput="updateParam('ribCount', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>16 (Offen)</span>
             <span>48 (Wie im Foto)</span>
@@ -400,9 +403,9 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Stab-Breite (Tangential)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribWidth">2.6</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribWidth">2.4</span> mm</span>
           </div>
-          <input type="range" id="param-ribWidth" min="1.6" max="6.0" step="0.2" value="2.6" oninput="updateParam('ribWidth', this.value)" />
+          <input type="range" id="param-ribWidth" min="1.6" max="6.0" step="0.2" value="2.4" oninput="updateParam('ribWidth', this.value)" />
           <p class="text-[11px] text-gray-400">Empfohlen für 0.4 mm Düse: mindestens 2.0 mm (5 Perimeter).</p>
         </div>
 
@@ -410,9 +413,9 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Stab-Tiefe (Radiale Wandstärke)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribDepth">4.5</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribDepth">4.0</span> mm</span>
           </div>
-          <input type="range" id="param-ribDepth" min="2.4" max="8.0" step="0.2" value="4.5" oninput="updateParam('ribDepth', this.value)" />
+          <input type="range" id="param-ribDepth" min="2.4" max="8.0" step="0.2" value="4.0" oninput="updateParam('ribDepth', this.value)" />
           <p class="text-[11px] text-gray-400">Verleiht den Stäben die hohe vertikale Biegesteifigkeit und den Lamellen-Look.</p>
         </div>
 
@@ -420,9 +423,9 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Spiral-Drehung (Twist)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-twistAngle">0</span>°</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-twistAngle">15</span>°</span>
           </div>
-          <input type="range" id="param-twistAngle" min="-90" max="90" step="5" value="0" oninput="updateParam('twistAngle', this.value)" />
+          <input type="range" id="param-twistAngle" min="-90" max="90" step="5" value="15" oninput="updateParam('twistAngle', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>-90° Links</span>
             <span>0° Gerade (Original)</span>
@@ -434,9 +437,9 @@
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Oberer Abschlussring (Stützfrei 42°)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-topRingHeight">4.0</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-topRingHeight">3.2</span> mm</span>
           </div>
-          <input type="range" id="param-topRingHeight" min="2.4" max="10.0" step="0.4" value="4.0" oninput="updateParam('topRingHeight', this.value)" />
+          <input type="range" id="param-topRingHeight" min="2.4" max="10.0" step="0.4" value="3.2" oninput="updateParam('topRingHeight', this.value)" />
           <p class="text-[11px] text-gray-400">Inkl. selbsttragender 30°-Gotik-Bögen zwischen den Stäben & 42°-Innenfase für 100 % stützfreien Druck.</p>
         </div>
 
@@ -470,9 +473,9 @@
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
                 <label class="text-gray-200 font-medium">Anzahl der Stütz-Kreise (Oben-Fokus)</label>
-                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerCount">3</span> Ringe</span>
+                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerCount">2</span> Ringe</span>
               </div>
-              <input type="range" id="param-stabilizerCount" min="1" max="5" step="1" value="3" oninput="updateParam('stabilizerCount', this.value)" />
+              <input type="range" id="param-stabilizerCount" min="1" max="5" step="1" value="2" oninput="updateParam('stabilizerCount', this.value)" />
               <div class="flex justify-between text-[10px] text-gray-400">
                 <span>1 Ring (72%)</span>
                 <span>3 Ringe (45/68/87%)</span>
@@ -484,18 +487,18 @@
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
                 <label class="text-gray-200 font-medium">Hebel-Kragen Breite innen (6.5× Hebelarm)</label>
-                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerWidth">3.4</span> mm</span>
+                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerWidth">3.0</span> mm</span>
               </div>
-              <input type="range" id="param-stabilizerWidth" min="2.2" max="5.5" step="0.2" value="3.4" oninput="updateParam('stabilizerWidth', this.value)" />
+              <input type="range" id="param-stabilizerWidth" min="2.2" max="5.5" step="0.2" value="3.0" oninput="updateParam('stabilizerWidth', this.value)" />
             </div>
 
             <!-- Continuous Ring Vertical Height -->
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
                 <label id="label-stab-thickness" class="text-gray-200 font-medium">Ring- & Hebel-Höhe</label>
-                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerThickness">3.8</span> mm</span>
+                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerThickness">3.2</span> mm</span>
               </div>
-              <input type="range" id="param-stabilizerThickness" min="2.6" max="6.0" step="0.2" value="3.8" oninput="updateParam('stabilizerThickness', this.value)" />
+              <input type="range" id="param-stabilizerThickness" min="2.6" max="6.0" step="0.2" value="3.2" oninput="updateParam('stabilizerThickness', this.value)" />
             </div>
 
             <!-- Breakaway Pin Thickness at Rib (PETG-tuned down to 0.45mm) -->
@@ -503,9 +506,9 @@
               <div class="space-y-1">
                 <div class="flex justify-between text-xs">
                   <label class="text-gray-200 font-medium">Pin-Sollbruchstelle (V-Kerbe am Stab)</label>
-                  <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerNeck">0.65</span> mm</span>
+                  <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerNeck">0.60</span> mm</span>
                 </div>
-                <input type="range" id="param-stabilizerNeck" min="0.45" max="1.20" step="0.05" value="0.65" oninput="updateParam('stabilizerNeck', this.value)" />
+                <input type="range" id="param-stabilizerNeck" min="0.45" max="1.20" step="0.05" value="0.60" oninput="updateParam('stabilizerNeck', this.value)" />
                 <div class="flex justify-between text-[10px] text-gray-400">
                   <span>0.50 mm (PETG Weich)</span>
                   <span>0.65 mm (Ideal)</span>
@@ -537,9 +540,9 @@
           <div class="space-y-1 pt-2 border-t border-white/10">
             <div class="flex justify-between text-xs">
               <label class="text-gray-200 font-medium">Fuß-Verstärkung am Boden (Root-Boost)</label>
-              <span class="font-mono text-teal-300 font-semibold">+<span id="val-rootBoost">25</span> %</span>
+              <span class="font-mono text-teal-300 font-semibold">+<span id="val-rootBoost">20</span> %</span>
             </div>
-            <input type="range" id="param-rootBoost" min="0" max="60" step="5" value="25" oninput="updateParam('rootBoost', this.value)" />
+            <input type="range" id="param-rootBoost" min="0" max="60" step="5" value="20" oninput="updateParam('rootBoost', this.value)" />
             <p class="text-[10px] text-gray-400">
               Verstärkt das untere Fünftel der Stäbe sanft am Übergang zum Teller, wo das größte Biegemoment entsteht.
             </p>
@@ -703,18 +706,18 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Teller-Gesamthöhe (Randhöhe)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseThickness">6.0</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseThickness">5.0</span> mm</span>
           </div>
-          <input type="range" id="param-baseThickness" min="3.0" max="14.0" step="0.5" value="6.0" oninput="updateParam('baseThickness', this.value)" />
+          <input type="range" id="param-baseThickness" min="3.0" max="14.0" step="0.5" value="5.0" oninput="updateParam('baseThickness', this.value)" />
         </div>
 
         <!-- Recess Depth -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Tiefe der Kerzen-Vertiefung</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessDepth">3.0</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessDepth">2.0</span> mm</span>
           </div>
-          <input type="range" id="param-recessDepth" min="1.0" max="10.0" step="0.5" value="3.0" oninput="updateParam('recessDepth', this.value)" />
+          <input type="range" id="param-recessDepth" min="1.0" max="10.0" step="0.5" value="2.0" oninput="updateParam('recessDepth', this.value)" />
           <p class="text-[11px] text-gray-400">
             Verbleibende Bodenstärke unter der Kerze: <strong id="floor-thickness-info" class="text-amber-300 font-mono">3.0 mm</strong>.
           </p>
@@ -724,9 +727,9 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Seitliches Spiel (Toleranz zur Kerze)</label>
-            <span class="font-mono text-amber-400 font-semibold">+<span id="val-candleClearance">1.5</span> mm (Radius)</span>
+            <span class="font-mono text-amber-400 font-semibold">+<span id="val-candleClearance">1.0</span> mm (Radius)</span>
           </div>
-          <input type="range" id="param-candleClearance" min="0.5" max="6.0" step="0.5" value="1.5" oninput="updateParam('candleClearance', this.value)" />
+          <input type="range" id="param-candleClearance" min="0.5" max="6.0" step="0.5" value="1.0" oninput="updateParam('candleClearance', this.value)" />
           <p class="text-[11px] text-gray-400">
             Bei Ø <span id="tray-candle-ref">80</span> mm Kerze hat die Mulde exakt <strong id="tray-calc-dia" class="text-emerald-300 font-mono">83.0 mm</strong> Innendurchmesser – sitzt sicher ohne zu klemmen.
           </p>
@@ -736,9 +739,9 @@
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Führungsrand-Breite um die Kerze</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessRimWidth">4.5</span> mm</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessRimWidth">3.0</span> mm</span>
           </div>
-          <input type="range" id="param-recessRimWidth" min="2.0" max="12.0" step="0.5" value="4.5" oninput="updateParam('recessRimWidth', this.value)" />
+          <input type="range" id="param-recessRimWidth" min="2.0" max="12.0" step="0.5" value="3.0" oninput="updateParam('recessRimWidth', this.value)" />
           <p class="text-[11px] text-gray-400">
             Erhöhter Kragen um die Kerzen-Mulde, damit die Kerze beim Tragen der Laterne garantiert nicht verrutscht.
           </p>
@@ -756,9 +759,9 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Kerzen-Durchmesser</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleDia">80</span> mm (8.0 cm)</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleDia">38</span> mm (8.0 cm)</span>
           </div>
-          <input type="range" id="param-candleDia" min="38" max="120" step="1" value="80" oninput="updateParam('candleDia', this.value)" />
+          <input type="range" id="param-candleDia" min="38" max="120" step="1" value="38" oninput="updateParam('candleDia', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>38 mm (Teelicht)</span>
             <span>80 mm (Deine 8 cm Kerze)</span>
@@ -770,9 +773,9 @@
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
             <label class="text-gray-300 font-medium">Kerzen-Höhe</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleHeight">100</span> mm (10.0 cm)</span>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleHeight">18</span> mm (10.0 cm)</span>
           </div>
-          <input type="range" id="param-candleHeight" min="30" max="200" step="2" value="100" oninput="updateParam('candleHeight', this.value)" />
+          <input type="range" id="param-candleHeight" min="30" max="200" step="2" value="18" oninput="updateParam('candleHeight', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>30 mm</span>
             <span>100 mm (Deine 10 cm Kerze)</span>
@@ -974,24 +977,24 @@
      * 1. PARAMETRIC STATE (All dimensions in millimeters: 1 unit = 1 mm)
      ********************************************************************/
     const defaultParams = {
-      height: 160,              // Total height of lantern (mm)
-      bellyDia: 200,            // Max outer diameter at belly (mm)
-      topInnerDia: 96,          // Inner opening diameter at top ring (mm) - fits 80mm candle easily
-      baseOuterDia: 108,        // Outer diameter at base (mm)
-      bellyHeightRatio: 46,     // Vertical position of max belly (%)
-      curveTension: 55,         // Controls bottom/top tangent steepness for support-free printing (%)
-      ribCount: 48,             // Number of vertical curved ribs
-      ribWidth: 2.6,            // Tangential width of each rib (mm)
-      ribDepth: 4.5,            // Radial thickness/depth of each rib (mm)
-      twistAngle: 0,            // Helical twist from bottom to top (degrees)
-      topRingHeight: 4.0,       // Height of top connecting ring (mm)
+      height: 110,              // Total height of lantern (mm) - tea light default
+      bellyDia: 124,            // Max outer diameter at belly (mm)
+      topInnerDia: 62,          // Inner opening diameter at top ring (mm) - tea light drops in easily
+      baseOuterDia: 84,         // Outer diameter at base (mm)
+      bellyHeightRatio: 47,     // Vertical position of max belly (%)
+      curveTension: 52,         // Controls bottom/top tangent steepness for support-free printing (%)
+      ribCount: 40,             // Number of vertical curved ribs
+      ribWidth: 2.4,            // Tangential width of each rib (mm)
+      ribDepth: 4.0,            // Radial thickness/depth of each rib (mm)
+      twistAngle: 15,           // Helical twist from bottom to top (degrees) - gentle spiral
+      topRingHeight: 3.2,       // Height of top connecting ring (mm)
       stabilizerMode: 'breakaway', // 'breakaway' (V5 Top-Down Lever-Snap with 1-Pin + every 4th upper pin), 'permanent', 'none'
-      stabilizerCount: 3,       // Default 3 rings focused on the mid-to-upper overhang zone (45%, 68%, 87%)
-      stabilizerWidth: 3.4,     // Radial width of the inner lever flange (mm) - gives 6.5x lever arm!
-      stabilizerThickness: 3.8, // Vertical height of the lever ring (mm)
-      stabilizerNeck: 0.65,     // V-Notch breakaway pin width at the rib (0.65 mm default for easy PETG/PLA snap!)
+      stabilizerCount: 2,       // Two rings are enough for the compact tea light body
+      stabilizerWidth: 3.0,     // Radial width of the inner lever flange (mm)
+      stabilizerThickness: 3.2, // Vertical height of the lever ring (mm)
+      stabilizerNeck: 0.60,     // V-Notch breakaway pin width at the rib (mm)
       upperPinStep: 4,          // 2nd upper pin every 4th rib by default (0 = strictly 1 pin per rib)
-      rootBoost: 25,            // Extra thickness at the bottom 25% of ribs (%) to prevent cantilever wobble
+      rootBoost: 20,            // Extra thickness at the bottom 25% of ribs (%) to prevent cantilever wobble
       motifType: 'none',        // 'none', 'tree', 'star', 'crystal', 'heart', 'mix'
       motifCount: 6,            // Number of decorative symbols per row around circumference
       motifRows: 2,             // Number of staggered vertical rows of symbols (1..3)
@@ -999,12 +1002,12 @@
       motifWidthScale: 100,     // Width aspect ratio scale (%)
       motifRelief: 2.4,         // Proud 3D relief projection in front of the outer rib surface (mm)
       motifHeightRatio: 50,     // Vertical center position of symbols (% of height)
-      baseThickness: 6.0,       // Total height of bottom base plate rim (mm)
-      recessDepth: 3.0,         // Depth of anti-slip candle recess (mm)
-      candleClearance: 1.5,     // Radial clearance around candle in tray (mm)
-      recessRimWidth: 4.5,      // Width of the raised lip around the candle recess (mm)
-      candleDia: 80,            // LED candle diameter (80 mm = 8 cm)
-      candleHeight: 100,        // LED candle height (100 mm = 10 cm)
+      baseThickness: 5.0,       // Total height of bottom base plate rim (mm)
+      recessDepth: 2.0,         // Depth of anti-slip candle recess (mm)
+      candleClearance: 1.0,     // Radial clearance around candle in tray (mm)
+      recessRimWidth: 3.0,      // Width of the raised lip around the candle recess (mm)
+      candleDia: 38,            // Tea light diameter (38 mm = standard tea light)
+      candleHeight: 18,         // Tea light height (18 mm = standard tea light)
       lightIntensity: 100,      // LED candle light intensity (%)
       lanternColor: '#d6c5b3'   // Modern Warm Travertine Sand
     };
@@ -1037,7 +1040,7 @@
       scene.background = new THREE.Color(0x08090d);
 
       camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 1, 2500);
-      camera.position.set(220, 210, 270);
+      camera.position.set(175, 165, 215);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
       renderer.setSize(container.clientWidth, container.clientHeight);
@@ -1053,9 +1056,9 @@
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      controls.target.set(0, 75, 0);
+      controls.target.set(0, 55, 0);
       controls.maxPolarAngle = Math.PI / 2 + 0.08;
-      controls.minDistance = 90;
+      controls.minDistance = 60;
       controls.maxDistance = 750;
 
       // Ambient & Studio Directional Lights
@@ -2591,6 +2594,31 @@
 
     function applyPreset(presetName) {
       const presets = {
+        tealight: {
+          height: 110,
+          bellyDia: 124,
+          topInnerDia: 62,
+          baseOuterDia: 84,
+          bellyHeightRatio: 47,
+          curveTension: 52,
+          ribCount: 40,
+          ribWidth: 2.4,
+          ribDepth: 4.0,
+          twistAngle: 15,
+          topRingHeight: 3.2,
+          stabilizerCount: 2,
+          stabilizerWidth: 3.0,
+          stabilizerThickness: 3.2,
+          stabilizerNeck: 0.60,
+          rootBoost: 20,
+          baseThickness: 5.0,
+          recessDepth: 2.0,
+          candleClearance: 1.0,
+          recessRimWidth: 3.0,
+          candleDia: 38,
+          candleHeight: 18,
+          motifType: 'none'
+        },
         classic: {
           height: 160,
           bellyDia: 200,
@@ -2684,7 +2712,7 @@
       }
 
       // Highlight active preset button
-      ['classic', 'xmas', 'lounge', 'twist', 'tall'].forEach(name => {
+      ['tealight', 'classic', 'xmas', 'lounge', 'twist', 'tall'].forEach(name => {
         const btn = document.getElementById(`preset-${name}`);
         if (!btn) return;
         if (name === presetName) {
@@ -2717,7 +2745,7 @@
       });
       setMotifType(defaultParams.motifType);
       updateBreakawayDescText();
-      applyPreset('classic');
+      applyPreset('tealight');
     }
 
     function setLanternColor(hexColor, btnEl) {
