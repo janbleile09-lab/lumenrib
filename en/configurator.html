@@ -3,9 +3,10 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Parametric 3D lantern designer in your browser: adjust ribs, motifs and candle chamber, see it live in 3D and export it as an STL file." />
   <link rel="alternate" hreflang="de" href="../konfigurator.html" />
   <link rel="alternate" hreflang="en" href="configurator.html" />
-  <title>LITO Studio — Parametric 3D Lantern & Vase Designer (STL Export)</title>
+  <title>Lumenrib — Parametric 3D Lantern & Vase Designer (STL Export)</title>
   <!-- Tailwind CSS -->
   <script src="../assets/vendor/tailwind.js"></script>
   <!-- Google Fonts: Inter & JetBrains Mono -->
@@ -146,7 +147,7 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h1 class="text-sm font-bold tracking-tight text-white">LITO Studio</h1>
+            <h1 class="text-sm font-bold tracking-tight text-white">Lumenrib</h1>
             <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-champagne-400/15 text-champagne-300 border border-champagne-400/30">STL Ready</span>
           </div>
           <p class="text-[11px] text-gray-400 hidden sm:block">Parametrischer 3D-Laternen & Kerzenhalter Designer</p>
@@ -275,7 +276,8 @@
           <span class="w-1.5 h-1.5 rounded-full bg-teal-400 inline-block ml-0.5 align-middle"></span>
         </button>
         <button onclick="switchTab('deko')" id="tab-deko" class="tab-btn py-2 px-1.5 rounded-lg text-[11px] font-semibold text-amber-300/90 hover:text-white transition-all relative">
-          3. Deko ★
+          3. Decoration
+          <span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30 align-middle ml-0.5">BETA</span>
         </button>
         <button onclick="switchTab('tray')" id="tab-tray" class="tab-btn py-2 px-1.5 rounded-lg text-[11px] font-semibold text-gray-400 hover:text-white transition-all">
           4. Teller
@@ -555,6 +557,9 @@
 
       <!-- TAB 3: WEIHNACHTS-STERNE & SYMBOLE (DEKO) -->
       <div id="panel-deko" class="tab-panel hidden space-y-5">
+        <div class="mb-3 rounded-xl border border-amber-400/25 bg-amber-400/10 px-3 py-2 text-[11px] leading-snug text-amber-200/90">
+          Beta — decoration is still in development. Motifs and reliefs may still change in shape and placement.
+        </div>
         <div>
           <div class="flex items-center gap-2">
             <h2 class="text-sm font-semibold text-white">Weihnachts-Sterne & Symbole</h2>
@@ -3063,7 +3068,7 @@
       const view = new DataView(arrayBuffer);
 
       // Write ASCII header
-      const headerText = `LITO Parametric Lantern - D${state.bellyDia}xH${state.height}mm - Candle D${state.candleDia}mm`;
+      const headerText = `Lumenrib Parametric Lantern - D${state.bellyDia}xH${state.height}mm - Candle D${state.candleDia}mm`;
       for (let i = 0; i < 80; i++) {
         view.setUint8(i, i < headerText.length ? headerText.charCodeAt(i) : 32);
       }

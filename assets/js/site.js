@@ -1,5 +1,5 @@
 /*!
- * LITO Studio — site.js
+ * Lumenrib — site.js
  * Scroll-Reveal, Nav-Zustand, sanftes Ankerscrollen, Footer-Jahr, Kontaktformular.
  * Reines Vanilla-JS, kein Build, keine externen Requests (ausser dem Formular-POST).
  */
@@ -179,7 +179,7 @@
     if (!addr) return '';
 
     var subjectEl = field(form, '_subject') || field(form, 'subject');
-    var subject = val(subjectEl) || 'LITO Studio';
+    var subject = val(subjectEl) || 'Lumenrib';
     var lines = [];
     if (data.message) lines.push(data.message);
     if (data.name || data.email) {

@@ -3,12 +3,12 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Kontakt — LITO Studio</title>
+  <title>Kontakt — Lumenrib</title>
   <meta name="description" content="Fragen zum Laternen-Designer, Fehler melden, Ideen für Motive oder Fotos vom Druckergebnis: Schreib mir über das Kontaktformular oder per E-Mail.">
   <meta name="theme-color" content="#08090d">
 
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Kontakt — LITO Studio">
+  <meta property="og:title" content="Kontakt — Lumenrib">
   <meta property="og:description" content="Fragen zum Designer, ein Fehler, eine Idee für ein Motiv oder ein Foto des Druckergebnisses sind willkommen.">
   <meta property="og:image" content="assets/img/wide-hero.webp">
   <meta property="og:locale" content="de_DE">
@@ -26,9 +26,9 @@
   <!-- 1 · Navigation -->
   <nav class="nav" aria-label="Hauptnavigation">
     <div class="nav-inner wrap">
-      <a class="nav-brand" href="index.html" aria-label="LITO Studio — Startseite">
+      <a class="nav-brand" href="index.html" aria-label="Lumenrib — Startseite">
         <span class="nav-mark" aria-hidden="true"></span>
-        <span>LITO Studio</span>
+        <span>Lumenrib</span>
       </a>
       <div class="nav-links">
         <a class="nav-link" href="index.html#ablauf">Ablauf</a>
@@ -51,66 +51,110 @@
     <section class="section wrap reveal" aria-labelledby="contact-title">
       <div class="grid">
         <p class="eyebrow">Kontakt</p>
-        <h1 class="display-l" id="contact-title">Schreib mir</h1>
-        <p class="lede">Hast du eine Frage zum Designer, einen Fehler entdeckt oder eine Idee für ein neues Motiv? Auch ein Foto deines Druckergebnisses ist jederzeit willkommen — ich lese jede Nachricht.</p>
+        <h1 class="display-l" id="contact-title">Schreib mir — oder lass mich für dich drucken</h1>
+        <p class="lede">Du hast eine Frage zum Designer, einen Fehler entdeckt oder eine Idee für ein neues Motiv? Schreib mir eine Nachricht. Oder du gestaltest deine Laterne im Konfigurator, exportierst die STL-Datei und lässt sie von mir drucken — ich schaue sie mir an, wir klären Material, Farbe und Aufwand, und wenn wir uns einig werden, drucke ich sie für dich und schicke sie dir zu.</p>
       </div>
     </section>
 
-    <!-- 3 · Formular + Hinweise -->
-    <section class="section--tight wrap reveal" aria-label="Kontaktformular und Hinweise">
+    <!-- 3 · Service: Ich drucke für dich -->
+    <section class="section wrap reveal" aria-labelledby="print-service-title">
+      <div class="grid">
+        <p class="eyebrow">Ohne 3D-Drucker?</p>
+        <h2 class="display-l" id="print-service-title">Ich drucke sie für dich</h2>
+        <p class="body">Du gestaltest die Laterne im Konfigurator, exportierst die STL-Datei und schickst sie über das Formular mit. Ich schaue sie mir an, wir klären Material, Farbe und Aufwand — und wenn wir uns einig werden, drucke ich sie für dich und schicke sie dir zu.</p>
+      </div>
+
+      <ul class="steps reveal" data-reveal-delay="1">
+        <li class="step">
+          <span class="step__num">01</span>
+          <h3 class="step__title">Laterne gestalten</h3>
+          <p class="step__text">Im Konfigurator wählst du Form, Grösse, Muster und alle Parameter. Wenn alles passt, exportierst du die STL-Datei mit einem Klick.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">02</span>
+          <h3 class="step__title">STL-Datei mitschicken</h3>
+          <p class="step__text">Fülle das Kontaktformular aus und nenne im Feld „Deine STL-Datei / Projekt“ den Dateinamen oder eine kurze Beschreibung. Die Datei selbst schickst du nach dem Absenden per E-Mail an jan.bleile@icloud.com.</p>
+        </li>
+        <li class="step">
+          <span class="step__num">03</span>
+          <h3 class="step__title">Angebot und Versand</h3>
+          <p class="step__text">Ich prüfe die Datei, melde mich mit einer Einschätzung zu Material, Farbe, Druckzeit und Versandkosten. Wenn wir uns einig werden, drucke ich auf meinem Bambu Lab A1 und schicke das Paket los.</p>
+        </li>
+      </ul>
+
+      <p class="note reveal" data-reveal-delay="2">Das ist kein Shop und kein automatischer Bestellvorgang. Es ist ein Angebot auf Zuruf — Zustandekommen, Preis und Versand werden individuell geklärt, und es besteht kein Anspruch darauf, dass ein Druck zustande kommt.</p>
+
+      <div class="btn-row reveal" data-reveal-delay="3">
+        <a class="btn btn--primary" href="konfigurator.html">Laterne gestalten</a>
+        <a class="btn btn--ghost" href="#formular">STL mitschicken</a>
+      </div>
+    </section>
+
+    <!-- 4 · Formular + Hinweise -->
+    <section id="formular" class="section--tight wrap reveal" aria-label="Kontaktformular und Hinweise">
       <div class="grid grid--2">
 
         <div>
-          <form class="form" data-contact
-                action="https://formsubmit.co/ajax/jan.bleile@icloud.com"
-                method="POST"
-                data-mailto="jan.bleile@icloud.com"
-                data-msg-sending="Wird gesendet …"
-                data-msg-ok="Danke! Deine Nachricht ist angekommen."
-                data-msg-err="Das hat leider nicht geklappt. Schreib mir direkt per E-Mail."
-                data-msg-name="Bitte gib deinen Namen ein (mindestens 2 Zeichen)."
-                data-msg-mail="Bitte gib eine gültige E-Mail-Adresse ein."
-                data-msg-text="Bitte schreib mir mindestens 10 Zeichen."
-                data-msg-email="Bitte gib eine gültige E-Mail-Adresse ein."
-                data-msg-message="Bitte schreib mir mindestens 10 Zeichen.">
-            <input type="text" name="_honey" style="display:none">
-            <input type="text" name="website" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
-            <div class="field">
-              <label class="field__label" for="name">Name</label>
-              <input class="input" id="name" name="name" type="text" required autocomplete="name" placeholder="Wie heisst du?">
+          <p class="caption">Name, E-Mail und Nachricht sind Pflicht, alles andere freiwillig. Ich antworte in der Regel innerhalb weniger Tage.</p>
+          <div class="card reveal" data-reveal-delay="1">
+            <div class="card__body">
+              <form class="form" data-contact
+                    action="https://formsubmit.co/ajax/jan.bleile@icloud.com"
+                    method="POST"
+                    data-mailto="jan.bleile@icloud.com"
+                    data-msg-sending="Wird gesendet …"
+                    data-msg-ok="Danke! Deine Nachricht ist angekommen."
+                    data-msg-err="Das hat leider nicht geklappt. Schreib mir direkt per E-Mail."
+                    data-msg-name="Bitte gib deinen Namen ein (mindestens 2 Zeichen)."
+                    data-msg-mail="Bitte gib eine gültige E-Mail-Adresse ein."
+                    data-msg-text="Bitte schreib mir mindestens 10 Zeichen."
+                    data-msg-email="Bitte gib eine gültige E-Mail-Adresse ein."
+                    data-msg-message="Bitte schreib mir mindestens 10 Zeichen.">
+                <input type="text" name="_honey" style="display:none">
+                <input type="text" name="website" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
+                <div class="field">
+                  <label class="field__label" for="name">Name</label>
+                  <input class="input" id="name" name="name" type="text" required autocomplete="name" placeholder="Wie heisst du?">
+                </div>
+                <div class="field">
+                  <label class="field__label" for="email">E-Mail</label>
+                  <input class="input" id="email" name="email" type="email" required autocomplete="email" placeholder="name@beispiel.de">
+                  <span class="field__hint">Nur damit ich antworten kann.</span>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="topic">Thema</label>
+                  <select class="select" id="topic" name="topic">
+                    <option>Frage zum Designer</option>
+                    <option>Fehler melden</option>
+                    <option>Idee für ein Motiv oder Preset</option>
+                    <option>Druckergebnis / Foto</option>
+                    <option>Sonstiges</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="project">Deine STL-Datei / Projekt</label>
+                  <input class="input" id="project" name="project" type="text" autocomplete="off" placeholder="Dateiname oder kurze Beschreibung">
+                  <span class="field__hint">Optional. Die STL-Datei selbst bitte nach dem Absenden per E-Mail an jan.bleile@icloud.com schicken.</span>
+                </div>
+                <div class="field">
+                  <label class="field__label" for="message">Nachricht</label>
+                  <textarea class="textarea" id="message" name="message" required placeholder="Was möchtest du loswerden?"></textarea>
+                </div>
+                <label class="checkbox">
+                  <input type="checkbox" name="consent" required>
+                  <span>Ich bin damit einverstanden, dass meine Angaben zur Beantwortung meiner Nachricht verwendet werden.</span>
+                </label>
+                <input type="hidden" name="_subject" value="Lumenrib — neue Kontaktanfrage">
+                <input type="hidden" name="_template" value="table">
+                <input type="hidden" name="_captcha" value="false">
+                <p class="form__status" role="status" aria-live="polite"></p>
+                <div class="btn-row">
+                  <button class="btn btn--primary" type="submit">Nachricht senden</button>
+                  <a class="btn btn--ghost" href="mailto:jan.bleile@icloud.com">Direkt per E-Mail</a>
+                </div>
+              </form>
             </div>
-            <div class="field">
-              <label class="field__label" for="email">E-Mail</label>
-              <input class="input" id="email" name="email" type="email" required autocomplete="email" placeholder="name@beispiel.de">
-              <span class="field__hint">Nur damit ich antworten kann.</span>
-            </div>
-            <div class="field">
-              <label class="field__label" for="topic">Thema</label>
-              <select class="select" id="topic" name="topic">
-                <option>Frage zum Designer</option>
-                <option>Fehler melden</option>
-                <option>Idee für ein Motiv oder Preset</option>
-                <option>Druckergebnis / Foto</option>
-                <option>Sonstiges</option>
-              </select>
-            </div>
-            <div class="field">
-              <label class="field__label" for="message">Nachricht</label>
-              <textarea class="textarea" id="message" name="message" required placeholder="Was möchtest du loswerden?"></textarea>
-            </div>
-            <label class="checkbox">
-              <input type="checkbox" name="consent" required>
-              <span>Ich bin damit einverstanden, dass meine Angaben zur Beantwortung meiner Nachricht verwendet werden.</span>
-            </label>
-            <input type="hidden" name="_subject" value="LITO Studio — neue Kontaktanfrage">
-            <input type="hidden" name="_template" value="table">
-            <input type="hidden" name="_captcha" value="false">
-            <p class="form__status" role="status" aria-live="polite"></p>
-            <div class="btn-row">
-              <button class="btn btn--primary" type="submit">Nachricht senden</button>
-              <a class="btn btn--ghost" href="mailto:jan.bleile@icloud.com">Direkt per E-Mail</a>
-            </div>
-          </form>
+          </div>
         </div>
 
         <div>
@@ -118,7 +162,7 @@
             <div class="feature reveal" data-reveal-delay="1">
               <span class="feature__icon" aria-hidden="true">✉&#xFE0E;</span>
               <h2 class="feature__title">Antwort</h2>
-              <p class="feature__text">Ich antworte in der Regel innerhalb weniger Tage. LITO Studio ist ein Ein-Personen-Projekt, keine Firma mit Support-Team.</p>
+              <p class="feature__text">Ich antworte in der Regel innerhalb weniger Tage. Lumenrib ist ein Ein-Personen-Projekt, keine Firma mit Support-Team.</p>
             </div>
             <div class="feature reveal" data-reveal-delay="2">
               <span class="feature__icon" aria-hidden="true">⌁</span>
@@ -137,19 +181,6 @@
       </div>
     </section>
 
-    <!-- 4 · Direktkontakt -->
-    <section class="section--tight wrap reveal" aria-labelledby="direct-title">
-      <div class="grid">
-        <p class="eyebrow">Direkt</p>
-        <h2 class="display-m" id="direct-title">Lieber klassisch per E-Mail</h2>
-        <p class="body">Du erreichst mich auch direkt unter <a href="mailto:jan.bleile@icloud.com">jan.bleile@icloud.com</a> — praktisch zum Beispiel, wenn du einen Screenshot oder ein Foto deines Druckergebnisses anhängen möchtest.</p>
-        <div class="btn-row">
-          <a class="btn btn--ghost" href="mailto:jan.bleile@icloud.com">E-Mail schreiben</a>
-          <a class="btn btn--primary" href="konfigurator.html">Zum Konfigurator</a>
-        </div>
-      </div>
-    </section>
-
   </main>
 
   <!-- 5 · Footer -->
@@ -165,7 +196,7 @@
         <div class="footer-col">
           <h2 class="footer-title">Ressourcen</h2>
           <a href="index.html#ablauf">Ablauf</a>
-          <a href="index.html#details">Bedienung &amp; Details</a>
+          <a href="index.html#details">Bedienung & Details</a>
           <a href="kontakt.html">Fehler melden</a>
         </div>
         <div class="footer-col">
@@ -180,7 +211,7 @@
         </div>
       </div>
       <div class="footer-note">
-        <p>© <span data-year>2026</span> LITO Studio</p>
+        <p>© <span data-year>2026</span> Lumenrib</p>
         <p>Kein Shop — ein Werkzeug.</p>
       </div>
     </div>
