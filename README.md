@@ -10,30 +10,36 @@ Parametrischer 3D-Laternen-Designer im Browser — Landing Page, Konfigurator, K
 Statische Seite, kein Build-Schritt. Lokal starten mit `python3 -m http.server`.
 Die 3D-Bibliotheken liegen in `assets/vendor/`, damit die Seite ohne CDN läuft.
 
-## Live-Adressen
+## Live
 
-| Zweck | URL |
+**https://lumenrib.me** — eigene Domain (Namecheap), ausgeliefert von GitHub Pages.
+DNS: vier A-Records auf 185.199.108.153 / .109 / .110 / .111, `www` als CNAME auf `lumenrib.me`.
+HTTPS aktiv, Zertifikat von Let's Encrypt (GitHub Pages), gültig bis 06.02.2027.
+`www` und `http` leiten per 301 auf `https://lumenrib.me/` um.
+
+| Seite | URL |
 |---|---|
-| Primär (Netlify) | https://lumenrib.netlify.app |
-| Backup (GitHub Pages) | https://janbleile09-lab.github.io/lumenrib/ |
-| Repository | https://github.com/janbleile09-lab/lumenrib |
+| Startseite DE | https://lumenrib.me/ |
+| Startseite EN | https://lumenrib.me/en/ |
+| Konfigurator DE | https://lumenrib.me/konfigurator.html |
+| Konfigurator EN | https://lumenrib.me/en/configurator.html |
+| Kontakt DE | https://lumenrib.me/kontakt.html |
+| Kontakt EN | https://lumenrib.me/en/contact.html |
 
-Beide sind kostenlos und werden bei jedem Push bzw. Deploy aktualisiert.
+Deployen = committen und pushen. GitHub Pages baut automatisch.
 
-Deploy auf Netlify (Site-ID `7d0ae2fd-8051-4c1e-9dee-cb91fc6f27b4`):
+    git add -A && git commit -m "..." && git push
 
-    npx netlify-cli deploy --prod --dir=. --site=7d0ae2fd-8051-4c1e-9dee-cb91fc6f27b4
+Netlify (`lumenrib.netlify.app`) ist nur noch Altlast: dort blockiert das Kontingent jeden
+Deploy (HTTP 403, "Account credit usage exceeded"), die Seite läuft auf einem alten Stand.
 
-## Wunschdomain `lumenrib.me`
+## Domain einrichten (falls mal neu)
 
-Bei Namecheap frei und im GitHub-Student-Pack ein Jahr kostenlos
-(Namecheap → "GitHub Student Developer Pack" → kostenlose `.me`-Domain).
-Einlösen muss das der Kontoinhaber selbst, danach verbinden:
-
-1. In Netlify unter Domain management → Add custom domain → `lumenrib.me`.
-2. Beim Registrar: `A`-Record der Apex auf `75.2.60.5` (Netlify Load Balancer),
-   `CNAME` für `www` auf `lumenrib.netlify.app`.
-3. Netlify stellt das TLS-Zertifikat automatisch aus (Let's Encrypt).
+1. Im Repo liegt eine Datei `CNAME` mit dem Inhalt `lumenrib.me` — die muss bleiben.
+2. Beim Registrar: A-Records der Apex auf 185.199.108–111.153, `CNAME` für `www` auf `lumenrib.me`.
+3. GitHub → Settings → Pages → Custom domain eintragen, "Enforce HTTPS" aktivieren.
+4. Wichtig: Eine Domain kann nur **einem** Repo im Konto zugeordnet sein. War vorher am
+   Repo `janbleile09-lab.github.io` (dort ebenfalls eine `CNAME`-Datei) — die muss dort weg.
 
 ## Kostenlose Alternative: `lumenrib.is-a.dev`
 
