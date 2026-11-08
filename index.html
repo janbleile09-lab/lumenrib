@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>LITO Studio — Parametrische 3D-Laternen selbst gestalten</title>
+  <meta name="description" content="Gestalte deine eigene Laterne im Browser: parametrisch, live in 3D, als STL-Datei exportiert und selbst auf dem FDM-3D-Drucker gedruckt.">
+  <meta name="theme-color" content="#08090d">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="LITO Studio — Parametrische 3D-Laternen selbst gestalten">
+  <meta property="og:description" content="Laterne im Browser gestalten, live in 3D ansehen, als STL exportieren und selbst drucken.">
+  <meta property="og:image" content="assets/img/wide-hero.webp">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <link rel="alternate" hreflang="de" href="index.html">
+  <link rel="alternate" hreflang="en" href="en/index.html">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308090d'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23e2be96'/%3E%3C/svg%3E">
+  <link rel="preload" as="image" href="assets/img/hero-portrait.webp">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+</head>
+<body>
+
+  <!-- 1 · Navigation -->
+  <nav class="nav" aria-label="Hauptnavigation">
+    <div class="nav-inner wrap">
+      <a class="nav-brand" href="index.html" aria-label="LITO Studio — Startseite">
+        <span class="nav-mark" aria-hidden="true"></span>
+        <span>LITO Studio</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="#ablauf">Ablauf</a>
+        <a class="nav-link" href="#presets">Presets</a>
+        <a class="nav-link" href="#funktionen">Funktionen</a>
+        <a class="nav-link" href="#details">Details</a>
+        <a class="nav-link" href="kontakt.html">Kontakt</a>
+      </div>
+      <div class="lang" aria-label="Sprache">
+        <span aria-current="true">DE</span>
+        <a href="en/index.html" hreflang="en" lang="en">EN</a>
+      </div>
+      <a class="nav-cta" href="konfigurator.html">Laterne gestalten</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- 2 · Hero -->
+    <section class="hero wrap" aria-labelledby="hero-title">
+      <div class="hero__copy">
+        <p><span class="badge">Parametrischer 3D-Laternen-Designer</span></p>
+        <h1 class="display-xl" id="hero-title">Deine Laterne. In deinem Massstab.</h1>
+        <p class="lede">Gestalte deine Laterne direkt im Browser, sieh jede Änderung sofort live in 3D, exportiere sie als STL-Datei und drucke sie selbst.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary btn--lg" href="konfigurator.html">Laterne gestalten</a>
+          <a class="btn btn--ghost btn--lg" href="#ablauf">So funktioniert's</a>
+        </div>
+      </div>
+      <div class="hero__media">
+        <img src="assets/img/hero-portrait.webp" alt="Gerenderte LITO-Laterne aus nach aussen gewölbten Stäben, von innen warm beleuchtet, vor dunklem Hintergrund" width="1200" height="1500" loading="eager" fetchpriority="high" decoding="async">
+      </div>
+    </section>
+
+    <!-- 3 · Einführung -->
+    <section class="section wrap" id="einfuehrung" aria-labelledby="intro-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <p class="eyebrow">Was LITO ist</p>
+          <h2 class="display-l" id="intro-title">Eine Laterne aus Parametern, nicht aus einer starren Vorlage.</h2>
+          <p class="body">LITO Studio ist ein Laternen-Designer, der komplett im Browser läuft. Die Laterne besteht aus einzelnen Stäben, den Rippen, die sich vom Boden zum Topring nach aussen wölben. Wie hoch, wie bauchig, wie dicht und wie verdreht sie sind, bestimmst du über Regler.</p>
+          <p class="body">Jede Änderung siehst du sofort in der 3D-Vorschau. Wenn die Form stimmt, lädst du sie als STL-Datei herunter und druckst sie auf deinem eigenen FDM-3D-Drucker.</p>
+        </div>
+        <dl class="specs">
+          <div class="spec reveal" data-reveal-delay="1">
+            <dt class="spec__k">Höhe · Bauch-Ø (Richtwert)</dt>
+            <dd class="spec__v">90–280 mm · 110–250 mm</dd>
+          </div>
+          <div class="spec reveal" data-reveal-delay="2">
+            <dt class="spec__k">Rippen</dt>
+            <dd class="spec__v">16 bis 80 Stäbe</dd>
+          </div>
+          <div class="spec reveal" data-reveal-delay="3">
+            <dt class="spec__k">Export</dt>
+            <dd class="spec__v"><span class="mono">.stl</span></dd>
+          </div>
+          <div class="spec reveal" data-reveal-delay="1">
+            <dt class="spec__k">Druck</dt>
+            <dd class="spec__v">FDM, z.&nbsp;B. Bambu Lab A1</dd>
+          </div>
+        </dl>
+      </div>
+    </section>
+
+    <!-- 4 · Showcase -->
+    <section class="section wrap" aria-label="Gestaltungsbeispiele">
+      <div class="grid">
+        <article class="showcase reveal">
+          <div class="showcase__media">
+            <img src="assets/img/card-xmas.webp" alt="Laterne im Preset Weihnachten mit erhabenen Motiven auf den Stäben" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <div class="showcase__body">
+            <p class="eyebrow">Motiv-Dekor</p>
+            <h2 class="display-m">Motive, die mitgedruckt werden.</h2>
+            <p class="lede">Tannenbaum, Stern, Eiskristall, Herz oder ein Mix daraus sitzen als Relief direkt auf den Stäben.</p>
+            <p class="body">Anzahl, Grösse, Höhe, Relief-Tiefe und die Zahl der Motivreihen stellst du selbst ein. Im Nachtmodus der Vorschau siehst du, wie die Motive im Kerzenlicht wirken.</p>
+          </div>
+        </article>
+        <hr class="divider">
+        <article class="showcase showcase--flip reveal">
+          <div class="showcase__media">
+            <img src="assets/img/card-twist.webp" alt="Laterne im Preset Twist mit spiralförmig verdrehten Stäben" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <div class="showcase__body">
+            <p class="eyebrow">Twist</p>
+            <h2 class="display-m">Eine Drehung, eine neue Form.</h2>
+            <p class="lede">Ein Regler verwindet alle Stäbe gleichzeitig, nach links oder rechts, bis zu 90&nbsp;Grad.</p>
+            <p class="body">Aus der geraden Laterne wird so eine Spirale. Zusammen mit Rippenanzahl und Wölbung entstehen ganz unterschiedliche Silhouetten aus derselben Grundform.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <!-- 5 · Presets -->
+    <section class="section wrap" id="presets" aria-labelledby="presets-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <p class="eyebrow">Presets</p>
+          <h2 class="display-l" id="presets-title">Fünf Ausgangspunkte</h2>
+        </div>
+        <div class="grid grid--3">
+          <article class="card reveal" data-reveal-delay="1">
+            <div class="card__media">
+              <img src="assets/img/card-classic.webp" alt="Preset Klassik: gerade Laterne mit 48 Stäben ohne Dekor" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <div class="card__body">
+              <span class="card__tag">Ausgewogen</span>
+              <h3 class="card__title">Klassik</h3>
+              <p class="card__text">48 gerade Stäbe, 160 mm hoch, ohne Dekor. Die neutrale Grundform, von der aus du in jede Richtung weitergehen kannst.</p>
+            </div>
+          </article>
+          <article class="card reveal" data-reveal-delay="2">
+            <div class="card__media">
+              <img src="assets/img/card-xmas.webp" alt="Preset Weihnachten: Laterne mit Motiven in zwei Reihen" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <div class="card__body">
+              <span class="card__tag">Mit Motiven</span>
+              <h3 class="card__title">Weihnachten</h3>
+              <p class="card__text">Die klassische Form mit einem Motiv-Mix in zwei Reihen auf den Stäben. Im Kerzenlicht zeichnen die Reliefs ein festliches Muster.</p>
+            </div>
+          </article>
+          <article class="card reveal" data-reveal-delay="3">
+            <div class="card__media">
+              <img src="assets/img/card-lounge.webp" alt="Preset Lounge: niedrige, breite Laterne mit starker Wölbung" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <div class="card__body">
+              <span class="card__tag">Breit</span>
+              <h3 class="card__title">Bauchig groß</h3>
+              <p class="card__text">Niedrig, mit 230 mm Bauchdurchmesser und 56 Stäben. Die stärkere Kurvenspannung macht sie zur bauchigsten der fünf Formen.</p>
+            </div>
+          </article>
+          <article class="card reveal" data-reveal-delay="1">
+            <div class="card__media">
+              <img src="assets/img/card-twist.webp" alt="Preset Twist: Laterne mit um 45 Grad verwundenen Stäben" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <div class="card__body">
+              <span class="card__tag">Verdreht</span>
+              <h3 class="card__title">Helix-Twist</h3>
+              <p class="card__text">44 Stäbe, um 45 Grad verwunden. Sie laufen spiralförmig vom Boden zum Topring.</p>
+            </div>
+          </article>
+          <article class="card reveal" data-reveal-delay="2">
+            <div class="card__media">
+              <img src="assets/img/card-tall.webp" alt="Preset Hoch: schlanke, hohe Laterne" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <div class="card__body">
+              <span class="card__tag">Schlank</span>
+              <h3 class="card__title">Hohe Laterne</h3>
+              <p class="card__text">230 mm hoch bei 190 mm Bauchdurchmesser. Der Bauch sitzt tiefer, die Silhouette wirkt gestreckt.</p>
+            </div>
+          </article>
+        </div>
+        <p class="note reveal">Jedes Preset ist nur ein Startpunkt. Alle Parameter bleiben danach frei verstellbar.</p>
+      </div>
+    </section>
+
+    <!-- 6 · Ablauf -->
+    <section class="section wrap" id="ablauf" aria-labelledby="ablauf-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <p class="eyebrow">Ablauf</p>
+          <h2 class="display-l" id="ablauf-title">In vier Schritten zur gedruckten Laterne</h2>
+        </div>
+        <div class="steps">
+          <div class="step reveal" data-reveal-delay="1">
+            <span class="step__num">01</span>
+            <h3 class="step__title">Gestalten</h3>
+            <p class="step__text">Öffne den Konfigurator im Browser. Ohne Installation und ohne Konto entsteht die Laterne direkt als 3D-Vorschau.</p>
+          </div>
+          <div class="step reveal" data-reveal-delay="2">
+            <span class="step__num">02</span>
+            <h3 class="step__title">Preset wählen &amp; anpassen</h3>
+            <p class="step__text">Starte mit einem der fünf Presets und verstelle Höhe, Wölbung, Stäbe, Twist und Motive. Jede Änderung siehst du sofort.</p>
+          </div>
+          <div class="step reveal" data-reveal-delay="3">
+            <span class="step__num">03</span>
+            <h3 class="step__title">STL exportieren</h3>
+            <p class="step__text">Vor dem Download prüft der Konfigurator Stabilität, Druckbarkeit und die Passform der Kerze. Danach lädst du die Datei als <span class="mono">.stl</span> herunter.</p>
+          </div>
+          <div class="step reveal" data-reveal-delay="1">
+            <span class="step__num">04</span>
+            <h3 class="step__title">Drucken</h3>
+            <p class="step__text">Öffne die Datei in deinem Slicer und drucke sie auf einem FDM-3D-Drucker, zum Beispiel einem Bambu Lab A1.</p>
+          </div>
+        </div>
+        <div class="btn-row reveal">
+          <a class="btn btn--primary" href="konfigurator.html">Jetzt gestalten</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 · Funktionen -->
+    <section class="section wrap" id="funktionen" aria-labelledby="funktionen-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <p class="eyebrow">Im Konfigurator</p>
+          <h2 class="display-l" id="funktionen-title">Alles, was du einstellen kannst</h2>
+        </div>
+        <div class="grid grid--4">
+          <div class="feature reveal" data-reveal-delay="1">
+            <span class="feature__icon" aria-hidden="true">△</span>
+            <h3 class="feature__title">Geometrie</h3>
+            <p class="feature__text">Höhe, Bauchdurchmesser, Kurvenspannung der Wölbung, Bodenplatte (Durchmesser, Dicke) und Topring (Innendurchmesser, Ringhöhe).</p>
+          </div>
+          <div class="feature reveal" data-reveal-delay="2">
+            <span class="feature__icon" aria-hidden="true">▤</span>
+            <h3 class="feature__title">Rippen</h3>
+            <p class="feature__text">Anzahl, Breite und Tiefe der Stäbe, von luftig mit wenigen Rippen bis dicht geschlossen.</p>
+          </div>
+          <div class="feature reveal" data-reveal-delay="3">
+            <span class="feature__icon" aria-hidden="true">↻</span>
+            <h3 class="feature__title">Twist</h3>
+            <p class="feature__text">Verwinde alle Stäbe nach links oder rechts, bis zu 90 Grad, für eine spiralförmige Silhouette.</p>
+          </div>
+          <div class="feature reveal" data-reveal-delay="1">
+            <span class="feature__icon" aria-hidden="true">✳</span>
+            <h3 class="feature__title">Motive</h3>
+            <p class="feature__text">Relief-Motive auf den Stäben: Anzahl, Grösse, Höhe, Relief-Tiefe und Zahl der Reihen.</p>
+          </div>
+          <div class="feature reveal" data-reveal-delay="2">
+            <span class="feature__icon" aria-hidden="true">◎</span>
+            <h3 class="feature__title">Kerzenfach</h3>
+            <p class="feature__text">Kerzendurchmesser und -höhe, Wandabstand und Vertiefung im Boden, damit die Kerze sicher sitzt.</p>
+          </div>
+          <div class="feature reveal" data-reveal-delay="3">
+            <span class="feature__icon" aria-hidden="true">⌗</span>
+            <h3 class="feature__title">Stabilisatoren</h3>
+            <p class="feature__text">Anzahl, Breite, Dicke und Halsform der Stabilisatoren, die die Laterne versteifen.</p>
+          </div>
+          <div class="feature reveal" data-reveal-delay="1">
+            <span class="feature__icon" aria-hidden="true">◐</span>
+            <h3 class="feature__title">Nachtmodus &amp; Farbe</h3>
+            <p class="feature__text">Vorschau mit Kerzenlicht und Schattenwurf, dazu eine Auswahl an Farbtönen für die Laterne.</p>
+          </div>
+          <div class="feature reveal" data-reveal-delay="2">
+            <span class="feature__icon" aria-hidden="true">⬡</span>
+            <h3 class="feature__title">STL-Export</h3>
+            <p class="feature__text">Vor dem Download prüft der Konfigurator Stabilität, Druckbarkeit und Kerzenpassform. Danach erhältst du eine <span class="mono">.stl</span> für deinen Slicer.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8 · Details -->
+    <section class="section wrap" id="details" aria-labelledby="details-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <p class="eyebrow">Details</p>
+          <h2 class="display-l" id="details-title">Gemacht für den Drucker, nicht nur für den Bildschirm.</h2>
+          <p class="body">Die Laterne wird direkt in deinem Browser berechnet und als STL-Datei auf deinem Rechner gespeichert. Es gibt kein Konto, keinen Login und keinen Upload in eine Cloud.</p>
+          <p class="body">Kerzenfach, Bodenplatte und Topring hängen zusammen: Die Öffnung oben muss grösser sein als die Kerze, damit du sie von oben einsetzen kannst. Der Konfigurator zeigt dir das direkt am Regler an.</p>
+        </div>
+        <div class="showcase reveal">
+          <div class="showcase__media">
+            <img src="assets/img/wide-hero.webp" alt="Querformat-Rendering einer LITO-Laterne im Konfigurator" width="1200" height="734" loading="lazy" decoding="async">
+          </div>
+          <div class="showcase__body">
+            <h3 class="display-m">Bedienung der 3D-Vorschau</h3>
+            <p class="body">Halte die <kbd class="kbd">linke Maustaste</kbd> gedrückt und ziehe, um die Laterne zu drehen. Mit dem <kbd class="kbd">Mausrad</kbd> zoomst du heran, mit der <kbd class="kbd">rechten Maustaste</kbd> verschiebst du die Ansicht.</p>
+            <p class="body">Auf dem Smartphone oder Tablet drehst du mit einem Finger und zoomst mit zwei Fingern.</p>
+            <p class="body">Der Nachtmodus dunkelt das Umgebungslicht ab, damit du den Schattenwurf der Stäbe siehst. Die Farbe der Laterne wählst du in der Werkzeugleiste.</p>
+            <p class="note">Die Laterne wird um eine echte LED-Kerze herum konstruiert. Kerzendurchmesser und Kerzenhöhe stellst du ein, das Kerzenfach im Boden passt sich daran an.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 9 · Abschluss-CTA -->
+    <section class="section wrap" aria-labelledby="cta-title">
+      <div class="grid reveal">
+        <h2 class="display-l" id="cta-title">Bereit für deine erste Laterne?</h2>
+        <p class="lede">Der Konfigurator läuft direkt im Browser. Starte mit einem der fünf Presets oder bau deine Laterne von Grund auf.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary btn--lg" href="konfigurator.html">Laterne gestalten</a>
+          <a class="btn btn--ghost btn--lg" href="kontakt.html">Kontakt aufnehmen</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 10 · Footer -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h2 class="footer-title">Produkt</h2>
+          <a href="konfigurator.html">Konfigurator</a>
+          <a href="#presets">Presets</a>
+          <a href="#funktionen">Funktionen</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Ressourcen</h2>
+          <a href="#ablauf">Ablauf</a>
+          <a href="#details">Bedienung &amp; Details</a>
+          <a href="kontakt.html">Fehler melden</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Sprache</h2>
+          <a href="index.html" hreflang="de" aria-current="page">Deutsch</a>
+          <a href="en/index.html" hreflang="en" lang="en">English</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Rechtliches</h2>
+          <a href="kontakt.html">Kontakt</a>
+          <p class="caption">Kein Konto, kein Login, kein Verkauf.</p>
+        </div>
+      </div>
+      <div class="footer-note">
+        <p>© <span data-year>2026</span> LITO Studio</p>
+        <p>Kein Shop — ein Werkzeug.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

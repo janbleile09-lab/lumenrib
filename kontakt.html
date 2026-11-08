@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Kontakt — LITO Studio</title>
+  <meta name="description" content="Fragen zum Laternen-Designer, Fehler melden, Ideen für Motive oder Fotos vom Druckergebnis: Schreib mir über das Kontaktformular oder per E-Mail.">
+  <meta name="theme-color" content="#08090d">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Kontakt — LITO Studio">
+  <meta property="og:description" content="Fragen zum Designer, ein Fehler, eine Idee für ein Motiv oder ein Foto des Druckergebnisses sind willkommen.">
+  <meta property="og:image" content="assets/img/wide-hero.webp">
+  <meta property="og:locale" content="de_DE">
+  <meta property="og:locale:alternate" content="en_US">
+
+  <link rel="alternate" hreflang="de" href="kontakt.html">
+  <link rel="alternate" hreflang="en" href="en/contact.html">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308090d'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23e2be96'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <script src="assets/js/site.js" defer></script>
+</head>
+<body>
+
+  <!-- 1 · Navigation -->
+  <nav class="nav" aria-label="Hauptnavigation">
+    <div class="nav-inner wrap">
+      <a class="nav-brand" href="index.html" aria-label="LITO Studio — Startseite">
+        <span class="nav-mark" aria-hidden="true"></span>
+        <span>LITO Studio</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#ablauf">Ablauf</a>
+        <a class="nav-link" href="index.html#presets">Presets</a>
+        <a class="nav-link" href="index.html#funktionen">Funktionen</a>
+        <a class="nav-link" href="index.html#details">Details</a>
+        <a class="nav-link" href="kontakt.html" aria-current="page">Kontakt</a>
+      </div>
+      <div class="lang" aria-label="Sprache">
+        <span aria-current="true">DE</span>
+        <a href="en/contact.html" hreflang="en" lang="en">EN</a>
+      </div>
+      <a class="nav-cta" href="konfigurator.html">Laterne gestalten</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <!-- 2 · Kopf -->
+    <section class="section wrap reveal" aria-labelledby="contact-title">
+      <div class="grid">
+        <p class="eyebrow">Kontakt</p>
+        <h1 class="display-l" id="contact-title">Schreib mir</h1>
+        <p class="lede">Hast du eine Frage zum Designer, einen Fehler entdeckt oder eine Idee für ein neues Motiv? Auch ein Foto deines Druckergebnisses ist jederzeit willkommen — ich lese jede Nachricht.</p>
+      </div>
+    </section>
+
+    <!-- 3 · Formular + Hinweise -->
+    <section class="section--tight wrap reveal" aria-label="Kontaktformular und Hinweise">
+      <div class="grid grid--2">
+
+        <div>
+          <form class="form" data-contact
+                action="https://formsubmit.co/ajax/jan.bleile09@gmail.com"
+                method="POST"
+                data-mailto="jan.bleile09@gmail.com"
+                data-msg-sending="Wird gesendet …"
+                data-msg-ok="Danke! Deine Nachricht ist angekommen."
+                data-msg-err="Das hat leider nicht geklappt. Schreib mir direkt per E-Mail."
+                data-msg-name="Bitte gib deinen Namen ein (mindestens 2 Zeichen)."
+                data-msg-mail="Bitte gib eine gültige E-Mail-Adresse ein."
+                data-msg-text="Bitte schreib mir mindestens 10 Zeichen."
+                data-msg-email="Bitte gib eine gültige E-Mail-Adresse ein."
+                data-msg-message="Bitte schreib mir mindestens 10 Zeichen.">
+            <input type="text" name="_honey" style="display:none">
+            <input type="text" name="website" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="field">
+              <label class="field__label" for="name">Name</label>
+              <input class="input" id="name" name="name" type="text" required autocomplete="name" placeholder="Wie heisst du?">
+            </div>
+            <div class="field">
+              <label class="field__label" for="email">E-Mail</label>
+              <input class="input" id="email" name="email" type="email" required autocomplete="email" placeholder="name@beispiel.de">
+              <span class="field__hint">Nur damit ich antworten kann.</span>
+            </div>
+            <div class="field">
+              <label class="field__label" for="topic">Thema</label>
+              <select class="select" id="topic" name="topic">
+                <option>Frage zum Designer</option>
+                <option>Fehler melden</option>
+                <option>Idee für ein Motiv oder Preset</option>
+                <option>Druckergebnis / Foto</option>
+                <option>Sonstiges</option>
+              </select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="message">Nachricht</label>
+              <textarea class="textarea" id="message" name="message" required placeholder="Was möchtest du loswerden?"></textarea>
+            </div>
+            <label class="checkbox">
+              <input type="checkbox" name="consent" required>
+              <span>Ich bin damit einverstanden, dass meine Angaben zur Beantwortung meiner Nachricht verwendet werden.</span>
+            </label>
+            <input type="hidden" name="_subject" value="LITO Studio — neue Kontaktanfrage">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <p class="form__status" role="status" aria-live="polite"></p>
+            <div class="btn-row">
+              <button class="btn btn--primary" type="submit">Nachricht senden</button>
+              <a class="btn btn--ghost" href="mailto:jan.bleile09@gmail.com">Direkt per E-Mail</a>
+            </div>
+          </form>
+        </div>
+
+        <div>
+          <div class="grid">
+            <div class="feature reveal" data-reveal-delay="1">
+              <span class="feature__icon" aria-hidden="true">✉&#xFE0E;</span>
+              <h2 class="feature__title">Antwort</h2>
+              <p class="feature__text">Ich antworte in der Regel innerhalb weniger Tage. LITO Studio ist ein Ein-Personen-Projekt, keine Firma mit Support-Team.</p>
+            </div>
+            <div class="feature reveal" data-reveal-delay="2">
+              <span class="feature__icon" aria-hidden="true">⌁</span>
+              <h2 class="feature__title">Was hilft</h2>
+              <p class="feature__text">Bei einem Fehler hilft: welcher Browser, welches Preset, welche Parameter verstellt wurden. Ein Screenshot ist Gold wert.</p>
+            </div>
+            <div class="feature reveal" data-reveal-delay="3">
+              <span class="feature__icon" aria-hidden="true">✳&#xFE0E;</span>
+              <h2 class="feature__title">Ideen</h2>
+              <p class="feature__text">Ein Motiv, das fehlt? Eine Form, die nicht funktioniert? Schreib es auf — gute Vorschläge landen in den Presets.</p>
+            </div>
+            <p class="note">Deine Nachricht wird über einen Formulardienst an meine E-Mail-Adresse zugestellt — auf dem Webserver werden keine Daten gespeichert.</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- 4 · Direktkontakt -->
+    <section class="section--tight wrap reveal" aria-labelledby="direct-title">
+      <div class="grid">
+        <p class="eyebrow">Direkt</p>
+        <h2 class="display-m" id="direct-title">Lieber klassisch per E-Mail</h2>
+        <p class="body">Du erreichst mich auch direkt unter <a href="mailto:jan.bleile09@gmail.com">jan.bleile09@gmail.com</a> — praktisch zum Beispiel, wenn du einen Screenshot oder ein Foto deines Druckergebnisses anhängen möchtest.</p>
+        <div class="btn-row">
+          <a class="btn btn--ghost" href="mailto:jan.bleile09@gmail.com">E-Mail schreiben</a>
+          <a class="btn btn--primary" href="konfigurator.html">Zum Konfigurator</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 5 · Footer -->
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h2 class="footer-title">Produkt</h2>
+          <a href="konfigurator.html">Konfigurator</a>
+          <a href="index.html#presets">Presets</a>
+          <a href="index.html#funktionen">Funktionen</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Ressourcen</h2>
+          <a href="index.html#ablauf">Ablauf</a>
+          <a href="index.html#details">Bedienung &amp; Details</a>
+          <a href="kontakt.html">Fehler melden</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Sprache</h2>
+          <a href="kontakt.html" hreflang="de" aria-current="page">Deutsch</a>
+          <a href="en/contact.html" hreflang="en" lang="en">English</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Rechtliches</h2>
+          <a href="kontakt.html">Kontakt</a>
+          <p class="caption">Kein Konto, kein Login, kein Verkauf.</p>
+        </div>
+      </div>
+      <div class="footer-note">
+        <p>© <span data-year>2026</span> LITO Studio</p>
+        <p>Kein Shop — ein Werkzeug.</p>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

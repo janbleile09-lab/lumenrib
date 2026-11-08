@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>LITO Studio — Design parametric 3D lanterns yourself</title>
+  <meta name="description" content="Design a parametric lantern in your browser, see it live in 3D, export it as an STL file and print it yourself on an FDM 3D printer.">
+  <meta name="theme-color" content="#08090d">
+
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LITO Studio">
+  <meta property="og:locale" content="en_GB">
+  <meta property="og:title" content="LITO Studio — Design parametric 3D lanterns yourself">
+  <meta property="og:description" content="Design a lantern in your browser, export it as an STL file and print it yourself.">
+  <meta property="og:image" content="../assets/img/wide-hero.webp">
+
+  <link rel="alternate" hreflang="en" href="index.html">
+  <link rel="alternate" hreflang="de" href="../index.html">
+  <link rel="alternate" hreflang="x-default" href="../index.html">
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2308090d'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23e2be96'/%3E%3C/svg%3E">
+  <link rel="preload" as="image" href="../assets/img/hero-portrait.webp">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <script src="../assets/js/site.js" defer></script>
+</head>
+<body>
+
+  <nav class="nav" aria-label="Main navigation">
+    <div class="wrap nav-inner">
+      <a class="nav-brand" href="index.html" aria-label="LITO Studio — home">
+        <span class="nav-mark" aria-hidden="true"></span>
+        <span>LITO Studio</span>
+      </a>
+      <ul class="nav-links">
+        <li><a class="nav-link" href="#process">Process</a></li>
+        <li><a class="nav-link" href="#presets">Presets</a></li>
+        <li><a class="nav-link" href="#features">Features</a></li>
+        <li><a class="nav-link" href="#details">Details</a></li>
+        <li><a class="nav-link" href="contact.html">Contact</a></li>
+      </ul>
+      <div class="lang" aria-label="Language">
+        <a href="../index.html" hreflang="de" lang="de">DE</a>
+        <span aria-hidden="true">/</span>
+        <span aria-current="true">EN</span>
+      </div>
+      <a class="nav-cta" href="configurator.html">Design your lantern</a>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- Hero -->
+    <section class="hero wrap">
+      <div class="hero__copy">
+        <span class="badge">Parametric 3D lantern designer</span>
+        <h1 class="display-xl">Your lantern. Your scale.</h1>
+        <p class="lede">Design it in your browser, watch it take shape live in 3D, export it as an STL file and print it yourself.</p>
+        <div class="btn-row">
+          <a class="btn btn--primary btn--lg" href="configurator.html">Design your lantern</a>
+          <a class="btn btn--ghost" href="#process">How it works</a>
+        </div>
+      </div>
+      <div class="hero__media">
+        <img src="../assets/img/hero-portrait.webp" alt="A glowing 3D-printed lantern made of curved ribs, rendered in the LITO Studio configurator" width="1200" height="1500" loading="eager" decoding="async">
+      </div>
+    </section>
+
+    <!-- Introduction -->
+    <section class="section wrap reveal" id="introduction">
+      <span class="eyebrow">What LITO is</span>
+      <h2 class="display-l">A lantern, built rib by rib.</h2>
+      <p class="body">LITO Studio is a parametric lantern designer that runs in your browser. You assemble a lantern from individual slender ribs that curve outwards, and you decide how tall it is, how wide it bulges and how many ribs it has.</p>
+      <p class="body">When you are happy with the shape, you download it as an STL file and print it on an FDM 3D printer such as the Bambu Lab A1. No account, no cloud — just the tool and your printer.</p>
+      <dl class="specs reveal" data-reveal-delay="1">
+        <div class="spec">
+          <dt class="spec__k">Height / diameter</dt>
+          <dd class="spec__v">90–280 mm / Ø 110–250 mm</dd>
+          <dd class="caption">Guide values for height and belly</dd>
+        </div>
+        <div class="spec">
+          <dt class="spec__k">Ribs</dt>
+          <dd class="spec__v">16 to 80</dd>
+        </div>
+        <div class="spec">
+          <dt class="spec__k">Export format</dt>
+          <dd class="spec__v">.stl</dd>
+        </div>
+        <div class="spec">
+          <dt class="spec__k">Printing</dt>
+          <dd class="spec__v">FDM</dd>
+        </div>
+      </dl>
+    </section>
+
+    <!-- Showcase -->
+    <section class="section wrap">
+      <div class="showcase reveal">
+        <div class="showcase__media">
+          <img src="../assets/img/card-xmas.webp" alt="The Christmas preset: a lantern with decorative motifs on its ribs" width="1200" height="1200" loading="lazy" decoding="async">
+        </div>
+        <div class="showcase__body">
+          <span class="eyebrow">Motifs</span>
+          <h2 class="display-m">Decoration that grows out of the ribs.</h2>
+          <p class="body">Motifs sit directly on the ribs as raised relief. You choose how many there are, how large they are, how high up the lantern they sit and how deep the relief is.</p>
+          <p class="body">Add a second or third row of motifs and the lantern throws a richer pattern of light and shadow once a candle or LED is inside.</p>
+        </div>
+      </div>
+      <div class="showcase showcase--flip reveal" style="margin-top: clamp(48px, 8vw, 110px)">
+        <div class="showcase__media">
+          <img src="../assets/img/card-twist.webp" alt="The Twist preset: a lantern whose ribs are twisted around the vertical axis" width="1200" height="1200" loading="lazy" decoding="async">
+        </div>
+        <div class="showcase__body">
+          <span class="eyebrow">Twist</span>
+          <h2 class="display-m">A gentle turn changes everything.</h2>
+          <p class="body">Twist the ribs around the vertical axis and a straight, calm lantern becomes a flowing one. The twist angle runs from −90° to +90°, so you can turn it either way.</p>
+          <p class="body">Combined with the curve tension of the bulge, the same ribs give you very different silhouettes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Presets -->
+    <section class="section wrap reveal" id="presets">
+      <span class="eyebrow">Presets</span>
+      <h2 class="display-l">Five starting points</h2>
+      <div class="grid grid--3" style="margin-top: clamp(28px, 4vw, 48px)">
+        <article class="card reveal" data-reveal-delay="1">
+          <div class="card__media">
+            <img src="../assets/img/card-classic.webp" alt="The Classic preset: a plain lantern with evenly curved ribs" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <div class="card__body">
+            <span class="card__tag">Timeless</span>
+            <h3 class="card__title">Classic</h3>
+            <p class="card__text">Evenly curved ribs and no decoration. A calm, balanced lantern, and a good place to learn how the parameters behave.</p>
+          </div>
+        </article>
+        <article class="card reveal" data-reveal-delay="2">
+          <div class="card__media">
+            <img src="../assets/img/card-xmas.webp" alt="The Christmas preset: a lantern with decorative motifs on its ribs" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <div class="card__body">
+            <span class="card__tag">Seasonal</span>
+            <h3 class="card__title">Christmas</h3>
+            <p class="card__text">Festive motifs in two rows around the lantern. They throw a pattern of shadows once the light is on.</p>
+          </div>
+        </article>
+        <article class="card reveal" data-reveal-delay="3">
+          <div class="card__media">
+            <img src="../assets/img/card-lounge.webp" alt="The Lounge preset: a wide, low lantern with many ribs" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <div class="card__body">
+            <span class="card__tag">Wide</span>
+            <h3 class="card__title">Lounge</h3>
+            <p class="card__text">A low, broad body with more ribs and a generous bulge. Made for a table or a shelf.</p>
+          </div>
+        </article>
+        <article class="card reveal" data-reveal-delay="1">
+          <div class="card__media">
+            <img src="../assets/img/card-twist.webp" alt="The Twist preset: a lantern whose ribs are twisted around the vertical axis" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <div class="card__body">
+            <span class="card__tag">Dynamic</span>
+            <h3 class="card__title">Helix Twist</h3>
+            <p class="card__text">The ribs wind around the lantern at a 45° angle. The shape feels like it is in motion, even standing still.</p>
+          </div>
+        </article>
+        <article class="card reveal" data-reveal-delay="2">
+          <div class="card__media">
+            <img src="../assets/img/card-tall.webp" alt="The Tall preset: a slender, tall lantern" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <div class="card__body">
+            <span class="card__tag">Slender</span>
+            <h3 class="card__title">Tall</h3>
+            <p class="card__text">A taller, more slender silhouette with a narrower bulge. It makes room for a long candle.</p>
+          </div>
+        </article>
+      </div>
+      <p class="note" style="margin-top: clamp(24px, 3vw, 36px)">Every preset is only a starting point. Once you have picked one, every parameter stays freely adjustable.</p>
+    </section>
+
+    <!-- Process -->
+    <section class="section wrap reveal" id="process">
+      <span class="eyebrow">Process</span>
+      <h2 class="display-l">From screen to printed lantern in four steps</h2>
+      <ol class="steps" role="list" style="margin-top: clamp(28px, 4vw, 48px)">
+        <li class="step reveal" data-reveal-delay="1">
+          <span class="step__num">01</span>
+          <h3 class="step__title">Design</h3>
+          <p class="step__text">Open the configurator and look at the lantern in 3D. Drag to turn it, scroll to zoom in.</p>
+        </li>
+        <li class="step reveal" data-reveal-delay="2">
+          <span class="step__num">02</span>
+          <h3 class="step__title">Pick a preset and adjust</h3>
+          <p class="step__text">Start from one of five presets and change height, bulge, ribs, twist, motifs and candle compartment until it suits you.</p>
+        </li>
+        <li class="step reveal" data-reveal-delay="3">
+          <span class="step__num">03</span>
+          <h3 class="step__title">Export the STL</h3>
+          <p class="step__text">One click downloads your lantern as an STL file, ready for your slicer.</p>
+        </li>
+        <li class="step reveal" data-reveal-delay="1">
+          <span class="step__num">04</span>
+          <h3 class="step__title">Print</h3>
+          <p class="step__text">Slice it and print it on your FDM printer, for example a Bambu Lab A1.</p>
+        </li>
+      </ol>
+      <div class="btn-row" style="margin-top: clamp(28px, 4vw, 44px)">
+        <a class="btn btn--primary" href="configurator.html">Start designing</a>
+      </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section wrap reveal" id="features">
+      <span class="eyebrow">In the configurator</span>
+      <h2 class="display-l">Everything you can adjust</h2>
+      <div class="grid grid--4" style="margin-top: clamp(28px, 4vw, 48px)">
+        <div class="feature reveal" data-reveal-delay="1">
+          <div class="feature__icon" aria-hidden="true">◐</div>
+          <h3 class="feature__title">Geometry</h3>
+          <p class="feature__text">Height, belly diameter, base plate diameter and thickness, and the inner diameter and height of the top ring.</p>
+        </div>
+        <div class="feature reveal" data-reveal-delay="2">
+          <div class="feature__icon" aria-hidden="true">▤</div>
+          <h3 class="feature__title">Ribs</h3>
+          <p class="feature__text">Number of ribs, rib width and depth, and the curve tension that shapes the bulge.</p>
+        </div>
+        <div class="feature reveal" data-reveal-delay="3">
+          <div class="feature__icon" aria-hidden="true">⌁</div>
+          <h3 class="feature__title">Twist</h3>
+          <p class="feature__text">Turn the ribs around the vertical axis by the twist angle, in either direction.</p>
+        </div>
+        <div class="feature reveal" data-reveal-delay="1">
+          <div class="feature__icon" aria-hidden="true">✳</div>
+          <h3 class="feature__title">Motifs</h3>
+          <p class="feature__text">Decoration on the ribs: number, size, height, relief depth and rows of motifs.</p>
+        </div>
+        <div class="feature reveal" data-reveal-delay="2">
+          <div class="feature__icon" aria-hidden="true">⌗</div>
+          <h3 class="feature__title">Candle compartment</h3>
+          <p class="feature__text">Candle diameter and height, clearance to the wall and the recess in the base.</p>
+        </div>
+        <div class="feature reveal" data-reveal-delay="3">
+          <div class="feature__icon" aria-hidden="true">△</div>
+          <h3 class="feature__title">Stabilisers</h3>
+          <p class="feature__text">Number, width and thickness of the stabilisers, plus the shape of their neck.</p>
+        </div>
+        <div class="feature reveal" data-reveal-delay="1">
+          <div class="feature__icon" aria-hidden="true">⬡</div>
+          <h3 class="feature__title">Night mode &amp; colour</h3>
+          <p class="feature__text">Preview your lantern with light and cast shadows, and choose its colour.</p>
+        </div>
+        <div class="feature reveal" data-reveal-delay="2">
+          <div class="feature__icon" aria-hidden="true">◇</div>
+          <h3 class="feature__title">STL export</h3>
+          <p class="feature__text">Download the finished lantern as an STL file for any slicer.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Details -->
+    <section class="section wrap reveal" id="details">
+      <span class="eyebrow">Details</span>
+      <h2 class="display-l">Built around a real light</h2>
+      <p class="body">LITO is a tool, not a shop. It does one thing: it helps you shape a lantern that you can print at home.</p>
+      <p class="body">Everything you see in the preview is what ends up in the STL file, so you can judge proportions, ribs and motifs before you print anything.</p>
+      <div class="showcase" style="margin-top: clamp(28px, 4vw, 48px)">
+        <div class="showcase__media">
+          <img src="../assets/img/wide-hero.webp" alt="A lantern in the LITO Studio configurator, shown in the 3D preview" width="1200" height="733" loading="lazy" decoding="async">
+        </div>
+        <div class="showcase__body">
+          <p class="body">Hold the mouse button and drag to turn the lantern. <span class="kbd">Scroll</span> to zoom in and out.</p>
+          <p class="body">Switch on night mode to see the lantern glow and cast shadows, then switch it off again to check the shape in daylight.</p>
+          <p class="body">Choose a colour for the preview, and adjust any value until the lantern looks the way you want it to.</p>
+          <p class="note">The lantern is built around a real candle or LED light. Candle diameter and height are adjustable, so the compartment fits what you have.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Closing CTA -->
+    <section class="section wrap reveal">
+      <h2 class="display-l">Ready to shape your first lantern?</h2>
+      <p class="lede" style="margin-top: 1.1rem">Open the configurator, pick a preset and make it yours. You do not need an account.</p>
+      <div class="btn-row" style="margin-top: clamp(24px, 3vw, 36px)">
+        <a class="btn btn--primary btn--lg" href="configurator.html">Design your lantern</a>
+        <a class="btn btn--ghost" href="contact.html">Get in touch</a>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <p class="footer-title">Product</p>
+          <ul>
+            <li><a href="configurator.html">Configurator</a></li>
+            <li><a href="#presets">Presets</a></li>
+            <li><a href="#features">Features</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-title">Resources</p>
+          <ul>
+            <li><a href="#process">Process</a></li>
+            <li><a href="#details">Details</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-title">Language</p>
+          <ul>
+            <li><a href="../index.html" hreflang="de" lang="de">Deutsch</a></li>
+            <li><span aria-current="true">English</span></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-title">Legal</p>
+          <p class="caption">Details you send through the contact form are used only to answer your message.</p>
+        </div>
+      </div>
+      <div class="footer-note">
+        <span>© <span data-year>2026</span> LITO Studio</span>
+        <span>Not a shop — a tool.</span>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
