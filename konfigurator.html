@@ -136,6 +136,7 @@
       <!-- Brand Badge -->
       <div class="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 pointer-events-auto shadow-2xl">
         <a href="index.html" class="text-gray-400 hover:text-white transition-colors text-base leading-none" title="Zurück zur Startseite" aria-label="Zurück zur Startseite">&#8592;</a>
+        <a href="en/configurator.html" class="text-[11px] font-mono uppercase px-2 py-0.5 rounded-full border border-white/15 text-gray-400 hover:text-white transition-colors" title="Switch to English" aria-label="Switch to English">EN</a>
         <div class="w-9 h-9 rounded-xl accent-gradient flex items-center justify-center shadow-lg shadow-champagne-500/20">
           <!-- Lantern SVG Icon -->
           <svg class="w-5 h-5 text-studio-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -775,9 +776,9 @@
             <label class="text-gray-300 font-medium">Kerzen-Höhe</label>
             <span class="font-mono text-amber-400 font-semibold"><span id="val-candleHeight">18</span> mm (10.0 cm)</span>
           </div>
-          <input type="range" id="param-candleHeight" min="30" max="200" step="2" value="18" oninput="updateParam('candleHeight', this.value)" />
+          <input type="range" id="param-candleHeight" min="10" max="200" step="2" value="18" oninput="updateParam('candleHeight', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>30 mm</span>
+            <span>10 mm (Teelicht)</span>
             <span>100 mm (Deine 10 cm Kerze)</span>
             <span>200 mm</span>
           </div>

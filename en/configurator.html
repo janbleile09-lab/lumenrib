@@ -4,9 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Parametric 3D lantern designer in your browser: adjust ribs, motifs and candle chamber, see it live in 3D and export it as an STL file." />
-  <link rel="alternate" hreflang="de" href="../konfigurator.html" />
-  <link rel="alternate" hreflang="en" href="configurator.html" />
-  <title>Lumenrib — Parametric 3D Lantern & Vase Designer (STL Export)</title>
+  <title>Lumenrib — Parametric 3D Lantern & Tea Light Designer (STL Export)</title>
   <!-- Tailwind CSS -->
   <script src="../assets/vendor/tailwind.js"></script>
   <!-- Google Fonts: Inter & JetBrains Mono -->
@@ -130,14 +128,15 @@
         <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
         <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
       </svg>
-      <span id="zen-btn-text">Vollbild</span>
+      <span id="zen-btn-text">Fullscreen</span>
     </button>
 
     <!-- Top-Left Brand & Quick Presets Bar -->
     <div id="ui-top-bar" class="absolute top-4 left-4 right-32 flex flex-wrap items-center justify-between gap-3 pointer-events-none transition-opacity duration-300">
       <!-- Brand Badge -->
       <div class="glass-panel px-4 py-2.5 rounded-2xl flex items-center gap-3 pointer-events-auto shadow-2xl">
-        <a href="../index.html" class="text-gray-400 hover:text-white transition-colors text-base leading-none" title="Zurück zur Startseite" aria-label="Zurück zur Startseite">&#8592;</a>
+        <a href="../index.html" class="text-gray-400 hover:text-white transition-colors text-base leading-none" title="Back to the home page" aria-label="Back to the home page">&#8592;</a>
+        <a href="../konfigurator.html" class="text-[11px] font-mono uppercase px-2 py-0.5 rounded-full border border-white/15 text-gray-400 hover:text-white transition-colors" title="Auf Deutsch umschalten" aria-label="Auf Deutsch umschalten">DE</a>
         <div class="w-9 h-9 rounded-xl accent-gradient flex items-center justify-center shadow-lg shadow-champagne-500/20">
           <!-- Lantern SVG Icon -->
           <svg class="w-5 h-5 text-studio-950" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
@@ -150,27 +149,30 @@
             <h1 class="text-sm font-bold tracking-tight text-white">Lumenrib</h1>
             <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-champagne-400/15 text-champagne-300 border border-champagne-400/30">STL Ready</span>
           </div>
-          <p class="text-[11px] text-gray-400 hidden sm:block">Parametrischer 3D-Laternen & Kerzenhalter Designer</p>
+          <p class="text-[11px] text-gray-400 hidden sm:block">Parametric 3D Lantern & Candle Holder Designer</p>
         </div>
       </div>
 
       <!-- Design Presets -->
       <div class="glass-panel p-1.5 rounded-2xl flex items-center gap-1.5 pointer-events-auto shadow-xl overflow-x-auto max-w-full">
-        <span class="text-[11px] text-gray-400 px-2.5 font-medium hidden lg:inline">Vorlagen:</span>
-        <button onclick="applyPreset('classic')" id="preset-classic" class="preset-btn px-3 py-1.5 rounded-xl text-xs transition-all accent-gradient text-studio-950 font-semibold">
-          Klassik (Foto)
+        <span class="text-[11px] text-gray-400 px-2.5 font-medium hidden lg:inline">Presets:</span>
+        <button onclick="applyPreset('tealight')" id="preset-tealight" class="preset-btn px-3 py-1.5 rounded-xl text-xs transition-all accent-gradient text-studio-950 font-semibold">
+          Tea light
+        </button>
+        <button onclick="applyPreset('classic')" id="preset-classic" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
+          Classic
         </button>
         <button onclick="applyPreset('xmas')" id="preset-xmas" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-medium text-amber-200 hover:text-white hover:bg-amber-500/15 border border-amber-400/25 transition-all flex items-center gap-1">
-          <span>★ Weihnachten</span>
+          <span>★ Christmas</span>
         </button>
         <button onclick="applyPreset('lounge')" id="preset-lounge" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
-          Bauchig Groß
+          Lounge
         </button>
         <button onclick="applyPreset('twist')" id="preset-twist" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
           Helix Twist
         </button>
         <button onclick="applyPreset('tall')" id="preset-tall" class="preset-btn px-3 py-1.5 rounded-xl text-xs font-medium text-gray-300 hover:text-white hover:bg-white/5 transition-all">
-          Hohe Laterne
+          Tall lantern
         </button>
       </div>
     </div>
@@ -181,9 +183,9 @@
         <div class="flex items-center justify-between border-b border-white/10 pb-2">
           <span class="text-xs font-semibold uppercase tracking-wider text-gray-300 flex items-center gap-1.5">
             <span id="status-dot" class="w-2.5 h-2.5 rounded-full bg-teal-400 animate-pulse"></span>
-            3D-Druck & Kerzen-Check
+            3D print & candle check
           </span>
-          <span id="est-weight" class="text-xs font-mono text-champagne-300 font-medium">~145 g PLA</span>
+          <span id="est-weight" class="text-xs font-mono text-champagne-300 font-medium">~75 g PLA</span>
         </div>
 
         <div class="grid grid-cols-2 gap-2 text-xs">
@@ -193,8 +195,8 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
             <div>
-              <div class="font-medium text-teal-200">Öffnung Oben</div>
-              <div id="check-opening-text" class="text-[11px] text-teal-300/80 font-mono">+16 mm Platz</div>
+              <div class="font-medium text-teal-200">Top opening</div>
+              <div id="check-opening-text" class="text-[11px] text-teal-300/80 font-mono">+24 mm clearance</div>
             </div>
           </div>
 
@@ -204,15 +206,15 @@
               <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
             </svg>
             <div>
-              <div class="font-medium text-teal-200">Überhangwinkel</div>
-              <div id="check-overhang-text" class="text-[11px] text-teal-300/80 font-mono">Max. 46° (Stützfrei)</div>
+              <div class="font-medium text-teal-200">Overhang angle</div>
+              <div id="check-overhang-text" class="text-[11px] text-teal-300/80 font-mono">Max. 38° (support-free)</div>
             </div>
           </div>
         </div>
 
         <div class="flex items-center justify-between text-[11px] text-gray-400 pt-0.5">
-          <span>Teller-Vertiefung innen: <strong id="tray-inner-dia" class="text-gray-200 font-mono">83.0 mm</strong></span>
-          <span>Außenmaß: <strong id="outer-dims" class="text-gray-200 font-mono">Ø200 × 160 mm</strong></span>
+          <span>Tray recess inside: <strong id="tray-inner-dia" class="text-gray-200 font-mono">83.0 mm</strong></span>
+          <span>Outer dims: <strong id="outer-dims" class="text-gray-200 font-mono">Ø124 × 110 mm</strong></span>
         </div>
       </div>
     </div>
@@ -221,11 +223,11 @@
     <div id="ui-bottom-right" class="absolute bottom-4 right-4 left-4 sm:left-auto flex flex-col items-center sm:items-end gap-2.5 pointer-events-auto transition-all duration-300 z-30">
       <!-- Modern Filament Colors -->
       <div id="ui-color-bar" class="glass-panel px-3 py-2 rounded-2xl flex items-center gap-2 shadow-xl transition-opacity duration-300">
-        <span class="text-[11px] text-gray-400 mr-1 hidden sm:inline">Farbe:</span>
+        <span class="text-[11px] text-gray-400 mr-1 hidden sm:inline">Colour:</span>
         <button onclick="setLanternColor('#d6c5b3', this)" title="Warm Sand / Travertin" class="color-swatch w-6 h-6 rounded-full border-2 border-white scale-110 transition-transform" style="background:#d6c5b3;"></button>
-        <button onclick="setLanternColor('#849287', this)" title="Nordic Sage / Salbeigrün" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#849287;"></button>
+        <button onclick="setLanternColor('#849287', this)" title="Nordic Sage" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#849287;"></button>
         <button onclick="setLanternColor('#7c7a72', this)" title="Taupe / Olivgrau" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#7c7a72;"></button>
-        <button onclick="setLanternColor('#f4f3ef', this)" title="Seidenmatt Weiß" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#f4f3ef;"></button>
+        <button onclick="setLanternColor('#f4f3ef', this)" title="Silk Matte White" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#f4f3ef;"></button>
         <button onclick="setLanternColor('#23262e', this)" title="Obsidian Anthrazit" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#23262e;"></button>
         <button onclick="setLanternColor('#c27d63', this)" title="Muted Terracotta" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#c27d63;"></button>
       </div>
@@ -236,28 +238,28 @@
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3c1.5 2 1.5 4 0 5.5C10.5 7 10.5 5 12 3zM9 11h6v10H9V11z"/>
           </svg>
-          <span>LED-Kerze</span>
+          <span>Candle</span>
         </button>
 
-        <button id="btn-drop" onclick="triggerCandleDropAnimation()" title="Testet visuell, ob die Kerze durch die obere Öffnung passt" class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 text-gray-300 hover:text-white hover:bg-white/10 transition-all">
+        <button id="btn-drop" onclick="triggerCandleDropAnimation()" title="Visually checks whether the candle fits through the top opening" class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 text-gray-300 hover:text-white hover:bg-white/10 transition-all">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M19 14l-7 7m0 0l-7-7m7 7V3"/>
           </svg>
-          <span class="hidden sm:inline">Einsetz-Test</span>
+          <span class="hidden sm:inline">Fit test</span>
         </button>
 
-        <button id="btn-section" onclick="toggleSectionView()" title="Halbiert das Modell, um den Kerzenteller und die Vertiefung im Inneren zu sehen" class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 text-gray-300 hover:text-white hover:bg-white/10 transition-all">
+        <button id="btn-section" onclick="toggleSectionView()" title="Cuts the model in half so you can see the tray and the recess inside" class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 text-gray-300 hover:text-white hover:bg-white/10 transition-all">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z"/>
           </svg>
-          <span>Schnitt</span>
+          <span>Section view</span>
         </button>
 
-        <button id="btn-night" onclick="toggleNightMode()" title="Schaltet das Umgebungslicht dunkel, um den dramatischen Schattenwurf der Stäbe zu zeigen" class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 bg-champagne-400/20 text-champagne-200 border border-champagne-400/40 transition-all">
+        <button id="btn-night" onclick="toggleNightMode()" title="Darkens the ambient light to show the dramatic shadow cast of the ribs" class="px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 bg-champagne-400/20 text-champagne-200 border border-champagne-400/40 transition-all">
           <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/>
           </svg>
-          <span>Schatten</span>
+          <span>Shadows</span>
         </button>
       </div>
     </div>
@@ -269,10 +271,10 @@
     <div class="p-3 border-b border-white/10 bg-studio-950/60">
       <div class="grid grid-cols-5 gap-1 p-1 bg-studio-800 rounded-xl">
         <button onclick="switchTab('form')" id="tab-form" class="tab-btn py-2 px-1.5 rounded-lg text-[11px] font-semibold accent-gradient text-studio-950 transition-all">
-          1. Form
+          1. Shape
         </button>
         <button onclick="switchTab('ribs')" id="tab-ribs" class="tab-btn py-2 px-1.5 rounded-lg text-[11px] font-semibold text-gray-400 hover:text-white transition-all relative">
-          2. Stäbe
+          2. Ribs
           <span class="w-1.5 h-1.5 rounded-full bg-teal-400 inline-block ml-0.5 align-middle"></span>
         </button>
         <button onclick="switchTab('deko')" id="tab-deko" class="tab-btn py-2 px-1.5 rounded-lg text-[11px] font-semibold text-amber-300/90 hover:text-white transition-all relative">
@@ -280,10 +282,10 @@
           <span class="text-[9px] font-mono uppercase px-1.5 py-0.5 rounded-full bg-amber-400/15 text-amber-300 border border-amber-400/30 align-middle ml-0.5">BETA</span>
         </button>
         <button onclick="switchTab('tray')" id="tab-tray" class="tab-btn py-2 px-1.5 rounded-lg text-[11px] font-semibold text-gray-400 hover:text-white transition-all">
-          4. Teller
+          4. Tray
         </button>
         <button onclick="switchTab('candle')" id="tab-candle" class="tab-btn py-2 px-1.5 rounded-lg text-[11px] font-semibold text-gray-400 hover:text-white transition-all">
-          5. Kerze
+          5. Candle
         </button>
       </div>
     </div>
@@ -295,8 +297,8 @@
       <div id="panel-form" class="tab-panel space-y-5">
         <div class="flex items-center justify-between">
           <div>
-            <h2 class="text-sm font-semibold text-white">Laternen-Geometrie & Maße</h2>
-            <p class="text-xs text-gray-400">Alle Angaben exakt in Millimetern (mm) für den 3D-Druck</p>
+            <h2 class="text-sm font-semibold text-white">Lantern geometry & dimensions</h2>
+            <p class="text-xs text-gray-400">All values exact in millimetres (mm) for 3D printing</p>
           </div>
           <button onclick="resetToDefaults()" class="text-xs text-amber-400 hover:text-amber-300 underline">Reset</button>
         </div>
@@ -304,27 +306,27 @@
         <!-- Total Height -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Gesamthöhe der Laterne</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-height">160</span> mm</span>
+            <label class="text-gray-300 font-medium">Total lantern height</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-height">110</span> mm</span>
           </div>
-          <input type="range" id="param-height" min="90" max="280" step="2" value="160" oninput="updateParam('height', this.value)" />
+          <input type="range" id="param-height" min="90" max="280" step="2" value="110" oninput="updateParam('height', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>90 mm (Teelicht)</span>
-            <span>160 mm (Standard)</span>
-            <span>280 mm (Groß)</span>
+            <span>90 mm (mini)</span>
+            <span>110 mm (tea light standard)</span>
+            <span>280 mm (large)</span>
           </div>
         </div>
 
         <!-- Belly Outer Diameter -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Max. Bauch-Durchmesser (Außen)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyDia">200</span> mm</span>
+            <label class="text-gray-300 font-medium">Max. belly diameter (outer)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyDia">124</span> mm</span>
           </div>
-          <input type="range" id="param-bellyDia" min="110" max="250" step="2" value="200" oninput="updateParam('bellyDia', this.value)" />
+          <input type="range" id="param-bellyDia" min="110" max="250" step="2" value="124" oninput="updateParam('bellyDia', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>110 mm</span>
-            <span>200 mm (Passt auf Standard-Druckbett)</span>
+            <span>124 mm (tea light)</span>
             <span>250 mm</span>
           </div>
         </div>
@@ -332,114 +334,114 @@
         <!-- Top Opening Inner Diameter -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Obere Öffnung (Innendurchmesser)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-topInnerDia">96</span> mm</span>
+            <label class="text-gray-300 font-medium">Top opening (inner diameter)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-topInnerDia">62</span> mm</span>
           </div>
-          <input type="range" id="param-topInnerDia" min="60" max="160" step="1" value="96" oninput="updateParam('topInnerDia', this.value)" />
+          <input type="range" id="param-topInnerDia" min="60" max="160" step="1" value="62" oninput="updateParam('topInnerDia', this.value)" />
           <p class="text-[11px] text-gray-400">
-            Muss größer als der Kerzendurchmesser (<span id="hint-candle-dia" class="text-gray-200 font-mono">80 mm</span>) sein, um die Kerze von oben einzusetzen.
+            Must be larger than the candle diameter (<span id="hint-candle-dia" class="text-gray-200 font-mono">38 mm</span>) so the candle can be inserted from the top.
           </p>
         </div>
 
         <!-- Bottom Base Outer Diameter -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Basis-Durchmesser (Unten)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseOuterDia">108</span> mm</span>
+            <label class="text-gray-300 font-medium">Base diameter (bottom)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseOuterDia">84</span> mm</span>
           </div>
-          <input type="range" id="param-baseOuterDia" min="75" max="180" step="1" value="108" oninput="updateParam('baseOuterDia', this.value)" />
+          <input type="range" id="param-baseOuterDia" min="75" max="180" step="1" value="84" oninput="updateParam('baseOuterDia', this.value)" />
         </div>
 
         <!-- Belly Vertical Position -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Bauch-Höhenschwerpunkt</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyHeightRatio">46</span> %</span>
+            <label class="text-gray-300 font-medium">Belly height centre</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyHeightRatio">47</span> %</span>
           </div>
-          <input type="range" id="param-bellyHeightRatio" min="28" max="72" step="1" value="46" oninput="updateParam('bellyHeightRatio', this.value)" />
+          <input type="range" id="param-bellyHeightRatio" min="28" max="72" step="1" value="47" oninput="updateParam('bellyHeightRatio', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>Tiefer Schwerpunkt (Tropfen)</span>
-            <span>Mitte (Kugel)</span>
-            <span>Hoch (Schulter)</span>
+            <span>Low centre (teardrop)</span>
+            <span>Centre (sphere)</span>
+            <span>High (shoulder)</span>
           </div>
         </div>
 
         <!-- Print-Friendly Curve Steepness -->
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Kurven-Wölbung (3D-Druck-Optimierung)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-curveTension">55</span> %</span>
+            <label class="text-gray-300 font-medium">Curve tension (3D print optimisation)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-curveTension">52</span> %</span>
           </div>
-          <input type="range" id="param-curveTension" min="25" max="85" step="1" value="55" oninput="updateParam('curveTension', this.value)" />
+          <input type="range" id="param-curveTension" min="25" max="85" step="1" value="52" oninput="updateParam('curveTension', this.value)" />
           <p class="text-[11px] text-gray-400">
-            Steuert, wie sanft die Stäbe aus der Bodenplatte aufsteigen. Werte um 45–60 % garantieren stützfreien 3D-Druck ohne Support!
+            Controls how gently the ribs rise from the base plate. Values around 45–60 % guarantee support-free 3D printing!
           </p>
         </div>
       </div>
 
-      <!-- TAB 2: STÄBE / LAMELLEN (RIBS) -->
+      <!-- TAB 2: RIBS / LAMELLAE -->
       <div id="panel-ribs" class="tab-panel hidden space-y-5">
         <div>
-          <h2 class="text-sm font-semibold text-white">Lamellen / Stäbe & Stabilität</h2>
-          <p class="text-xs text-gray-400">Flache, abgerundete Streben wie beim Original-Design</p>
+          <h2 class="text-sm font-semibold text-white">Lamellae / ribs & stability</h2>
+          <p class="text-xs text-gray-400">Flat, rounded struts like the original design</p>
         </div>
 
         <!-- Number of Ribs -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Anzahl der Stäbe</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribCount">48</span> Stäbe</span>
+            <label class="text-gray-300 font-medium">Number of ribs</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribCount">40</span> ribs</span>
           </div>
-          <input type="range" id="param-ribCount" min="16" max="80" step="2" value="48" oninput="updateParam('ribCount', this.value)" />
+          <input type="range" id="param-ribCount" min="16" max="80" step="2" value="40" oninput="updateParam('ribCount', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>16 (Offen)</span>
-            <span>48 (Wie im Foto)</span>
-            <span>80 (Sehr dicht)</span>
+            <span>16 (open)</span>
+            <span>48 (as in the photo)</span>
+            <span>80 (very dense)</span>
           </div>
         </div>
 
         <!-- Rib Width (Tangential) -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Stab-Breite (Tangential)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribWidth">2.6</span> mm</span>
+            <label class="text-gray-300 font-medium">Rib width (tangential)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribWidth">2.4</span> mm</span>
           </div>
-          <input type="range" id="param-ribWidth" min="1.6" max="6.0" step="0.2" value="2.6" oninput="updateParam('ribWidth', this.value)" />
-          <p class="text-[11px] text-gray-400">Empfohlen für 0.4 mm Düse: mindestens 2.0 mm (5 Perimeter).</p>
+          <input type="range" id="param-ribWidth" min="1.6" max="6.0" step="0.2" value="2.4" oninput="updateParam('ribWidth', this.value)" />
+          <p class="text-[11px] text-gray-400">Recommended for a 0.4 mm nozzle: at least 2.0 mm (5 wall loops).</p>
         </div>
 
         <!-- Rib Radial Depth -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Stab-Tiefe (Radiale Wandstärke)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribDepth">4.5</span> mm</span>
+            <label class="text-gray-300 font-medium">Rib depth (radial wall thickness)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-ribDepth">4.0</span> mm</span>
           </div>
-          <input type="range" id="param-ribDepth" min="2.4" max="8.0" step="0.2" value="4.5" oninput="updateParam('ribDepth', this.value)" />
-          <p class="text-[11px] text-gray-400">Verleiht den Stäben die hohe vertikale Biegesteifigkeit und den Lamellen-Look.</p>
+          <input type="range" id="param-ribDepth" min="2.4" max="8.0" step="0.2" value="4.0" oninput="updateParam('ribDepth', this.value)" />
+          <p class="text-[11px] text-gray-400">Gives the ribs their high vertical bending stiffness and the lamella look.</p>
         </div>
 
         <!-- Helical Twist -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Spiral-Drehung (Twist)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-twistAngle">0</span>°</span>
+            <label class="text-gray-300 font-medium">Spiral twist</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-twistAngle">15</span>°</span>
           </div>
-          <input type="range" id="param-twistAngle" min="-90" max="90" step="5" value="0" oninput="updateParam('twistAngle', this.value)" />
+          <input type="range" id="param-twistAngle" min="-90" max="90" step="5" value="15" oninput="updateParam('twistAngle', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>-90° Links</span>
-            <span>0° Gerade (Original)</span>
-            <span>+90° Rechts</span>
+            <span>-90° left</span>
+            <span>0° straight (original)</span>
+            <span>+90° right</span>
           </div>
         </div>
 
         <!-- Top Stabilizer Ring Height -->
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Oberer Abschlussring (Stützfrei 42°)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-topRingHeight">4.0</span> mm</span>
+            <label class="text-gray-300 font-medium">Top finishing ring (support-free 42°)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-topRingHeight">3.2</span> mm</span>
           </div>
-          <input type="range" id="param-topRingHeight" min="2.4" max="10.0" step="0.4" value="4.0" oninput="updateParam('topRingHeight', this.value)" />
-          <p class="text-[11px] text-gray-400">Inkl. selbsttragender 30°-Gotik-Bögen zwischen den Stäben & 42°-Innenfase für 100 % stützfreien Druck.</p>
+          <input type="range" id="param-topRingHeight" min="2.4" max="10.0" step="0.4" value="3.2" oninput="updateParam('topRingHeight', this.value)" />
+          <p class="text-[11px] text-gray-400">Includes self-supporting 30° gothic arches between the ribs and a 42° inner chamfer for 100 % support-free printing.</p>
         </div>
 
           <!-- NEW: ANTI-VIBRATION & PRINT STABILIZER SYSTEM -->
@@ -448,22 +450,22 @@
             <div>
               <div class="flex items-center gap-1.5">
                 <span class="w-2 h-2 rounded-full bg-teal-400"></span>
-                <h3 class="text-xs font-bold uppercase tracking-wider text-teal-300">Top-Down Hebel-Snap Ringe (V5 • PETG-Ready)</h3>
+                <h3 class="text-xs font-bold uppercase tracking-wider text-teal-300">Top-down lever-snap rings (V5 • PETG ready)</h3>
               </div>
-              <p class="text-[11px] text-gray-300 mt-0.5">1 Haupt-Pin mit V-Schälkerbe pro Stab + 2. Pin alle 4 Stäbe. Durch den inneren Hebel-Kragen einfach von oben nach unten im Domino-Effekt herausdrücken!</p>
+              <p class="text-[11px] text-gray-300 mt-0.5">One main pin with a V-peel notch per rib plus a 2nd pin every 4 ribs. Push out from top to bottom through the inner lever collar in a domino effect!</p>
             </div>
           </div>
 
           <!-- Mode Selector -->
           <div class="grid grid-cols-3 gap-1.5 p-1 bg-studio-950/80 rounded-xl border border-white/10">
             <button onclick="setStabilizerMode('breakaway')" id="stab-mode-breakaway" class="py-2 px-2 rounded-lg text-[11px] font-semibold bg-teal-500/25 text-teal-200 border border-teal-400/40 transition-all leading-tight">
-              Hebel-Snap V5<br><span class="text-[9px] font-normal opacity-80">(Von oben drücken)</span>
+              Lever-snap V5<br><span class="text-[9px] font-normal opacity-80">(push from the top)</span>
             </button>
             <button onclick="setStabilizerMode('permanent')" id="stab-mode-permanent" class="py-2 px-2 rounded-lg text-[11px] font-medium text-gray-400 hover:text-white transition-all leading-tight">
-              Fester Ring<br><span class="text-[9px] font-normal opacity-80">(Bleibt drin)</span>
+              Permanent ring<br><span class="text-[9px] font-normal opacity-80">(stays in)</span>
             </button>
             <button onclick="setStabilizerMode('none')" id="stab-mode-none" class="py-2 px-2 rounded-lg text-[11px] font-medium text-gray-400 hover:text-white transition-all leading-tight">
-              Aus<br><span class="text-[9px] font-normal opacity-80">(Ohne Ring)</span>
+              Off<br><span class="text-[9px] font-normal opacity-80">(no ring)</span>
             </button>
           </div>
 
@@ -471,66 +473,66 @@
             <!-- Number of Stabilizer Levels -->
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
-                <label class="text-gray-200 font-medium">Anzahl der Stütz-Kreise (Oben-Fokus)</label>
-                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerCount">3</span> Ringe</span>
+                <label class="text-gray-200 font-medium">Number of support rings (upper focus)</label>
+                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerCount">2</span> rings</span>
               </div>
-              <input type="range" id="param-stabilizerCount" min="1" max="5" step="1" value="3" oninput="updateParam('stabilizerCount', this.value)" />
+              <input type="range" id="param-stabilizerCount" min="1" max="5" step="1" value="2" oninput="updateParam('stabilizerCount', this.value)" />
               <div class="flex justify-between text-[10px] text-gray-400">
-                <span>1 Ring (72%)</span>
-                <span>3 Ringe (45/68/87%)</span>
-                <span>5 Ringe (Max. Halt)</span>
+                <span>1 ring (72 %)</span>
+                <span>3 rings (45/68/87 %)</span>
+                <span>5 rings (max. hold)</span>
               </div>
             </div>
 
             <!-- Continuous Ring Radial Lever Width -->
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
-                <label class="text-gray-200 font-medium">Hebel-Kragen Breite innen (6.5× Hebelarm)</label>
-                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerWidth">3.4</span> mm</span>
+                <label class="text-gray-200 font-medium">Lever collar width inside (6.5× lever arm)</label>
+                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerWidth">3.0</span> mm</span>
               </div>
-              <input type="range" id="param-stabilizerWidth" min="2.2" max="5.5" step="0.2" value="3.4" oninput="updateParam('stabilizerWidth', this.value)" />
+              <input type="range" id="param-stabilizerWidth" min="2.2" max="5.5" step="0.2" value="3.0" oninput="updateParam('stabilizerWidth', this.value)" />
             </div>
 
             <!-- Continuous Ring Vertical Height -->
             <div class="space-y-1">
               <div class="flex justify-between text-xs">
-                <label id="label-stab-thickness" class="text-gray-200 font-medium">Ring- & Hebel-Höhe</label>
-                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerThickness">3.8</span> mm</span>
+                <label id="label-stab-thickness" class="text-gray-200 font-medium">Ring & lever height</label>
+                <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerThickness">3.2</span> mm</span>
               </div>
-              <input type="range" id="param-stabilizerThickness" min="2.6" max="6.0" step="0.2" value="3.8" oninput="updateParam('stabilizerThickness', this.value)" />
+              <input type="range" id="param-stabilizerThickness" min="2.6" max="6.0" step="0.2" value="3.2" oninput="updateParam('stabilizerThickness', this.value)" />
             </div>
 
             <!-- Breakaway Pin Thickness at Rib (PETG-tuned down to 0.45mm) -->
             <div id="stab-neck-wrap" class="space-y-3">
               <div class="space-y-1">
                 <div class="flex justify-between text-xs">
-                  <label class="text-gray-200 font-medium">Pin-Sollbruchstelle (V-Kerbe am Stab)</label>
-                  <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerNeck">0.65</span> mm</span>
+                  <label class="text-gray-200 font-medium">Pin breakaway point (V-notch on the rib)</label>
+                  <span class="font-mono text-teal-300 font-semibold"><span id="val-stabilizerNeck">0.60</span> mm</span>
                 </div>
-                <input type="range" id="param-stabilizerNeck" min="0.45" max="1.20" step="0.05" value="0.65" oninput="updateParam('stabilizerNeck', this.value)" />
+                <input type="range" id="param-stabilizerNeck" min="0.45" max="1.20" step="0.05" value="0.60" oninput="updateParam('stabilizerNeck', this.value)" />
                 <div class="flex justify-between text-[10px] text-gray-400">
-                  <span>0.50 mm (PETG Weich)</span>
-                  <span>0.65 mm (Ideal)</span>
-                  <span>1.00 mm (Fest)</span>
+                  <span>0.50 mm (PETG soft)</span>
+                  <span>0.65 mm (ideal)</span>
+                  <span>1.00 mm (strong)</span>
                 </div>
               </div>
 
               <!-- Sparse 2nd Upper Pin Interval (Default: Every 4th Rib) -->
               <div class="space-y-1 pt-1 border-t border-white/10">
                 <div class="flex justify-between text-xs">
-                  <label class="text-gray-200 font-medium">2. Oberer Stütz-Pin (Abstand)</label>
-                  <span id="val-upperPinStep" class="font-mono text-teal-300 font-semibold">Jeder 4. Stab</span>
+                  <label class="text-gray-200 font-medium">2nd upper support pin (spacing)</label>
+                  <span id="val-upperPinStep" class="font-mono text-teal-300 font-semibold">Every 4th rib</span>
                 </div>
                 <input type="range" id="param-upperPinStep" min="0" max="8" step="1" value="4" oninput="updateParam('upperPinStep', this.value)" />
                 <div class="flex justify-between text-[10px] text-gray-400">
-                  <span>0 = Nur 1 Pin (Max. Hebel)</span>
-                  <span>Jeder 4. Stab (Standard)</span>
-                  <span>Jeder 8. Stab</span>
+                  <span>0 = only 1 pin (max. leverage)</span>
+                  <span>Every 4th rib (default)</span>
+                  <span>Every 8th rib</span>
                 </div>
               </div>
 
               <p id="desc-stab-mode" class="text-[11px] text-teal-200/80 leading-relaxed">
-                <strong>Hebelwirkung von oben nach unten:</strong> Greife von oben durch die Öffnung und drücke auf die schräge Innenkante des Rings nach unten. Da 3 von 4 Stäben <strong>nur 1 Pin mit oberer V-Schälkerbe</strong> haben und der Ring Domino-Kerben besitzt, kippt der Ring nach unten weg und schält die Pins einzeln ab, ohne die Stäbe zu biegen!
+                <strong>Top-down leverage:</strong> Reach through the top opening and press down on the angled inner edge of the ring. Since 3 out of 4 ribs <strong>have only 1 pin with an upper V-peel notch</strong> and the ring has domino notches, the ring tilts downward and peels the pins off one by one without bending the ribs!
               </p>
             </div>
           </div>
@@ -538,19 +540,19 @@
           <!-- Root Stiffening Flare (Bottom 22% of ribs) -->
           <div class="space-y-1 pt-2 border-t border-white/10">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-200 font-medium">Fuß-Verstärkung am Boden (Root-Boost)</label>
-              <span class="font-mono text-teal-300 font-semibold">+<span id="val-rootBoost">25</span> %</span>
+              <label class="text-gray-200 font-medium">Root reinforcement at the base (root boost)</label>
+              <span class="font-mono text-teal-300 font-semibold">+<span id="val-rootBoost">20</span> %</span>
             </div>
-            <input type="range" id="param-rootBoost" min="0" max="60" step="5" value="25" oninput="updateParam('rootBoost', this.value)" />
+            <input type="range" id="param-rootBoost" min="0" max="60" step="5" value="20" oninput="updateParam('rootBoost', this.value)" />
             <p class="text-[10px] text-gray-400">
-              Verstärkt das untere Fünftel der Stäbe sanft am Übergang zum Teller, wo das größte Biegemoment entsteht.
+              Gently reinforces the bottom fifth of the ribs at the transition to the tray, where the highest bending moment occurs.
             </p>
           </div>
 
           <!-- Free Span Live Calculation -->
           <div class="px-3 py-2 rounded-xl bg-studio-950/90 border border-white/10 flex items-center justify-between text-[11px]">
-            <span class="text-gray-400">Max. freie Länge oben:</span>
-            <span id="free-span-badge" class="font-mono font-bold text-teal-300">~22 mm (64× steifer)</span>
+            <span class="text-gray-400">Max. free length at the top:</span>
+            <span id="free-span-badge" class="font-mono font-bold text-teal-300">~22 mm (64× stiffer)</span>
           </div>
         </div>
       </div>
@@ -562,39 +564,39 @@
         </div>
         <div>
           <div class="flex items-center gap-2">
-            <h2 class="text-sm font-semibold text-white">Weihnachts-Sterne & Symbole</h2>
-            <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">Stützfrei ≤42°</span>
+            <h2 class="text-sm font-semibold text-white">Christmas stars & symbols</h2>
+            <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">Support-free ≤42°</span>
           </div>
-          <p class="text-xs text-gray-400 mt-0.5">Verteilt stützfrei druckbare Sterne oder Winter-Symbole zwischen den Stäben – wirft magische Schattenmuster!</p>
+          <p class="text-xs text-gray-400 mt-0.5">Distributes support-free printable stars or winter symbols between the ribs — casts magical shadow patterns!</p>
         </div>
 
         <!-- Motif Type Selector Grid -->
         <div class="space-y-2">
-          <label class="text-xs text-gray-300 font-medium">Motiv / Symbol auswählen</label>
+          <label class="text-xs text-gray-300 font-medium">Select motif / symbol</label>
           <div class="grid grid-cols-3 gap-2">
             <button onclick="setMotifType('none')" id="motif-btn-none" class="py-2.5 px-2 rounded-xl text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/40 transition-all flex flex-col items-center gap-1">
               <span class="text-base leading-none">⊘</span>
-              <span>Keine Deko</span>
+              <span>No decoration</span>
             </button>
             <button onclick="setMotifType('tree')" id="motif-btn-tree" class="py-2.5 px-2 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all flex flex-col items-center gap-1">
               <span class="text-base leading-none text-emerald-300">🎄</span>
-              <span>3D-Tannenbaum</span>
+              <span>3D Christmas tree</span>
             </button>
             <button onclick="setMotifType('star')" id="motif-btn-star" class="py-2.5 px-2 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all flex flex-col items-center gap-1">
               <span class="text-base leading-none text-amber-300">★</span>
-              <span>3D-Stern</span>
+              <span>3D star</span>
             </button>
             <button onclick="setMotifType('crystal')" id="motif-btn-crystal" class="py-2.5 px-2 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all flex flex-col items-center gap-1">
               <span class="text-base leading-none text-sky-300">❄</span>
-              <span>Eiskristall</span>
+              <span>Ice crystal</span>
             </button>
             <button onclick="setMotifType('heart')" id="motif-btn-heart" class="py-2.5 px-2 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all flex flex-col items-center gap-1">
               <span class="text-base leading-none text-rose-300">♥</span>
-              <span>Winter-Herz</span>
+              <span>Winter heart</span>
             </button>
             <button onclick="setMotifType('mix')" id="motif-btn-mix" class="py-2.5 px-2 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all flex flex-col items-center gap-1">
               <span class="text-base leading-none text-champagne-300">✨</span>
-              <span>Fest-Mix</span>
+              <span>Festive mix</span>
             </button>
           </div>
         </div>
@@ -603,75 +605,75 @@
           <!-- Overall Proportional Symbol Size (Height & Width in mm) -->
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-300 font-medium">Allgemeine Gesamtgröße (Höhe & Breite)</label>
+              <label class="text-gray-300 font-medium">Overall size (height & width)</label>
               <span class="font-mono text-amber-400 font-semibold"><span id="val-motifSize">30</span> mm</span>
             </div>
             <input type="range" id="param-motifSize" min="16" max="54" step="1" value="30" oninput="updateParam('motifSize', this.value)" />
             <div class="flex justify-between text-[10px] text-gray-500">
-              <span>16 mm (Dezent)</span>
-              <span>30 mm (Ideal sichtbar)</span>
-              <span>54 mm (Statement)</span>
+              <span>16 mm (subtle)</span>
+              <span>30 mm (ideal visibility)</span>
+              <span>54 mm (statement)</span>
             </div>
           </div>
 
           <!-- Width Proportion / Aspect Ratio -->
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-300 font-medium">Breiten-Proportion (Symbol-Breite)</label>
+              <label class="text-gray-300 font-medium">Width proportion (symbol width)</label>
               <span class="font-mono text-amber-400 font-semibold"><span id="val-motifWidthScale">100</span> %</span>
             </div>
             <input type="range" id="param-motifWidthScale" min="70" max="145" step="5" value="100" oninput="updateParam('motifWidthScale', this.value)" />
             <div class="flex justify-between text-[10px] text-gray-500">
-              <span>70 % (Schlank)</span>
-              <span>100 % (Original)</span>
-              <span>145 % (Breit & kräftig)</span>
+              <span>70 % (slim)</span>
+              <span>100 % (original)</span>
+              <span>145 % (wide & bold)</span>
             </div>
           </div>
 
           <!-- 3D Relief Projection Depth in Front of Ribs -->
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-300 font-medium">3D-Relief-Tiefe (Hervorhebung vor Stäben)</label>
+              <label class="text-gray-300 font-medium">3D relief depth (protrusion in front of the ribs)</label>
               <span class="font-mono text-amber-400 font-semibold">+<span id="val-motifRelief">2.4</span> mm</span>
             </div>
             <input type="range" id="param-motifRelief" min="1.2" max="4.0" step="0.2" value="2.4" oninput="updateParam('motifRelief', this.value)" />
             <p class="text-[11px] text-gray-400">
-              Hebt das Symbol plastisch vor die Stäbe, damit die Silhouette (z. B. 3-stufiger Tannenbaum) nicht von den Stäben unterbrochen wird.
+              Lifts the symbol proudly in front of the ribs so the silhouette (e.g. a 3-tier Christmas tree) is not interrupted by the ribs.
             </p>
           </div>
 
           <!-- Number of Symbols per Row -->
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-300 font-medium">Anzahl Symbole pro Reihe (Umfang)</label>
-              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifCount">6</span> Stk.</span>
+              <label class="text-gray-300 font-medium">Symbols per row (circumference)</label>
+              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifCount">6</span> pcs.</span>
             </div>
             <input type="range" id="param-motifCount" min="3" max="14" step="1" value="6" oninput="updateParam('motifCount', this.value)" />
             <div class="flex justify-between text-[10px] text-gray-500">
-              <span>3 (Minimal)</span>
-              <span>6 (Harmonisch)</span>
-              <span>14 (Dicht)</span>
+              <span>3 (minimal)</span>
+              <span>6 (harmonious)</span>
+              <span>14 (dense)</span>
             </div>
           </div>
 
           <!-- Number of Staggered Rows -->
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-300 font-medium">Vertikale Reihen (Versetzt verteilt)</label>
-              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifRows">2</span> Reihen</span>
+              <label class="text-gray-300 font-medium">Vertical rows (staggered)</label>
+              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifRows">2</span> rows</span>
             </div>
             <input type="range" id="param-motifRows" min="1" max="3" step="1" value="2" oninput="updateParam('motifRows', this.value)" />
             <div class="flex justify-between text-[10px] text-gray-500">
-              <span>1 Reihe (Mitte)</span>
-              <span>2 Reihen (Versetzt)</span>
-              <span>3 Reihen (Voll)</span>
+              <span>1 row (centre)</span>
+              <span>2 rows (staggered)</span>
+              <span>3 rows (full)</span>
             </div>
           </div>
 
           <!-- Vertical Center Position -->
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-300 font-medium">Höhen-Zentrum auf der Laterne</label>
+              <label class="text-gray-300 font-medium">Height centre on the lantern</label>
               <span class="font-mono text-amber-400 font-semibold"><span id="val-motifHeightRatio">50</span> %</span>
             </div>
             <input type="range" id="param-motifHeightRatio" min="32" max="70" step="2" value="50" oninput="updateParam('motifHeightRatio', this.value)" />
@@ -681,10 +683,10 @@
         <!-- Print Engineering Explanation Box -->
         <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 space-y-1.5">
           <div class="flex items-center gap-2 text-xs font-semibold text-amber-300">
-            <span>★ 2-Schicht 3D-Relief-Technik (100 % Stützfrei):</span>
+            <span>★ 2-layer 3D relief technique (100 % support-free):</span>
           </div>
           <p class="text-[11px] text-gray-300 leading-relaxed">
-            Damit z. B. der <strong>Tannenbaum</strong> einen echten Stamm und <strong>3 klar erkennbare Ast-Etagen</strong> hat, wächst in der Stab-Ebene zuerst ein <strong>42°-Stützträger</strong> zwischen den Stäben, während das <strong>3D-facettiere Symbol (+2.4 mm)</strong> mit 45°-Unterfase erhaben vor den Stäben sitzt!
+            So that the <strong>Christmas tree</strong> a real trunk and <strong>3 clearly recognisable branch tiers</strong> a support strut first grows in the rib plane between the ribs, while the <strong>42° support strut</strong> grows between the ribs, while the <strong>3D-faceted symbol (+2.4 mm)</strong> sits proudly in front of the ribs with a 45° under-chamfer!
           </p>
         </div>
       </div>
@@ -693,56 +695,56 @@
       <div id="panel-tray" class="tab-panel hidden space-y-5">
         <div class="flex items-start justify-between gap-2">
           <div>
-            <h2 class="text-sm font-semibold text-white">Bodenteller & Kerzen-Vertiefung</h2>
-            <p class="text-xs text-gray-400">Integrierter Standteller mit Anti-Rutsch-Mulde für deine LED-Kerze</p>
+            <h2 class="text-sm font-semibold text-white">Base tray & candle recess</h2>
+            <p class="text-xs text-gray-400">Integrated base tray with anti-slip recess for your candle</p>
           </div>
           <button onclick="enableSectionView()" class="shrink-0 px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/30 text-[11px] font-medium hover:bg-amber-500/30">
-            Im Schnitt zeigen
+            Show in section
           </button>
         </div>
 
         <!-- Base Plate Total Height -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Teller-Gesamthöhe (Randhöhe)</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseThickness">6.0</span> mm</span>
+            <label class="text-gray-300 font-medium">Tray total height (rim height)</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-baseThickness">5.0</span> mm</span>
           </div>
-          <input type="range" id="param-baseThickness" min="3.0" max="14.0" step="0.5" value="6.0" oninput="updateParam('baseThickness', this.value)" />
+          <input type="range" id="param-baseThickness" min="3.0" max="14.0" step="0.5" value="5.0" oninput="updateParam('baseThickness', this.value)" />
         </div>
 
         <!-- Recess Depth -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Tiefe der Kerzen-Vertiefung</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessDepth">3.0</span> mm</span>
+            <label class="text-gray-300 font-medium">Candle recess depth</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessDepth">2.0</span> mm</span>
           </div>
-          <input type="range" id="param-recessDepth" min="1.0" max="10.0" step="0.5" value="3.0" oninput="updateParam('recessDepth', this.value)" />
+          <input type="range" id="param-recessDepth" min="1.0" max="10.0" step="0.5" value="2.0" oninput="updateParam('recessDepth', this.value)" />
           <p class="text-[11px] text-gray-400">
-            Verbleibende Bodenstärke unter der Kerze: <strong id="floor-thickness-info" class="text-amber-300 font-mono">3.0 mm</strong>.
+            Remaining floor thickness under the candle: <strong id="floor-thickness-info" class="text-amber-300 font-mono">3.0 mm</strong>.
           </p>
         </div>
 
         <!-- Radial Clearance -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Seitliches Spiel (Toleranz zur Kerze)</label>
-            <span class="font-mono text-amber-400 font-semibold">+<span id="val-candleClearance">1.5</span> mm (Radius)</span>
+            <label class="text-gray-300 font-medium">Radial clearance (tolerance to the candle)</label>
+            <span class="font-mono text-amber-400 font-semibold">+<span id="val-candleClearance">1.0</span> mm (radius)</span>
           </div>
-          <input type="range" id="param-candleClearance" min="0.5" max="6.0" step="0.5" value="1.5" oninput="updateParam('candleClearance', this.value)" />
+          <input type="range" id="param-candleClearance" min="0.5" max="6.0" step="0.5" value="1.0" oninput="updateParam('candleClearance', this.value)" />
           <p class="text-[11px] text-gray-400">
-            Bei Ø <span id="tray-candle-ref">80</span> mm Kerze hat die Mulde exakt <strong id="tray-calc-dia" class="text-emerald-300 font-mono">83.0 mm</strong> Innendurchmesser – sitzt sicher ohne zu klemmen.
+            With a Ø <span id="tray-candle-ref">80</span> mm candle the recess has exactly <strong id="tray-calc-dia" class="text-emerald-300 font-mono">83.0 mm</strong> mm inner diameter — sits securely without jamming.
           </p>
         </div>
 
         <!-- Raised Lip around Recess -->
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Führungsrand-Breite um die Kerze</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessRimWidth">4.5</span> mm</span>
+            <label class="text-gray-300 font-medium">Lip width around the candle</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-recessRimWidth">3.0</span> mm</span>
           </div>
-          <input type="range" id="param-recessRimWidth" min="2.0" max="12.0" step="0.5" value="4.5" oninput="updateParam('recessRimWidth', this.value)" />
+          <input type="range" id="param-recessRimWidth" min="2.0" max="12.0" step="0.5" value="3.0" oninput="updateParam('recessRimWidth', this.value)" />
           <p class="text-[11px] text-gray-400">
-            Erhöhter Kragen um die Kerzen-Mulde, damit die Kerze beim Tragen der Laterne garantiert nicht verrutscht.
+            Raised lip around the candle recess so the candle cannot slip while the lantern is carried.
           </p>
         </div>
       </div>
@@ -750,20 +752,20 @@
       <!-- TAB 4: LED-KERZE & LICHT -->
       <div id="panel-candle" class="tab-panel hidden space-y-5">
         <div>
-          <h2 class="text-sm font-semibold text-white">LED-Kerzen Maße (Referenz & Vorschau)</h2>
-          <p class="text-xs text-gray-400">Passt den Kerzenteller automatisch an deine LED-Kerze an (wird nicht mitgedruckt)</p>
+          <h2 class="text-sm font-semibold text-white">Candle dimensions (reference & preview)</h2>
+          <p class="text-xs text-gray-400">Fits the candle tray automatically to your candle (not printed)</p>
         </div>
 
         <!-- Candle Diameter (Default 80 mm = 8 cm) -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Kerzen-Durchmesser</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleDia">80</span> mm (8.0 cm)</span>
+            <label class="text-gray-300 font-medium">Candle diameter</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleDia">38</span> mm (8.0 cm)</span>
           </div>
-          <input type="range" id="param-candleDia" min="38" max="120" step="1" value="80" oninput="updateParam('candleDia', this.value)" />
+          <input type="range" id="param-candleDia" min="38" max="120" step="1" value="38" oninput="updateParam('candleDia', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>38 mm (Teelicht)</span>
-            <span>80 mm (Deine 8 cm Kerze)</span>
+            <span>38 mm (tea light)</span>
+            <span>80 mm (your 8 cm candle)</span>
             <span>120 mm</span>
           </div>
         </div>
@@ -771,13 +773,13 @@
         <!-- Candle Height (Default 100 mm = 10 cm) -->
         <div class="space-y-1.5">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Kerzen-Höhe</label>
-            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleHeight">100</span> mm (10.0 cm)</span>
+            <label class="text-gray-300 font-medium">Candle height</label>
+            <span class="font-mono text-amber-400 font-semibold"><span id="val-candleHeight">18</span> mm (10.0 cm)</span>
           </div>
-          <input type="range" id="param-candleHeight" min="30" max="200" step="2" value="100" oninput="updateParam('candleHeight', this.value)" />
+          <input type="range" id="param-candleHeight" min="10" max="200" step="2" value="18" oninput="updateParam('candleHeight', this.value)" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>30 mm</span>
-            <span>100 mm (Deine 10 cm Kerze)</span>
+            <span>10 mm (tea light)</span>
+            <span>100 mm (your 10 cm candle)</span>
             <span>200 mm</span>
           </div>
         </div>
@@ -785,18 +787,18 @@
         <!-- Glass Cylinder Toggle (like in photo 1 & 2) -->
         <div class="pt-2 border-t border-white/10 flex items-center justify-between">
           <div>
-            <div class="text-xs font-medium text-gray-200">Optionales Windglas anzeigen</div>
-            <div class="text-[11px] text-gray-400">Zeigt zusätzlich ein dünnes Glas um die Kerze (wie im Foto)</div>
+            <div class="text-xs font-medium text-gray-200">Show optional glass sleeve</div>
+            <div class="text-[11px] text-gray-400">Also shows a thin glass sleeve around the candle (as in the photo)</div>
           </div>
           <button id="btn-glass" onclick="toggleGlassSleeve()" class="px-3 py-1.5 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 border border-white/10 hover:bg-studio-700 transition-all">
-            Aus
+            Off
           </button>
         </div>
 
         <!-- Flame Flicker Intensity -->
         <div class="space-y-1.5 pt-2 border-t border-white/10">
           <div class="flex justify-between text-xs">
-            <label class="text-gray-300 font-medium">Warmlicht-Helligkeit & Schattenwurf</label>
+            <label class="text-gray-300 font-medium">Warm light brightness & shadow cast</label>
             <span class="font-mono text-amber-400 font-semibold"><span id="val-lightIntensity">100</span> %</span>
           </div>
           <input type="range" id="param-lightIntensity" min="0" max="150" step="5" value="100" oninput="updateParam('lightIntensity', this.value)" />
@@ -809,12 +811,12 @@
           <svg class="w-4 h-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
           </svg>
-          <span>Empfohlene 3D-Druck Einstellungen</span>
+          <span>Recommended 3D print settings</span>
         </div>
         <p class="text-[11px] text-gray-300 leading-relaxed">
-          • <strong>Stützstruktur (Supports):</strong> Keine benötigt (Boden liegt plan auf <span class="font-mono">Z=0</span>)<br>
-          • <strong>Wandlinien (Wall Loops):</strong> 3–4 Perimeter für maximale Stabilität der Stäbe<br>
-          • <strong>Schichthöhe:</strong> 0.16 mm oder 0.20 mm (PLA Matt, PETG oder ASA)
+          • <strong>Supports:</strong> None needed (the base sits flat on the <span class="font-mono">Z=0</span>)<br>
+          • <strong>Wall loops:</strong> 3–4 wall loops for maximum rib stability<br>
+          • <strong>Layer height:</strong> 0.16 mm or 0.20 mm (matte PLA, PETG or ASA)
         </p>
       </div>
 
@@ -826,11 +828,11 @@
         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
           <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
         </svg>
-        <span>Druck-Analyse & .STL herunterladen</span>
+        <span>Print analysis & download .STL</span>
       </button>
       <div class="flex items-center justify-between text-[11px] text-gray-400 px-1">
-        <span id="mesh-stats" class="font-mono">Wasserdichtes Binary STL (Maßstab 1:1 in mm)</span>
-        <span class="text-teal-400 font-medium">Ohne Kerze exportiert</span>
+        <span id="mesh-stats" class="font-mono">Watertight binary STL (1:1 scale in mm)</span>
+        <span class="text-teal-400 font-medium">Exported without the candle</span>
       </div>
     </div>
 
@@ -849,8 +851,8 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-base font-bold text-white">3D-Druck Analyse & Sicherheits-Check</h3>
-            <p id="modal-subtitle" class="text-xs text-gray-400 font-mono">Laterne Ø200 × 160 mm • 48 Stäbe</p>
+            <h3 class="text-base font-bold text-white">3D print analysis & safety check</h3>
+            <p id="modal-subtitle" class="text-xs text-gray-400 font-mono">Lantern Ø124 × 110 mm • 40 ribs</p>
           </div>
         </div>
         <button onclick="closeExportModal()" class="p-2 rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-colors">
@@ -867,23 +869,23 @@
         <div class="grid grid-cols-2 gap-3">
           <!-- Filament Estimate Card -->
           <div class="p-3.5 rounded-2xl bg-studio-800/90 border border-white/10 space-y-1">
-            <div class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Filament-Verbrauch</div>
+            <div class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Filament usage</div>
             <div class="flex items-baseline gap-2">
               <span id="modal-filament-g" class="text-2xl font-bold font-mono text-champagne-300">~145 g</span>
               <span id="modal-filament-m" class="text-xs font-mono text-gray-400">(~48.6 m)</span>
             </div>
-            <div id="modal-print-time" class="text-[11px] text-gray-300">Geschätzte Druckzeit: ~5h 20m</div>
+            <div id="modal-print-time" class="text-[11px] text-gray-300">Estimated print time: ~2h 10m</div>
           </div>
 
           <!-- Print Success Probability Card -->
           <div class="p-3.5 rounded-2xl bg-studio-800/90 border border-white/10 space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Erfolgs-Chance</span>
-              <span id="modal-success-badge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30">Sehr sicher</span>
+              <span class="text-[11px] text-gray-400 uppercase tracking-wider font-semibold">Success chance</span>
+              <span id="modal-success-badge" class="text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30">Very safe</span>
             </div>
             <div class="flex items-baseline gap-2">
               <span id="modal-success-rate" class="text-2xl font-bold font-mono text-teal-400">96 %</span>
-              <span class="text-xs text-gray-400">ohne Support</span>
+              <span class="text-xs text-gray-400">without supports</span>
             </div>
             <div class="w-full h-1.5 bg-studio-950 rounded-full overflow-hidden">
               <div id="modal-success-bar" class="h-full bg-teal-400 rounded-full transition-all duration-500" style="width: 96%;"></div>
@@ -898,8 +900,8 @@
             <div id="modal-icon-stability" class="mt-0.5 text-teal-400 shrink-0"></div>
             <div class="space-y-0.5">
               <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-white">Mechanische Stabilität:</span>
-                <span id="modal-title-stability" class="text-xs font-semibold text-teal-300">Sehr stabil & verwindungssteif</span>
+                <span class="text-xs font-bold text-white">Mechanical stability:</span>
+                <span id="modal-title-stability" class="text-xs font-semibold text-teal-300">Very rigid and torsion-resistant</span>
               </div>
               <p id="modal-desc-stability" class="text-[11px] text-gray-300 leading-relaxed"></p>
             </div>
@@ -910,8 +912,8 @@
             <div id="modal-icon-danger" class="mt-0.5 text-teal-400 shrink-0"></div>
             <div class="space-y-0.5">
               <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-white">Fehlschlag- & Druckkopf-Risiko:</span>
-                <span id="modal-title-danger" class="text-xs font-semibold text-teal-300">Ungefährlich (Kein Spaghetti-Risiko)</span>
+                <span class="text-xs font-bold text-white">Failure & print-head risk:</span>
+                <span id="modal-title-danger" class="text-xs font-semibold text-teal-300">Harmless (no spaghetti risk)</span>
               </div>
               <p id="modal-desc-danger" class="text-[11px] text-gray-300 leading-relaxed"></p>
             </div>
@@ -922,8 +924,8 @@
             <div id="modal-icon-candle" class="mt-0.5 text-teal-400 shrink-0"></div>
             <div class="space-y-0.5">
               <div class="flex items-center gap-2">
-                <span class="text-xs font-bold text-white">LED-Kerzen Passform & Teller:</span>
-                <span id="modal-title-candle" class="text-xs font-semibold text-teal-300">Passt perfekt</span>
+                <span class="text-xs font-bold text-white">Candle fit & tray:</span>
+                <span id="modal-title-candle" class="text-xs font-semibold text-teal-300">Fits perfectly</span>
               </div>
               <p id="modal-desc-candle" class="text-[11px] text-gray-300 leading-relaxed"></p>
             </div>
@@ -935,7 +937,7 @@
           <svg class="w-4 h-4 text-amber-300 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/>
           </svg>
-          <span>Kritische Werte jetzt automatisch für sicheren 3D-Druck korrigieren</span>
+          <span>Auto-correct critical values for safe 3D printing now</span>
         </button>
 
       </div>
@@ -943,13 +945,13 @@
       <!-- Modal Footer: Cancel or Final Download -->
       <div class="p-4 border-t border-white/10 bg-studio-950 flex flex-col sm:flex-row items-center gap-2.5">
         <button onclick="closeExportModal()" class="w-full sm:w-auto px-4 py-3 rounded-2xl bg-studio-800 hover:bg-studio-700 text-xs font-semibold text-gray-300 hover:text-white transition-all">
-          Zurück zum Designer
+          Back to the designer
         </button>
         <button onclick="confirmAndDownloadSTL()" class="w-full flex-1 py-3.5 px-5 rounded-2xl accent-gradient hover:brightness-105 active:scale-[0.99] text-studio-950 font-bold text-sm shadow-lg shadow-champagne-500/20 flex items-center justify-center gap-2 transition-all">
           <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
           </svg>
-          <span>Jetzt .STL Datei herunterladen</span>
+          <span>Download .STL file now</span>
         </button>
       </div>
 
@@ -965,8 +967,8 @@
         </svg>
       </div>
       <div>
-        <div id="toast-title" class="text-xs font-semibold text-white">STL-Datei erstellt!</div>
-        <div id="toast-desc" class="text-[11px] text-gray-300">Bereit für Bambu Studio, PrusaSlicer & Cura</div>
+        <div id="toast-title" class="text-xs font-semibold text-white">STL file created!</div>
+        <div id="toast-desc" class="text-[11px] text-gray-300">Ready for Bambu Studio, PrusaSlicer & Cura</div>
       </div>
     </div>
   </div>
@@ -976,24 +978,24 @@
      * 1. PARAMETRIC STATE (All dimensions in millimeters: 1 unit = 1 mm)
      ********************************************************************/
     const defaultParams = {
-      height: 160,              // Total height of lantern (mm)
-      bellyDia: 200,            // Max outer diameter at belly (mm)
-      topInnerDia: 96,          // Inner opening diameter at top ring (mm) - fits 80mm candle easily
-      baseOuterDia: 108,        // Outer diameter at base (mm)
-      bellyHeightRatio: 46,     // Vertical position of max belly (%)
-      curveTension: 55,         // Controls bottom/top tangent steepness for support-free printing (%)
-      ribCount: 48,             // Number of vertical curved ribs
-      ribWidth: 2.6,            // Tangential width of each rib (mm)
-      ribDepth: 4.5,            // Radial thickness/depth of each rib (mm)
-      twistAngle: 0,            // Helical twist from bottom to top (degrees)
-      topRingHeight: 4.0,       // Height of top connecting ring (mm)
+      height: 110,              // Total height of lantern (mm) - tea light default
+      bellyDia: 124,            // Max outer diameter at belly (mm)
+      topInnerDia: 62,          // Inner opening diameter at top ring (mm) - tea light drops in easily
+      baseOuterDia: 84,         // Outer diameter at base (mm)
+      bellyHeightRatio: 47,     // Vertical position of max belly (%)
+      curveTension: 52,         // Controls bottom/top tangent steepness for support-free printing (%)
+      ribCount: 40,             // Number of vertical curved ribs
+      ribWidth: 2.4,            // Tangential width of each rib (mm)
+      ribDepth: 4.0,            // Radial thickness/depth of each rib (mm)
+      twistAngle: 15,           // Helical twist from bottom to top (degrees) - gentle spiral
+      topRingHeight: 3.2,       // Height of top connecting ring (mm)
       stabilizerMode: 'breakaway', // 'breakaway' (V5 Top-Down Lever-Snap with 1-Pin + every 4th upper pin), 'permanent', 'none'
-      stabilizerCount: 3,       // Default 3 rings focused on the mid-to-upper overhang zone (45%, 68%, 87%)
-      stabilizerWidth: 3.4,     // Radial width of the inner lever flange (mm) - gives 6.5x lever arm!
-      stabilizerThickness: 3.8, // Vertical height of the lever ring (mm)
-      stabilizerNeck: 0.65,     // V-Notch breakaway pin width at the rib (0.65 mm default for easy PETG/PLA snap!)
+      stabilizerCount: 2,       // Two rings are enough for the compact tea light body
+      stabilizerWidth: 3.0,     // Radial width of the inner lever flange (mm)
+      stabilizerThickness: 3.2, // Vertical height of the lever ring (mm)
+      stabilizerNeck: 0.60,     // V-Notch breakaway pin width at the rib (mm)
       upperPinStep: 4,          // 2nd upper pin every 4th rib by default (0 = strictly 1 pin per rib)
-      rootBoost: 25,            // Extra thickness at the bottom 25% of ribs (%) to prevent cantilever wobble
+      rootBoost: 20,            // Extra thickness at the bottom 25% of ribs (%) to prevent cantilever wobble
       motifType: 'none',        // 'none', 'tree', 'star', 'crystal', 'heart', 'mix'
       motifCount: 6,            // Number of decorative symbols per row around circumference
       motifRows: 2,             // Number of staggered vertical rows of symbols (1..3)
@@ -1001,12 +1003,12 @@
       motifWidthScale: 100,     // Width aspect ratio scale (%)
       motifRelief: 2.4,         // Proud 3D relief projection in front of the outer rib surface (mm)
       motifHeightRatio: 50,     // Vertical center position of symbols (% of height)
-      baseThickness: 6.0,       // Total height of bottom base plate rim (mm)
-      recessDepth: 3.0,         // Depth of anti-slip candle recess (mm)
-      candleClearance: 1.5,     // Radial clearance around candle in tray (mm)
-      recessRimWidth: 4.5,      // Width of the raised lip around the candle recess (mm)
-      candleDia: 80,            // LED candle diameter (80 mm = 8 cm)
-      candleHeight: 100,        // LED candle height (100 mm = 10 cm)
+      baseThickness: 5.0,       // Total height of bottom base plate rim (mm)
+      recessDepth: 2.0,         // Depth of anti-slip candle recess (mm)
+      candleClearance: 1.0,     // Radial clearance around candle in tray (mm)
+      recessRimWidth: 3.0,      // Width of the raised lip around the candle recess (mm)
+      candleDia: 38,            // Tea light diameter (38 mm = standard tea light)
+      candleHeight: 18,         // Tea light height (18 mm = standard tea light)
       lightIntensity: 100,      // LED candle light intensity (%)
       lanternColor: '#d6c5b3'   // Modern Warm Travertine Sand
     };
@@ -1039,7 +1041,7 @@
       scene.background = new THREE.Color(0x08090d);
 
       camera = new THREE.PerspectiveCamera(38, container.clientWidth / container.clientHeight, 1, 2500);
-      camera.position.set(220, 210, 270);
+      camera.position.set(175, 165, 215);
 
       renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' });
       renderer.setSize(container.clientWidth, container.clientHeight);
@@ -1055,9 +1057,9 @@
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      controls.target.set(0, 75, 0);
+      controls.target.set(0, 55, 0);
       controls.maxPolarAngle = Math.PI / 2 + 0.08;
-      controls.minDistance = 90;
+      controls.minDistance = 60;
       controls.maxDistance = 750;
 
       // Ambient & Studio Directional Lights
@@ -2329,7 +2331,7 @@
       if (openingDiff >= 4) {
         checkOpenEl.className = 'p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-start gap-2';
         checkOpenText.className = 'text-[11px] text-teal-300/80 font-mono';
-        checkOpenText.textContent = `+${openingDiff.toFixed(0)} mm Platz`;
+        checkOpenText.textContent = `+${openingDiff.toFixed(0)} mm clearance`;
       } else if (openingDiff >= 0) {
         checkOpenEl.className = 'p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-start gap-2';
         checkOpenText.className = 'text-[11px] text-amber-300 font-mono';
@@ -2348,7 +2350,7 @@
       if (roundedOverhang <= 55) {
         checkOverhangEl.className = 'p-2 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-start gap-2';
         checkOverhangText.className = 'text-[11px] text-teal-300/80 font-mono';
-        checkOverhangText.textContent = `Max. ${roundedOverhang}° (Stützfrei)`;
+        checkOverhangText.textContent = `Max. ${roundedOverhang}° (support-free)`;
       } else if (roundedOverhang <= 64) {
         checkOverhangEl.className = 'p-2 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-start gap-2';
         checkOverhangText.className = 'text-[11px] text-amber-300 font-mono';
@@ -2395,14 +2397,14 @@
           spanBadge.textContent = `~${freeSpanMm} mm (${stiffnessGain}× steifer)`;
           spanBadge.className = 'font-mono font-bold text-teal-300';
         } else {
-          spanBadge.textContent = `${freeSpanMm} mm (Ungestützt!)`;
+          spanBadge.textContent = `${freeSpanMm} mm (unsupported!)`;
           spanBadge.className = freeSpanMm > 60 ? 'font-mono font-bold text-rose-400' : 'font-mono font-bold text-amber-300';
         }
       }
 
       if (currentLanternGeometry) {
         const triCount = Math.round(currentLanternGeometry.attributes.position.count / 3);
-        document.getElementById('mesh-stats').textContent = `${triCount.toLocaleString('de-DE')} Dreiecke • Maßstab 1:1 (mm)`;
+        document.getElementById('mesh-stats').textContent = `${triCount.toLocaleString('en-GB')} triangles • scale 1:1 (mm)`;
       }
     }
 
@@ -2446,11 +2448,11 @@
       if (!descEl || state.stabilizerMode !== 'breakaway') return;
       const s = Math.round(state.upperPinStep || 0);
       const upperInfo = s <= 0
-        ? 'pro Stab hält <strong>nur 1 unterer Pin</strong> (kein oberer Pin)'
+        ? 'holds <strong>only 1 lower pin</strong> per rib (no upper pin)'
         : (s === 1
           ? 'pro Stab halten 2 Pins'
-          : `4 von ${s} Stäben haben <strong>nur 1 Pin</strong> (2. Micro-Pin nur an jedem ${s}. Stab)`);
-      descEl.innerHTML = `<strong>Hebelwirkung von oben nach unten (6.5× Hebel):</strong> Greife durch die obere Öffnung und drücke auf die schräge Innenkante (${state.stabilizerWidth.toFixed(1)} mm) nach unten. Da ${upperInfo} und die Sollbruchstelle nur <strong>${state.stabilizerNeck.toFixed(2)} mm</strong> dünn ist, schält der Ring die Pins im Domino-Effekt ab, ohne die Stäbe zu biegen!`;
+          : `4 of ${s} ribs have <strong>only 1 pin</strong> (2nd micro pin on every ${s}th rib only)`);
+      descEl.innerHTML = `<strong>Top-down leverage (6.5× lever):</strong> Reach through the top opening and press down on the angled inner edge (${state.stabilizerWidth.toFixed(1)} mm). Since ${upperInfo} and the breakaway point is only <strong>${state.stabilizerNeck.toFixed(2)} mm</strong> thin, the ring peels the pins off in a domino effect without bending the ribs!`;
     }
 
     function setStabilizerMode(mode) {
@@ -2477,12 +2479,12 @@
         controlsWrap.classList.remove('opacity-40', 'pointer-events-none');
         if (mode === 'breakaway') {
           if (neckWrap) neckWrap.classList.remove('hidden');
-          labelEl.textContent = 'Ring- & Hebel-Höhe';
+          labelEl.textContent = 'Ring & lever height';
           updateBreakawayDescText();
         } else {
           if (neckWrap) neckWrap.classList.add('hidden');
-          labelEl.textContent = 'Ring-Höhe (Fester Vasen-Innenring)';
-          descEl.innerHTML = 'Fester, von unten im 42°-Winkel selbsttragender Stabilisierungsring in Laternenfarbe. Braucht keinen Slicer-Support und verbindet alle Stäbe dauerhaft.';
+          labelEl.textContent = 'Ring height (permanent inner ring)';
+          descEl.innerHTML = 'Fixed, self-supporting stabiliser ring in the lantern colour, printed at a 42° angle from below. Needs no slicer support and permanently connects all ribs.';
         }
       }
 
@@ -2558,7 +2560,7 @@
         bottomLeft.classList.add('opacity-0', 'pointer-events-none');
         if (colorBar) colorBar.classList.add('hidden');
 
-        // Keep the function bar (LED-Kerze, Schatten, Schnitt, Einsetz-Test) visible & centered at the bottom in fullscreen
+        // Keep the function bar (candle, shadows, section view, fit test) visible and centred at the bottom in fullscreen
         bottomRight.classList.remove('sm:left-auto', 'sm:items-end');
         bottomRight.classList.add('left-4', 'right-4', 'items-center');
 
@@ -2567,7 +2569,7 @@
 
         iconExpand.classList.add('hidden');
         iconCollapse.classList.remove('hidden');
-        btnText.textContent = 'Menü einblenden';
+        btnText.textContent = 'Show menu';
         zenBtn.className = 'fixed top-4 right-4 z-40 px-4 py-2.5 rounded-2xl flex items-center gap-2 text-xs font-bold accent-gradient text-studio-950 shadow-2xl transition-all active:scale-95';
       } else {
         sidebar.classList.remove('hidden');
@@ -2582,7 +2584,7 @@
 
         iconExpand.classList.remove('hidden');
         iconCollapse.classList.add('hidden');
-        btnText.textContent = 'Vollbild';
+        btnText.textContent = 'Fullscreen';
         zenBtn.className = 'fixed top-4 right-4 z-40 glass-panel px-3.5 py-2.5 rounded-2xl flex items-center gap-2 text-xs font-semibold text-champagne-200 hover:text-white hover:border-champagne-400/50 shadow-2xl transition-all active:scale-95';
       }
 
@@ -2593,6 +2595,31 @@
 
     function applyPreset(presetName) {
       const presets = {
+        tealight: {
+          height: 110,
+          bellyDia: 124,
+          topInnerDia: 62,
+          baseOuterDia: 84,
+          bellyHeightRatio: 47,
+          curveTension: 52,
+          ribCount: 40,
+          ribWidth: 2.4,
+          ribDepth: 4.0,
+          twistAngle: 15,
+          topRingHeight: 3.2,
+          stabilizerCount: 2,
+          stabilizerWidth: 3.0,
+          stabilizerThickness: 3.2,
+          stabilizerNeck: 0.60,
+          rootBoost: 20,
+          baseThickness: 5.0,
+          recessDepth: 2.0,
+          candleClearance: 1.0,
+          recessRimWidth: 3.0,
+          candleDia: 38,
+          candleHeight: 18,
+          motifType: 'none'
+        },
         classic: {
           height: 160,
           bellyDia: 200,
@@ -2686,7 +2713,7 @@
       }
 
       // Highlight active preset button
-      ['classic', 'xmas', 'lounge', 'twist', 'tall'].forEach(name => {
+      ['tealight', 'classic', 'xmas', 'lounge', 'twist', 'tall'].forEach(name => {
         const btn = document.getElementById(`preset-${name}`);
         if (!btn) return;
         if (name === presetName) {
@@ -2719,7 +2746,7 @@
       });
       setMotifType(defaultParams.motifType);
       updateBreakawayDescText();
-      applyPreset('classic');
+      applyPreset('tealight');
     }
 
     function setLanternColor(hexColor, btnEl) {
@@ -2837,10 +2864,10 @@
       const hours = Math.floor(totalMinutes / 60);
       const mins = totalMinutes % 60;
 
-      document.getElementById('modal-subtitle').textContent = `Laterne Ø${state.bellyDia} × ${state.height} mm • ${state.ribCount} Stäbe`;
+      document.getElementById('modal-subtitle').textContent = `Lantern Ø${state.bellyDia} × ${state.height} mm • ${state.ribCount} ribs`;
       document.getElementById('modal-filament-g').textContent = `~${grams} g`;
       document.getElementById('modal-filament-m').textContent = `(~${meters} m)`;
-      document.getElementById('modal-print-time').textContent = `Geschätzte Druckzeit: ~${hours}h ${mins}m`;
+      document.getElementById('modal-print-time').textContent = `Estimated print time: ~${hours}h ${mins}m`;
 
       // Evaluate Stability, Overhang & Nozzle Collision / Failure Risk
       const overhang = Math.round(state.lastMaxOverhangDeg || 45);
@@ -2860,45 +2887,45 @@
       const pinSummary = stepVal <= 0 ? '1 Hebel-Pin/Stab' : `1 Pin + jeder ${stepVal}. Stab 2. Pin`;
       const stabModeText = state.stabilizerMode === 'breakaway'
         ? `${activeStabRings} Top-Down Hebel-Snap Ringen (${pinSummary}, ${state.stabilizerNeck.toFixed(2)} mm V-Kerbe)`
-        : (state.stabilizerMode === 'permanent' ? `${activeStabRings} festen 42°-Vasen-Ringen` : 'ohne Zwischenringe');
+        : (state.stabilizerMode === 'permanent' ? `${activeStabRings} festen 42°-Vasen-Ringen` : 'without intermediate rings');
       let stabilityTitle = `PETG-Hebel-Snap & Stabil (Max. frei ~${freeSpanMm} mm)`;
-      let stabilityDesc = `Dank ${stabModeText} lassen sich die Ringe von oben durch Nach-unten-Drücken auf den inneren Hebelkragen (6.5× Hebelarm) im Domino-Effekt abschälen, ohne dass ein Stab bricht.`;
+      let stabilityDesc = `Thanks to ${stabModeText} the rings can be peeled off from the top by pressing down on the inner lever collar (6.5× lever arm) in a domino effect, without breaking a rib.`;
 
       if (state.ribWidth < 2.0 || state.ribDepth < 3.0 || ribCrossArea < 6.5) {
         stabilityLevel = 'danger';
-        stabilityTitle = 'Fragil (Stäbe zu dünn)';
-        stabilityDesc = `Bei ${state.ribWidth.toFixed(1)} × ${state.ribDepth.toFixed(1)} mm schwingen die Stäbe stark. Empfehlung: mind. 2.4 × 4.0 mm plus durchgehenden Ausbrech-Ring.`;
+        stabilityTitle = 'Fragile (ribs too thin)';
+        stabilityDesc = `At ${state.ribWidth.toFixed(1)} × ${state.ribDepth.toFixed(1)} mm the ribs vibrate strongly. Recommendation: at least 2.4 × 4.0 mm plus a continuous breakaway ring.`;
         score -= 28;
         needsOptimization = true;
       } else if (freeSpanMm > 75 || slenderness > 32) {
         stabilityLevel = 'danger';
-        stabilityTitle = `Vibrations-Gefahr! (Freie Länge ${freeSpanMm} mm)`;
-        stabilityDesc = `Ohne ausreichende Ringe schwingen die ${state.height} mm langen Stäbe durch die Düsenbewegung auf. Aktiviere 2 durchgehende Ausbrech-Ringe!`;
+        stabilityTitle = `Vibration risk! (free length ${freeSpanMm} mm)`;
+        stabilityDesc = `Without enough rings the ${state.height} mm long ribs vibrate with the nozzle movement. Activate 2 continuous breakaway rings!`;
         score -= 26;
         needsOptimization = true;
       } else if (freeSpanMm > 58 || slenderness > 24) {
         stabilityLevel = 'warn';
-        stabilityTitle = `Leichtes Schwingen möglich (${freeSpanMm} mm frei)`;
-        stabilityDesc = `Ein zusätzlicher durchgehender Stützring würde die freie Stablänge weiter verkürzen und alle Stäbe noch gleichmäßiger stabilisieren.`;
+        stabilityTitle = `Slight vibration possible (${freeSpanMm} mm free)`;
+        stabilityDesc = `An additional continuous support ring would shorten the free rib length further and stabilise all ribs more evenly.`;
         score -= 10;
         needsOptimization = true;
       }
 
       // 2. Print Failure / Danger Check (Nozzle collision, curling overhangs, spaghetti risk)
       let dangerLevel = 'good';
-      let dangerTitle = 'Ungefährlich (Kein Fehlschlag-Risiko)';
-      let dangerDesc = `Max. Überhangwinkel von ${overhang}° liegt im sicheren Bereich. Kein Curling (Hochbiegen) und keine Kollisionsgefahr für die Druckerdüse.`;
+      let dangerTitle = 'Harmless (no failure risk)';
+      let dangerDesc = `A maximum overhang of ${overhang}° is in the safe range. No curling and no collision risk for the nozzle.`;
 
       if (overhang > 63 || (overhang > 56 && state.ribWidth < 2.0)) {
         dangerLevel = 'danger';
-        dangerTitle = 'Erhöhtes Fehlschlag- & Kollisions-Risiko!';
-        dangerDesc = `Der Überhang von ${overhang}° ist sehr flach. Die freien Stab-Kanten können sich beim Abkühlen nach oben wölben (Curling), sodass die Düse dagegen stößt und den Druck abreißt ("Spaghetti-Druck").`;
+        dangerTitle = 'Increased failure & collision risk!';
+        dangerDesc = `The ${overhang}° overhang is very shallow. The free rib edges can curl upwards while cooling, so the nozzle hits them and the print fails ("Spaghetti-Druck").`;
         score -= 38;
         needsOptimization = true;
       } else if (overhang > 54 || Math.abs(state.twistAngle) > 65) {
         dangerLevel = 'warn';
-        dangerTitle = 'Anspruchsvoller Druck (Kühlung beachten)';
-        dangerDesc = `Überhang von ${overhang}° erfordert gute Bauteilkühlung (100% Lüfter) und reduzierte Überhang-Geschwindigkeit, damit die Lamellen sauber schichten.`;
+        dangerTitle = 'Demanding print (watch your cooling)';
+        dangerDesc = `A ${overhang}° overhang needs good part cooling (100 % fan) and reduced overhang speed so the lamellae layer cleanly.`;
         score -= 14;
         needsOptimization = true;
       }
@@ -2906,18 +2933,18 @@
       // 3. Candle Fit & Tray Floor Check
       let candleLevel = 'good';
       let candleTitle = 'Perfekter Sitz & Einlass';
-      let candleDesc = `Deine Ø${state.candleDia} mm Kerze passt bequem durch die Ø${state.topInnerDia} mm Öffnung (+${openingDiff.toFixed(0)} mm Spiel) und steht sicher in der ${state.recessDepth.toFixed(1)} mm tiefen Mulde.`;
+      let candleDesc = `Your Ø${state.candleDia} mm candle fits comfortably through the Ø${state.topInnerDia} mm opening (+${openingDiff.toFixed(0)} mm clearance) and sits securely in theer ${state.recessDepth.toFixed(1)} mm tiefen Mulde.`;
 
       if (openingDiff < 0) {
         candleLevel = 'danger';
-        candleTitle = 'Kerze passt oben nicht durch!';
-        candleDesc = `Die obere Öffnung (Ø${state.topInnerDia} mm) ist kleiner als deine Kerze (Ø${state.candleDia} mm). Du kannst die Kerze später nicht von oben einsetzen!`;
+        candleTitle = 'Candle does not fit through the top!';
+        candleDesc = `The top opening (Ø${state.topInnerDia} mm) is smaller than your candle (Ø${state.candleDia} mm). You will not be able to insert the candle from the top!`;
         score -= 20;
         needsOptimization = true;
       } else if (openingDiff < 4 || floorThickness < 1.6) {
         candleLevel = 'warn';
         candleTitle = 'Sehr knappe Toleranz';
-        candleDesc = `Öffnungs-Spiel beträgt nur +${openingDiff.toFixed(0)} mm (oder Bodenstärke ${floorThickness.toFixed(1)} mm ist knapp). Etwas mehr Spiel erleichtert das Einsetzen.`;
+        candleDesc = `the opening clearance is only +${openingDiff.toFixed(0)} mm (or the floor thickness ${floorThickness.toFixed(1)} mm is tight). A little more clearance makes insertion easier.`;
         score -= 8;
         needsOptimization = true;
       }
@@ -3048,7 +3075,7 @@
       updateBreakawayDescText();
       rebuildAll();
       openExportModal();
-      showToast('V5 Top-Down Hebel-Snap aktiviert!', '1 Pin + jeder 5. Stab 2. Pin mit 0.65 mm V-Schälkerbe für leichtes Aushebeln.');
+      showToast('V5 Top-Down Hebel-Snap aktiviert!', '1 pin + 2nd pin on every 5th rib with a 0.65 mm V-peel notch for easy removal.');
     }
 
     function confirmAndDownloadSTL() {
@@ -3124,7 +3151,7 @@
       const blob = new Blob([arrayBuffer], { type: 'application/octet-stream' });
       const url = URL.createObjectURL(blob);
       const link = document.createElement('a');
-      const fileName = `Laterne_D${state.bellyDia}_H${state.height}_Kerze${state.candleDia}mm.stl`;
+      const fileName = `Lumenrib_Lantern_D${state.bellyDia}_H${state.height}_Candle${state.candleDia}mm.stl`;
       link.href = url;
       link.download = fileName;
       document.body.appendChild(link);
