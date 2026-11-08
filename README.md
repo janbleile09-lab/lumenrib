@@ -56,3 +56,24 @@ Pull Requests. Der PR muss von Hand eingereicht werden. Inhalt der Datei:
 
 Die JSON-Struktur wurde gegen die Tests des Repos geprüft (json, domains, records, proxy:
 alle grün), der Subdomain-Name `lumenrib` ist frei.
+
+## Netlify-Deploys blockiert (Stand 08.11.2026)
+
+Seit dem 08.11.2026 lehnt das Netlify-Konto **jeden** Deploy ab:
+
+    {"error":"Account credit usage exceeded - new deploys are blocked until credits are added"}
+
+Antwort ist HTTP 403 bei `POST /api/v1/sites/<id>/deploys`, per CLI („JSONHTTPError: Forbidden")
+und über den MCP-Connector gleichermaßen. Der Build selbst ist nicht das Problem — Netlify
+blockiert das *Anlegen* des Deploys.
+
+**Konsequenz:** `lumenrib.netlify.app` läuft auf dem Stand vom Vormittag des 08.11.
+**Maßgebliche Live-Quelle ist deshalb GitHub Pages:** https://janbleile09-lab.github.io/lumenrib/
+Dort ist jeder Push sofort live.
+
+Lokal deployen, sobald das Kontingent wieder da ist:
+
+    npx netlify-cli deploy --prod --dir=.
+
+Die Alternative ohne Netlify ist Cloudflare Pages oder Vercel — beide kostenlos, beide können
+das Repo direkt aus GitHub bauen (dann ist kein manueller Deploy mehr nötig).
