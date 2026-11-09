@@ -15,7 +15,13 @@
 
   var ENDPOINT = 'https://eggrvcohkaizbcsxtywi.supabase.co/rest/v1/rpc/track';
   var KEY = 'sb_publishable_3-q2CXobEwsMTTzUFk82hw_17NEfCdt';
-  var PAGE = location.pathname.replace(/^\/+/, '') || 'index.html';
+  // Pfad normalisieren, damit "/", "/index.html" und "/en/" sauber gruppieren.
+  function pagePath() {
+    var p = location.pathname.replace(/\/index\.html$/, '/');
+    if (p === '' ) p = '/';
+    return p.slice(0, 160);
+  }
+  var PAGE = pagePath();
   var LANG = /^\/en\//.test(location.pathname) ? 'en' : 'de';
 
   function device() {
@@ -62,7 +68,7 @@
   /* Seitenaufruf — erst nach dem ersten Bild, damit niemand auf die Messung wartet */
   function pageview() {
     send({ kind: 'pageview' });
-    if (/konfigurator\.html$/.test(location.pathname)) {
+    if (/configurator\.html$/.test(PAGE)) {
       send({ kind: 'configurator_open' });
     }
   }
