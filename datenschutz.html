@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self' https://eggrvcohkaizbcsxtywi.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Datenschutz — Lumenrib</title>
+  <meta name="description" content="Was Lumenrib speichert, was nicht — und warum es keinen Cookie-Banner braucht.">
+  <meta name="theme-color" content="#08090d">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Datenschutz — Lumenrib">
+  <meta property="og:url" content="https://lumenrib.me/datenschutz.html">
+  <link rel="canonical" href="https://lumenrib.me/datenschutz.html">
+  <meta property="og:locale" content="de_DE">
+  <link rel="alternate" hreflang="de" href="https://lumenrib.me/datenschutz.html">
+  <link rel="alternate" hreflang="en" href="https://lumenrib.me/en/privacy.html">
+  <link rel="alternate" hreflang="x-default" href="https://lumenrib.me/datenschutz.html">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308090d'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23e2be96'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/fonts.css">
+</head>
+<body>
+
+  <nav class="nav" aria-label="Hauptnavigation">
+    <div class="nav-inner wrap">
+      <a class="nav-brand" href="index.html" aria-label="Lumenrib — Startseite">
+        <span class="nav-mark" aria-hidden="true"></span>
+        <span>Lumenrib</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="index.html#ablauf">Ablauf</a>
+        <a class="nav-link" href="index.html#presets">Presets</a>
+        <a class="nav-link" href="index.html#funktionen">Funktionen</a>
+        <a class="nav-link" href="kontakt.html">Kontakt</a>
+        <a class="nav-link" href="en/privacy.html" hreflang="en" lang="en">EN</a>
+      </div>
+      <a class="btn btn--primary nav-cta" href="konfigurator.html">Laterne gestalten</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <section class="section wrap reveal">
+      <div class="grid">
+        <p class="eyebrow">Datenschutz</p>
+        <h1 class="display-l">Kurz gesagt: Ich sammle so wenig wie möglich</h1>
+        <p class="lede">Diese Seite ist ein Werkzeug, kein Shop. Es gibt kein Konto, keine Anmeldung, keine Werbung, keine Weitergabe von Daten an Dritte zu Werbezwecken. Was trotzdem anfällt, steht hier vollständig.</p>
+      </div>
+    </section>
+
+    <section class="section--tight wrap reveal">
+      <div class="grid grid--2">
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Keine Cookies von mir</h2>
+            <p class="body">Die Seite setzt <strong>keine Cookies</strong> und speichert nichts im <code>localStorage</code> oder <code>sessionStorage</code> deines Browsers. Deshalb siehst du hier auch keinen Cookie-Banner: Es gibt nichts, worin du einwilligen müsstest.</p>
+            <p class="body">Der Konfigurator rechnet vollständig in deinem Browser. Die Laterne, die du baust, verlässt dein Gerät nicht — die STL-Datei wird lokal erzeugt und lokal heruntergeladen.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Reichweitenmessung ohne Personenbezug</h2>
+            <p class="body">Ich möchte wissen, ob die Seite überhaupt gelesen wird. Dafür zählt der Server zwei Dinge: einen <em>Aufruf</em> und einen <em>Download</em>. Beim Aufruf werden übertragen: die Seite (z. B. <code>/konfigurator.html</code>), die Sprache, die Geräteklasse (Desktop, Handy, Tablet) und — falls vorhanden — die Seite, von der du kommst.</p>
+            <p class="body">Für die Zählung bildet der Server aus deiner IP-Adresse, deinem Browser-Kennzeichen und dem Kalendertag einen <strong>Hash-Wert</strong> und speichert nur diesen. Aus dem Hash lässt sich die IP-Adresse nicht zurückrechnen. Tages- und Stundenzähler werden nach kurzer Zeit zusammengefasst und alte Einträge nach spätestens 400 Tagen gelöscht.</p>
+            <p class="body">Das ist keine Einwilligung nach § 25 TDDDG, weil auf deinem Gerät nichts gespeichert oder ausgelesen wird, und es ist keine Profilbildung.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Wenn du das Kontaktformular benutzt</h2>
+            <p class="body">Dann bekomme ich, was du einträgst: Name, E-Mail-Adresse, Thema, optionale Projektbeschreibung und deine Nachricht. Diese Daten liegen in einer Datenbank bei Supabase (Region Frankfurt am Main, EU) und werden <strong>ausschliesslich</strong> benutzt, um dir zu antworten.</p>
+            <p class="body">Rechtsgrundlage ist Art. 6 Abs. 1 lit. b DSGVO (Antwort auf deine Anfrage) bzw. lit. f DSGVO (berechtigtes Interesse an der Beantwortung). Zur Abschreckung von Spam speichere ich zusätzlich einen Tages-Hash deiner IP-Adresse — nicht die IP selbst. Ich lösche Nachrichten, wenn sie erledigt sind, spätestens nach zwei Jahren.</p>
+            <p class="body">Die Nachricht geht <strong>nicht</strong> über einen Formulardienst eines Dritten; sie landet direkt bei mir. Eine Weitergabe an Dritte findet nicht statt, ausser ich bin gesetzlich dazu verpflichtet.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Wer technisch im Spiel ist</h2>
+            <p class="body"><strong>GitHub Pages</strong> (GitHub Inc., USA) liefert die Seiten aus. Dabei fallen beim Hoster Server-Logs mit IP-Adressen an, auf die ich keinen Zugriff habe. Grundlage sind die Standardvertragsklauseln von GitHub.</p>
+            <p class="body"><strong>Supabase</strong> (Supabase Inc., Datenbank in der EU) speichert die Zähler und die Kontaktnachrichten. <strong>Keine Schriftarten, keine Skripte, keine Zählpixel von Google oder anderen Werbenetzwerken</strong> — die Schriften liegen lokal auf dem Server.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Deine Rechte</h2>
+            <p class="body">Du kannst jederzeit Auskunft (Art. 15 DSGVO), Berichtigung (Art. 16), Löschung (Art. 17), Einschränkung (Art. 18) und Datenübertragbarkeit (Art. 20) verlangen und der Verarbeitung widersprechen (Art. 21). Eine formlose E-Mail genügt.</p>
+            <p class="body">Beschwerden kannst du bei einer Aufsichtsbehörde einlegen — zuständig ist der Landesbeauftragte für den Datenschutz und die Informationsfreiheit Baden-Württemberg.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Kontakt</h2>
+            <p class="body">Verantwortlich für diese Seite ist Jan Bleile. Am schnellsten erreichst du mich per E-Mail: <a class="legal-link" href="mailto:jan.bleile@icloud.com">jan.bleile@icloud.com</a></p>
+            <p class="body">Oder über das <a class="legal-link" href="kontakt.html">Kontaktformular</a>. Was ich nicht anbiete: Verkauf, Konto, Newsletter, Tracking-Profile.</p>
+            <p class="caption">Stand: 9. November 2026</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h2 class="footer-title">Produkt</h2>
+          <a href="konfigurator.html">Konfigurator</a>
+          <a href="index.html#presets">Presets</a>
+          <a href="index.html#funktionen">Funktionen</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Ressourcen</h2>
+          <a href="index.html#ablauf">Ablauf</a>
+          <a href="index.html#details">Bedienung &amp; Details</a>
+          <a href="kontakt.html">Fehler melden</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Sprache</h2>
+          <a href="datenschutz.html" hreflang="de" aria-current="page">Deutsch</a>
+          <a href="en/privacy.html" hreflang="en" lang="en">English</a>
+        </div>
+        <div class="footer-col">
+          <h2 class="footer-title">Rechtliches</h2>
+          <a href="datenschutz.html">Datenschutz</a>
+          <a href="kontakt.html">Kontakt</a>
+          <p class="caption">Kein Konto, kein Login, kein Verkauf.</p>
+        </div>
+      </div>
+      <div class="footer-note">
+        <p>© <span data-year>2026</span> Lumenrib</p>
+        <p>Kein Shop — ein Werkzeug.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/track.js" defer></script>
+</body>
+</html>

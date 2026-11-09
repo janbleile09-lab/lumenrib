@@ -2,84 +2,106 @@
 
 Parametrischer 3D-Laternen-Designer im Browser — Landing Page, Konfigurator, Kontakt.
 
-- `index.html` — Deutsche Landing Page
-- `konfigurator.html` — Der Designer (DE), exportiert `.stl`
-- `kontakt.html` — Kontakt (DE)
-- `en/` — englische Fassung
+## Seiten
+
+| Seite | Datei | Sprache |
+|---|---|---|
+| Startseite | `index.html` | DE |
+| Konfigurator | `konfigurator.html` | DE |
+| Kontakt | `kontakt.html` | DE |
+| Datenschutz | `datenschutz.html` | DE |
+| Startseite | `en/index.html` | EN |
+| Konfigurator | `en/configurator.html` | EN |
+| Kontakt | `en/contact.html` | EN |
+| Privacy | `en/privacy.html` | EN |
 
 Statische Seite, kein Build-Schritt. Lokal starten mit `python3 -m http.server`.
-Die 3D-Bibliotheken liegen in `assets/vendor/`, damit die Seite ohne CDN läuft.
+Alle Bibliotheken und Schriften liegen lokal (`assets/`), es gibt keinen CDN-Aufruf.
 
 ## Live
 
 **https://lumenrib.me** — eigene Domain (Namecheap), ausgeliefert von GitHub Pages.
 DNS: vier A-Records auf 185.199.108.153 / .109 / .110 / .111, `www` als CNAME auf `lumenrib.me`.
 HTTPS aktiv, Zertifikat von Let's Encrypt (GitHub Pages), gültig bis 06.02.2027.
-`www` und `http` leiten per 301 auf `https://lumenrib.me/` um.
-
-| Seite | URL |
-|---|---|
-| Startseite DE | https://lumenrib.me/ |
-| Startseite EN | https://lumenrib.me/en/ |
-| Konfigurator DE | https://lumenrib.me/konfigurator.html |
-| Konfigurator EN | https://lumenrib.me/en/configurator.html |
-| Kontakt DE | https://lumenrib.me/kontakt.html |
-| Kontakt EN | https://lumenrib.me/en/contact.html |
 
 Deployen = committen und pushen. GitHub Pages baut automatisch.
 
     git add -A && git commit -m "..." && git push
 
-Netlify (`lumenrib.netlify.app`) ist nur noch Altlast: dort blockiert das Kontingent jeden
-Deploy (HTTP 403, "Account credit usage exceeded"), die Seite läuft auf einem alten Stand.
+## Aufbau der Skripte
 
-## Domain einrichten (falls mal neu)
+Der Konfigurator ist bewusst **ohne Inline-JavaScript** gebaut, damit die
+Content-Security-Policy `script-src 'self'` lauten kann (kein `unsafe-inline`,
+also kein Weg für eingeschleustes JavaScript).
 
-1. Im Repo liegt eine Datei `CNAME` mit dem Inhalt `lumenrib.me` — die muss bleiben.
-2. Beim Registrar: A-Records der Apex auf 185.199.108–111.153, `CNAME` für `www` auf `lumenrib.me`.
-3. GitHub → Settings → Pages → Custom domain eintragen, "Enforce HTTPS" aktivieren.
-4. Wichtig: Eine Domain kann nur **einem** Repo im Konto zugeordnet sein. War vorher am
-   Repo `janbleile09-lab.github.io` (dort ebenfalls eine `CNAME`-Datei) — die muss dort weg.
+| Datei | Inhalt |
+|---|---|
+| `assets/js/config-tailwind.js` | `tailwind.config` (Farben, Schriften) |
+| `assets/js/configurator.de.js` | gesamte Logik des Konfigurators (DE-Fassung) |
+| `assets/js/configurator.en.js` | dieselbe Logik mit englischen Texten |
+| `assets/js/site.js` | Landing Pages: Reveal-Animation, Formular, Jahr im Footer |
+| `assets/js/track.js` | anonyme Reichweitenmessung (siehe unten) |
 
-## Kostenlose Alternative: `lumenrib.is-a.dev`
+Interaktion läuft über Event-Delegation: die HTML-Elemente tragen
+`data-act="funktion"` (mit `data-args='["…"]'`) bzw. `data-on="updateParam"
+data-arg="height"`. Ein Zuhörer am Dokument ruft die Funktion auf. Neue Buttons
+brauchen deshalb kein `onclick`, nur das passende `data-act`.
 
-Die Datei `lumenrib.json` liegt im Ordner `domain/` (nicht im Web-Root).
-Registrierung läuft über einen Pull Request an `is-a-dev/register`:
+## Schriften
 
-1. Datei nach `domains/lumenrib.json` im geforkten Repo kopieren.
-2. PR gegen `is-a-dev/register` öffnen.
+Inter und JetBrains Mono liegen als woff2 in `assets/fonts/` und werden über
+`assets/css/fonts.css` eingebunden — nicht mehr über Google Fonts. Das spart
+einen Drittanbieter-Request und die Übertragung der Besucher-IP an Google.
+Lizenz: SIL Open Font License 1.1. Nur `latin` und `latin-ext` (deckt Deutsch
+mit Umlauten und Englisch ab). Inter ist ein Variable Font — ein File pro
+Subset genügt für alle Schnitte.
 
-**Wichtig:** Dieses Repo akzeptiert laut eigener `AGENTS.md` *keine* KI-generierten
-Pull Requests. Der PR muss von Hand eingereicht werden. Inhalt der Datei:
+## Reichweitenmessung (anonym)
 
-```json
-{
-  "description": "Lumenrib — parametric 3D lantern designer",
-  "owner": { "username": "janbleile09-lab" },
-  "records": { "CNAME": "janbleile09-lab.github.io" }
-}
-```
+`assets/js/track.js` schickt bei Seitenaufruf, Konfigurator-Start, Preset-Klick
+und STL-Download ein Ereignis an Supabase (`lumen.track`).
 
-Die JSON-Struktur wurde gegen die Tests des Repos geprüft (json, domains, records, proxy:
-alle grün), der Subdomain-Name `lumenrib` ist frei.
+- **Kein Cookie, kein localStorage, kein sessionStorage.** Deshalb kein
+  Cookie-Banner: es wird nichts auf dem Gerät gespeichert oder gelesen.
+- Der Besucher wird serverseitig aus IP + User-Agent + Kalendertag gehasht.
+  Roh-IP wird nie gespeichert. Ereignisse werden nach 400 Tagen gelöscht.
+- Übertragen werden nur: Ereignisart, Pfad, Sprache, Geräteklasse und bei
+  Downloads die Modellmaße. `lumen.clean_meta` filtert serverseitig gegen eine
+  Whitelist (`dia`, `height`, `candle`, `ribs`, `motif`, `kb`, `preset`).
+- Bei Downloads wird zusätzlich das Modell vermessen (Bauch-Ø, Höhe, Kerzen-Ø,
+  Rippen, Motiv, Dateigröße) — das landet in der Tabelle `last_downloads`.
 
-## Netlify-Deploys blockiert (Stand 08.11.2026)
+Die Zahlen stehen im JARVIS-Staff-Board unter dem Reiter **Website**
+(`~/.hermes/skills/.../jarvis-os-staffboard`). Zugriff nur für Besitzerrolle
+plus freigeschaltetes Gerät (`staff.is_owner() and staff.device_ok()`).
+Schema-Quelle: `jarvis-os/supabase/migrations/006_lumen.sql`.
 
-Seit dem 08.11.2026 lehnt das Netlify-Konto **jeden** Deploy ab:
+## Kontaktformular
 
-    {"error":"Account credit usage exceeded - new deploys are blocked until credits are added"}
+Geht direkt an die eigene Datenbank (`lumen.contact`), nicht an einen
+Formulardienst. Felder: Name, E-Mail, Thema, Projekt, Nachricht. Serverseitig:
+E-Mail- und Längenprüfung, Honeypot-Feld, maximal drei Nachrichten pro
+10 Minuten und IP-Hash.
 
-Antwort ist HTTP 403 bei `POST /api/v1/sites/<id>/deploys`, per CLI („JSONHTTPError: Forbidden")
-und über den MCP-Connector gleichermaßen. Der Build selbst ist nicht das Problem — Netlify
-blockiert das *Anlegen* des Deploys.
+## Sicherheit
 
-**Konsequenz:** `lumenrib.netlify.app` läuft auf dem Stand vom Vormittag des 08.11.
-**Maßgebliche Live-Quelle ist deshalb GitHub Pages:** https://janbleile09-lab.github.io/lumenrib/
-Dort ist jeder Push sofort live.
+- CSP-Meta auf allen Seiten: `script-src 'self'`, `object-src 'none'`,
+  `frame-ancestors 'none'`, `upgrade-insecure-requests`.
+- `referrer` auf `strict-origin-when-cross-origin`.
+- Keine Inline-Handler, kein `eval`, kein `innerHTML` mit Fremddaten.
+- `anon` darf in Supabase nur `lumen.track` und `lumen.contact` aufrufen;
+  Tabellen sind per RLS ohne Policies gesperrt.
+- Hinweis: GitHub Pages kann keine echten HTTP-Header setzen. Die CSP steht
+  deshalb als `<meta>` im `<head>`; `_headers` wirkt nur bei Netlify.
 
-Lokal deployen, sobald das Kontingent wieder da ist:
+## Bekannte Lücke
 
-    npx netlify-cli deploy --prod --dir=.
+`https://www.lumenrib.me` hat ein Zertifikatsproblem: der `www`-CNAME zeigt auf
+`lumenrib.me`, das GitHub-Zertifikat deckt aber nur den Apex ab. Fix beim
+Registrar: `www` CNAME auf `janbleile09-lab.github.io` umstellen, dann nimmt
+GitHub `www` in die SAN-Liste auf.
 
-Die Alternative ohne Netlify ist Cloudflare Pages oder Vercel — beide kostenlos, beide können
-das Repo direkt aus GitHub bauen (dann ist kein manueller Deploy mehr nötig).
+## Netlify
+
+`lumenrib.netlify.app` ist Altlast: das Kontingent blockiert jeden Deploy
+(HTTP 403). Live-Quelle ist ausschliesslich GitHub Pages.

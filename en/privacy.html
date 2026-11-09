@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self' https://eggrvcohkaizbcsxtywi.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Privacy — Lumenrib</title>
+  <meta name="description" content="What Lumenrib stores, what it does not — and why there is no cookie banner.">
+  <meta name="theme-color" content="#08090d">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Privacy — Lumenrib">
+  <meta property="og:url" content="https://lumenrib.me/en/privacy.html">
+  <link rel="canonical" href="https://lumenrib.me/en/privacy.html">
+  <meta property="og:locale" content="en_US">
+  <link rel="alternate" hreflang="de" href="https://lumenrib.me/datenschutz.html">
+  <link rel="alternate" hreflang="en" href="https://lumenrib.me/en/privacy.html">
+  <link rel="alternate" hreflang="x-default" href="https://lumenrib.me/datenschutz.html">
+
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308090d'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23e2be96'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="../assets/css/site.css">
+  <link rel="stylesheet" href="../assets/css/fonts.css">
+</head>
+<body>
+
+  <nav class="nav" aria-label="Main navigation">
+    <div class="nav-inner wrap">
+      <a class="nav-brand" href="../index.html" aria-label="Lumenrib — home">
+        <span class="nav-mark" aria-hidden="true"></span>
+        <span>Lumenrib</span>
+      </a>
+      <div class="nav-links">
+        <a class="nav-link" href="../index.html#process">Process</a>
+        <a class="nav-link" href="../index.html#presets">Presets</a>
+        <a class="nav-link" href="../index.html#features">Features</a>
+        <a class="nav-link" href="contact.html">Contact</a>
+        <a class="nav-link" href="../datenschutz.html" hreflang="de" lang="de">DE</a>
+      </div>
+      <a class="btn btn--primary nav-cta" href="configurator.html">Design a lantern</a>
+    </div>
+  </nav>
+
+  <main id="main">
+
+    <section class="section wrap reveal">
+      <div class="grid">
+        <p class="eyebrow">Privacy</p>
+        <h1 class="display-l">In short: I collect as little as possible</h1>
+        <p class="lede">This site is a tool, not a shop. There is no account, no sign-in, no advertising, and no data passed to third parties for marketing. Whatever does get processed is listed here in full.</p>
+      </div>
+    </section>
+
+    <section class="section--tight wrap reveal">
+      <div class="grid grid--2">
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">No cookies from me</h2>
+            <p class="body">This site sets <strong>no cookies</strong> and writes nothing to your browser's <code>localStorage</code> or <code>sessionStorage</code>. That is also why you see no cookie banner: there is nothing for you to consent to.</p>
+            <p class="body">The configurator runs entirely in your browser. The lantern you build never leaves your device — the STL file is generated locally and downloaded locally.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Reach measurement without personal data</h2>
+            <p class="body">I want to know whether anyone reads this. For that, the server counts two things: a <em>page view</em> and a <em>download</em>. A page view carries the page (e.g. <code>/configurator.html</code>), the language, the device class (desktop, phone, tablet) and — if present — the page you came from.</p>
+            <p class="body">To count, the server builds a <strong>hash</strong> from your IP address, your browser identifier and the calendar day, and stores only that hash. The IP address cannot be reconstructed from it. Daily and hourly counters are aggregated after a short time, and old entries are deleted within 400 days at the latest.</p>
+            <p class="body">This is not a consent matter under § 25 TDDDG, because nothing is stored on or read from your device, and it is not profiling.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">If you use the contact form</h2>
+            <p class="body">Then I receive what you enter: name, email address, topic, an optional project description and your message. That data lives in a database at Supabase (Frankfurt am Main region, EU) and is used <strong>only</strong> to reply to you.</p>
+            <p class="body">The legal basis is Art. 6(1)(b) GDPR (responding to your enquiry) and Art. 6(1)(f) GDPR (legitimate interest in answering). To keep spam out, I also store a daily hash of your IP address — not the IP itself. I delete messages once they are settled, and at the latest after two years.</p>
+            <p class="body">Your message does <strong>not</strong> go through a third-party form service; it lands directly with me. There is no onward transfer, unless I am legally obliged to do so.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Who is technically involved</h2>
+            <p class="body"><strong>GitHub Pages</strong> (GitHub Inc., USA) serves the pages. The host keeps server logs with IP addresses that I cannot access. This is covered by GitHub's standard contractual clauses.</p>
+            <p class="body"><strong>Supabase</strong> (Supabase Inc., database inside the EU) stores the counters and the contact messages. <strong>No fonts, no scripts, no tracking pixels from Google or any ad network</strong> — the fonts are hosted locally on the same server.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Your rights</h2>
+            <p class="body">You may at any time request access (Art. 15 GDPR), rectification (Art. 16), erasure (Art. 17), restriction (Art. 18) and data portability (Art. 20), and you may object to processing (Art. 21). A plain email is enough.</p>
+            <p class="body">You may also lodge a complaint with a supervisory authority — the competent one is the State Commissioner for Data Protection and Freedom of Information of Baden-Württemberg, Germany.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card__body">
+            <h2 class="card__title">Contact</h2>
+            <p class="body">The person responsible for this site is Jan Bleile. The fastest way to reach me is email: <a class="legal-link" href="mailto:jan.bleile@icloud.com">jan.bleile@icloud.com</a></p>
+            <p class="body">Or use the <a class="legal-link" href="contact.html">contact form</a>. What I do not offer: sales, accounts, newsletters, tracking profiles.</p>
+            <p class="caption">Last updated: 9 November 2026</p>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <p class="footer-title">Product</p>
+          <ul>
+            <li><a href="configurator.html">Configurator</a></li>
+            <li><a href="../index.html#presets">Presets</a></li>
+            <li><a href="../index.html#features">Features</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-title">Resources</p>
+          <ul>
+            <li><a href="../index.html#process">Process</a></li>
+            <li><a href="../index.html#details">Details</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-title">Language</p>
+          <ul>
+            <li><a href="../datenschutz.html" hreflang="de" lang="de">Deutsch</a></li>
+            <li><span aria-current="true">English</span></li>
+          </ul>
+        </div>
+        <div class="footer-col">
+          <p class="footer-title">Legal</p>
+          <ul>
+            <li><a href="privacy.html">Privacy</a></li>
+            <li><a href="contact.html">Contact</a></li>
+          </ul>
+          <p class="caption">No account, no sign-in, nothing for sale.</p>
+        </div>
+      </div>
+      <div class="footer-note">
+        <span>© <span data-year>2026</span> Lumenrib</span>
+        <span>Not a shop — a tool.</span>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../assets/js/site.js" defer></script>
+  <script src="../assets/js/track.js" defer></script>
+</body>
+</html>

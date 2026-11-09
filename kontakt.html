@@ -2,6 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; media-src 'self'; connect-src 'self' https://eggrvcohkaizbcsxtywi.supabase.co; form-action 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; upgrade-insecure-requests">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Kontakt — Lumenrib</title>
   <meta name="description" content="Fragen zum Laternen-Designer, Fehler melden, Ideen für Motive oder Fotos vom Druckergebnis: Schreib mir über das Kontaktformular oder per E-Mail.">
@@ -18,11 +19,14 @@
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308090d'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23e2be96'/%3E%3C/svg%3E">
   <link rel="stylesheet" href="assets/css/site.css">
+  <link rel="stylesheet" href="assets/css/fonts.css">
   <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/track.js" defer></script>
 
   <link rel="alternate" hreflang="de" href="https://lumenrib.me/kontakt.html">
   <link rel="alternate" hreflang="en" href="https://lumenrib.me/en/contact.html">
   <link rel="alternate" hreflang="x-default" href="https://lumenrib.me/kontakt.html">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
 </head>
 <body>
 
@@ -102,7 +106,7 @@
           <div class="card reveal" data-reveal-delay="1">
             <div class="card__body">
               <form class="form" data-contact
-                    action="https://formsubmit.co/ajax/jan.bleile@icloud.com"
+                    action=""
                     method="POST"
                     data-mailto="jan.bleile@icloud.com"
                     data-msg-sending="Wird gesendet …"
@@ -113,7 +117,6 @@
                     data-msg-text="Bitte schreib mir mindestens 10 Zeichen."
                     data-msg-email="Bitte gib eine gültige E-Mail-Adresse ein."
                     data-msg-message="Bitte schreib mir mindestens 10 Zeichen.">
-                <input type="text" name="_honey" style="display:none">
                 <input type="text" name="website" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
                 <div class="field">
                   <label class="field__label" for="name">Name</label>
@@ -147,9 +150,6 @@
                   <input type="checkbox" name="consent" required>
                   <span>Ich bin damit einverstanden, dass meine Angaben zur Beantwortung meiner Nachricht verwendet werden.</span>
                 </label>
-                <input type="hidden" name="_subject" value="Lumenrib — neue Kontaktanfrage">
-                <input type="hidden" name="_template" value="table">
-                <input type="hidden" name="_captcha" value="false">
                 <p class="form__status" role="status" aria-live="polite"></p>
                 <div class="btn-row">
                   <button class="btn btn--primary" type="submit">Nachricht senden</button>
@@ -209,6 +209,7 @@
         </div>
         <div class="footer-col">
           <h2 class="footer-title">Rechtliches</h2>
+          <a href="datenschutz.html">Datenschutz</a>
           <a href="kontakt.html">Kontakt</a>
           <p class="caption">Kein Konto, kein Login, kein Verkauf.</p>
         </div>

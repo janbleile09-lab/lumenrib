@@ -137,10 +137,18 @@
     sending: 'Wird gesendet …',
     ok: 'Danke! Deine Nachricht ist angekommen.',
     err: 'Senden hat leider nicht geklappt.',
+    rate: lang === 'en'
+      ? 'That was a lot of messages in a short time. Please wait ten minutes or write me an email directly.'
+      : 'Das waren viele Nachrichten in kurzer Zeit. Bitte warte zehn Minuten oder schreib mir direkt eine E-Mail.',
     mailto: lang === 'en' ? 'Send it by email instead' : 'Stattdessen per E-Mail senden'
   };
 
   var EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+  // Eigener Empfang (Supabase, Schema lumen). Der Publishable Key darf im
+  // Browser stehen — er erlaubt ausschliesslich das Absenden einer Nachricht.
+  var ENDPOINT = 'https://eggrvcohkaizbcsxtywi.supabase.co/rest/v1/rpc/contact';
+  var KEY = 'sb_publishable_3-q2CXobEwsMTTzUFk82hw_17NEfCdt';
 
   function msg(form, key) {
     var attr = form.getAttribute('data-msg-' + key);
@@ -251,8 +259,9 @@
         return;
       }
 
-      var action = form.getAttribute('action');
-      if (!action || typeof window.fetch !== 'function') {
+      // Die Nachricht geht an die eigene Datenbank (lumen.contact), nicht an
+      // einen Fremdanbieter. Kein Dritter sieht Name, Adresse oder Text.
+      if (typeof window.fetch !== 'function') {
         fail();
         return;
       }
@@ -267,25 +276,34 @@
       }
       form.setAttribute('aria-busy', 'true');
 
-      window.fetch(form.action, {
+      window.fetch(ENDPOINT, {
         method: 'POST',
         mode: 'cors',
-        body: new FormData(form),
-        headers: { 'Accept': 'application/json' }
+        headers: {
+          'apikey': KEY,
+          'Authorization': 'Bearer ' + KEY,
+          'Content-Type': 'application/json',
+          'Content-Profile': 'lumen'
+        },
+        body: JSON.stringify({
+          p_name: data.name,
+          p_email: data.email,
+          p_message: data.message,
+          p_topic: val(field(form, 'topic')),
+          p_project: val(field(form, 'project')),
+          p_lang: document.documentElement.lang === 'en' ? 'en' : 'de',
+          p_honeypot: val(honeypot)
+        })
       }).then(function (res) {
-        return res.text().then(function (text) {
-          var json = null;
-          try { json = text ? JSON.parse(text) : null; } catch (e) { json = null; }
+        return res.json().catch(function () { return null; }).then(function (json) {
           return { res: res, json: json };
         });
       }).then(function (r) {
-        var s = r.json ? r.json.success : undefined;
-        // FormSubmit liefert success als String — "false" ausdrücklich als Fehler werten
-        var explicitFail = s === false || s === 'false';
-        var ok = !explicitFail && (r.res.ok || !!s);
-        if (ok) {
+        if (r.res.ok && r.json && r.json.ok === true) {
           form.reset();
           setStatus(statusEl, 'ok', msg(form, 'ok'));
+        } else if (r.json && r.json.reason === 'rate') {
+          setStatus(statusEl, 'err', msg(form, 'rate'), buildMailto(form, data), msg(form, 'mailto'));
         } else {
           fail();
         }
