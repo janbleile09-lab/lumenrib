@@ -68,7 +68,8 @@
   /* Seitenaufruf — erst nach dem ersten Bild, damit niemand auf die Messung wartet */
   function pageview() {
     send({ kind: 'pageview' });
-    if (/configurator\.html$/.test(PAGE)) {
+    // DE heisst konfigurator.html, EN configurator.html — beide zaehlen.
+    if (/(?:kon|con)figurator\.html$/.test(PAGE)) {
       send({ kind: 'configurator_open' });
     }
   }
