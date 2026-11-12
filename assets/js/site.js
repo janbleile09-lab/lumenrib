@@ -10,10 +10,15 @@
   var root = doc.documentElement;
   var lang = (root.getAttribute('lang') || 'de').toLowerCase().slice(0, 2);
 
-  var reduceMotion = false;
-  try {
-    reduceMotion = !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  } catch (e) { /* ignore */ }
+  function isReducedMotion() {
+    try {
+      return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+    } catch (e) {
+      return false;
+    }
+  }
+
+  var reduceMotion = isReducedMotion();
 
   function ready(fn) {
     if (doc.readyState === 'loading') {
@@ -103,7 +108,7 @@
       if (!target) return;
 
       ev.preventDefault();
-      target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      target.scrollIntoView({ behavior: isReducedMotion() ? 'auto' : 'smooth', block: 'start' });
 
       if (window.history && typeof window.history.pushState === 'function') {
         try { window.history.pushState(null, '', hash); } catch (e) { /* file:// o.ä. */ }

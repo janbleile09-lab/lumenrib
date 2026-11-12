@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Keine Crawling-Fallen: der Konfigurator erzeugt keine eigenen URLs.
+Sitemap: https://lumenrib.me/sitemap.xml

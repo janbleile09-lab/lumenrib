@@ -11,17 +11,18 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="Lumenrib — Parametrische 3D-Laternen selbst gestalten">
   <meta property="og:description" content="Laterne im Browser gestalten, live in 3D ansehen, als STL exportieren und selbst drucken.">
-  <meta property="og:image" content="https://lumenrib.me/assets/img/wide-hero.webp">
+  <meta property="og:image" content="https://lumenrib.me/assets/img/og-lumenrib.jpg">
   <meta property="og:url" content="https://lumenrib.me/">
   <link rel="canonical" href="https://lumenrib.me/">
   <meta property="og:locale" content="de_DE">
   <meta property="og:locale:alternate" content="en_US">
 
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2308090d'/%3E%3Ccircle cx='32' cy='32' r='15' fill='%23e2be96'/%3E%3C/svg%3E">
-  <link rel="preload" as="image" href="assets/img/hero-portrait.webp">
+  <link rel="preload" as="image" href="assets/img/foto-nacht-schatten.webp">
   <link rel="stylesheet" href="assets/css/site.css">
   <link rel="stylesheet" href="assets/css/fonts.css">
   <script src="assets/js/site.js" defer></script>
+  <script src="assets/js/carousel.js" defer></script>
   <script src="assets/js/track.js" defer></script>
 
   <link rel="alternate" hreflang="de" href="https://lumenrib.me/">
@@ -39,9 +40,9 @@
         <span>Lumenrib</span>
       </a>
       <div class="nav-links">
-        <a class="nav-link" href="#ablauf">Ablauf</a>
+        <a class="nav-link" href="#galerie">Galerie</a>
         <a class="nav-link" href="#presets">Presets</a>
-        <a class="nav-link" href="#funktionen">Funktionen</a>
+        <a class="nav-link" href="#ablauf">Ablauf</a>
         <a class="nav-link" href="#details">Details</a>
         <a class="nav-link" href="kontakt.html">Kontakt</a>
       </div>
@@ -67,7 +68,7 @@
         </div>
       </div>
       <div class="hero__media">
-        <img src="assets/img/hero-portrait.webp" alt="Gerenderte Lumenrib-Laterne aus nach aussen gewölbten Stäben, von innen warm beleuchtet, vor dunklem Hintergrund" width="1200" height="1500" loading="eager" fetchpriority="high" decoding="async">
+        <img src="assets/img/foto-nacht-schatten.webp" alt="Dunkel gedruckte Lumenrib-Laterne mit spiralförmig gedrehten Rippen und brennendem Teelicht, das ein radiales Schattenmuster auf Tisch und Wand wirft" width="765" height="1024" loading="eager" fetchpriority="high" decoding="async">
       </div>
     </section>
 
@@ -106,7 +107,7 @@
       <div class="grid">
         <article class="showcase reveal">
           <div class="showcase__media">
-            <img src="assets/img/card-xmas.webp" alt="Laterne im Preset Weihnachten mit erhabenen Motiven auf den Stäben" width="1200" height="1200" loading="lazy" decoding="async">
+            <img src="assets/img/foto-motive-herzen-1200.webp" srcset="assets/img/foto-motive-herzen-800.webp 800w, assets/img/foto-motive-herzen-1200.webp 1200w, assets/img/foto-motive-herzen-1600.webp 1600w" sizes="(max-width: 899px) 92vw, 540px" alt="Dunkelblaue 3D-gedruckte Lumenrib-Laterne mit reliefartigen Herz-Motiven direkt auf den Rippen und eingesetztem LED-Teelicht" width="1200" height="1200" loading="lazy" decoding="async">
           </div>
           <div class="showcase__body">
             <p class="eyebrow">Motiv-Dekor</p>
@@ -118,7 +119,7 @@
         <hr class="divider">
         <article class="showcase showcase--flip reveal">
           <div class="showcase__media">
-            <img src="assets/img/card-twist.webp" alt="Laterne im Preset Twist mit spiralförmig verdrehten Stäben" width="1200" height="1200" loading="lazy" decoding="async">
+            <img src="assets/img/foto-terrakotta-card.webp" alt="Terrakotta-farbene gedruckte Lumenrib-Laterne mit spiralförmig verdrehten Stäben und brennender Kerze" width="765" height="765" loading="lazy" decoding="async">
           </div>
           <div class="showcase__body">
             <p class="eyebrow">Twist</p>
@@ -127,6 +128,129 @@
             <p class="body">Aus der geraden Laterne wird so eine Spirale. Zusammen mit Rippenanzahl und Wölbung entstehen ganz unterschiedliche Silhouetten aus derselben Grundform.</p>
           </div>
         </article>
+      </div>
+    </section>
+
+    <!-- 4b · Echte Laternen -->
+    <section class="section wrap" id="echte-laternen" aria-labelledby="real-lanterns-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <p class="eyebrow">Gedruckt &amp; fotografiert</p>
+          <h2 class="display-l" id="real-lanterns-title">Echte Laternen</h2>
+          <p class="lede">Aufnahmen physisch gedruckter Laternen — von warmem Terrakotta über Salbeigrün bis zu mattem Dunkelblau.</p>
+        </div>
+        <div class="real-grid">
+          <figure class="media-card real-grid__lead reveal">
+            <div class="media-card__frame">
+              <img src="assets/img/foto-duo-terrakotta.webp" alt="Zwei gedruckte Lumenrib-Laternen in Terrakotta und Grau nebeneinander mit brennenden Teelichtern und radialem Schattenwurf" width="1024" height="572" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Zwei gedruckte Teelicht-Laternen in Terrakotta und Grau mit brennenden Kerzen und weichem Strahlenschatten.</figcaption>
+          </figure>
+          <div class="real-grid__pair">
+            <figure class="media-card reveal" data-reveal-delay="1">
+              <div class="media-card__frame">
+                <img src="assets/img/foto-navy-frontal-1200.webp" srcset="assets/img/foto-navy-frontal-800.webp 800w, assets/img/foto-navy-frontal-1200.webp 1200w, assets/img/foto-navy-frontal-1600.webp 1600w" sizes="(max-width: 759px) 92vw, 560px" alt="Dunkelblaue 3D-gedruckte Lumenrib-Laterne mit geraden Rippen und warmem LED-Teelicht" width="1200" height="900" loading="lazy" decoding="async">
+              </div>
+              <figcaption class="media-card__caption">Gerade Rippen in Dunkelblau (FDM-Druck) mit eingesetztem LED-Teelicht.</figcaption>
+            </figure>
+            <figure class="media-card reveal" data-reveal-delay="2">
+              <div class="media-card__frame">
+                <img src="assets/img/foto-gruen-quer.webp" alt="Salbeigrüne gedruckte Lumenrib-Laterne mit geraden Rippen und LED-Teelicht vor hellem Studiohintergrund" width="1024" height="572" loading="lazy" decoding="async">
+              </div>
+              <figcaption class="media-card__caption">Salbeigrüne Laterne mit offenem Rippen-Abstand im Tageslicht.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4c · Galerie-Karussell -->
+    <section class="carousel-section" id="galerie" role="region" aria-roledescription="Karussell" aria-labelledby="gallery-title" data-carousel>
+      <div class="wrap">
+        <div class="carousel__head reveal">
+          <div class="carousel__intro">
+            <p class="eyebrow">Galerie</p>
+            <h2 class="display-l" id="gallery-title">Licht, Schatten und gedruckte Form</h2>
+            <p class="lede">Neun Aufnahmen gedruckter Laternen — bei Kerzenlicht und im Studio.</p>
+          </div>
+          <div class="carousel__controls" data-carousel-controls hidden>
+            <button type="button" class="carousel__btn" data-carousel-prev aria-label="Vorheriges Foto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="carousel__btn" data-carousel-next aria-label="Nächstes Foto">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="carousel__track" tabindex="0" role="group" aria-label="Fotostrecke gedruckter Laternen" data-carousel-track>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-nacht-schatten.webp" alt="Dunkle Twist-Laterne bei Nacht mit brennendem Teelicht und radialem Schattenwurf an Tisch und Wand" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Anthrazit-Twist bei Nacht: scharfer radialer Schattenwurf an Tisch und Wand.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-duo-terrakotta.webp" alt="Terrakotta- und graufarbene Twist-Laterne nebeneinander mit brennenden Teelichtern" width="1024" height="572" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Terrakotta und Grau nebeneinander mit brennenden Teelichtern.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-motive-herzen-1200.webp" srcset="assets/img/foto-motive-herzen-800.webp 800w, assets/img/foto-motive-herzen-1200.webp 1200w, assets/img/foto-motive-herzen-1600.webp 1600w" sizes="(max-width: 639px) 86vw, 480px" alt="Dunkelblaue 3D-gedruckte Laterne mit Herz-Motiven auf den Rippen" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Dunkelblaue Laterne mit direkt auf den Rippen gedruckten Herz-Motiven.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-terrakotta-studio.webp" alt="Terrakotta-Laterne frontal mit brennender Kerze und radialem Schatten auf neutralem Studiohintergrund" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Terrakotta-Variante mit gedrehten Rippen auf neutralem Untergrund.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-grau-studio.webp" alt="Graue Teelicht-Laterne mit verdrehten Rippen und warmem Kerzenschein" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Graue Teelicht-Laterne mit gleichmäßiger Twist-Kurve.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-navy-frontal-1200.webp" srcset="assets/img/foto-navy-frontal-800.webp 800w, assets/img/foto-navy-frontal-1200.webp 1200w, assets/img/foto-navy-frontal-1600.webp 1600w" sizes="(max-width: 639px) 86vw, 640px" alt="Dunkelblaue gedruckte Laterne mit geraden Rippen und LED-Teelicht" width="1200" height="900" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Klassische Form in Dunkelblau mit geraden Stäben und LED-Kerze.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-gruen-quer.webp" alt="Salbeigrüne Laterne mit geraden Rippen und LED-Teelicht im Querformat" width="1024" height="572" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Salbeigrüne Laterne mit offenem Rippen-Abstand.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-terrakotta-draufsicht.webp" alt="Terrakotta-Laterne aus erhöhter Perspektive mit Blick durch den Topring auf das Teelicht" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Erhöhter Blick auf den Topring und die Kerze im Inneren.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="assets/img/foto-duo-hoch.webp" alt="Hochformat-Aufnahme zweier gedruckter Twist-Laternen in Terrakotta und Grau mit brennenden Kerzen" width="765" height="1020" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Terrakotta und Grau im Hochformat vor ruhigem Studiohintergrund.</figcaption>
+        </figure>
+      </div>
+      <div class="wrap">
+        <div class="carousel__dots" data-carousel-dots hidden>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 1 von 9" aria-current="true"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 2 von 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 3 von 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 4 von 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 5 von 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 6 von 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 7 von 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 8 von 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Foto 9 von 9"></button>
+        </div>
       </div>
     </section>
 
@@ -140,7 +264,7 @@
         <div class="grid grid--3">
           <article class="card reveal" data-reveal-delay="1">
             <div class="card__media">
-              <img src="assets/img/card-tealight.webp" alt="Teelicht-Preset: kleine bauchige Laterne aus dünnen Stäben, warmes Licht im Inneren wirft ein radiales Schattenmuster" width="1200" height="1200" loading="lazy" decoding="async">
+              <img src="assets/img/foto-grau-card.webp" alt="Teelicht-Preset als echtes Foto: graue bauchige Laterne mit brennendem Teelicht und radialem Schatten" width="765" height="765" loading="lazy" decoding="async">
             </div>
             <div class="card__body">
               <span class="card__tag">Empfohlen</span>
@@ -150,7 +274,7 @@
           </article>
           <article class="card reveal" data-reveal-delay="2">
             <div class="card__media">
-              <img src="assets/img/card-classic.webp" alt="Preset Klassik: gerade Laterne mit 48 Stäben ohne Dekor" width="1200" height="1200" loading="lazy" decoding="async">
+              <img src="assets/img/foto-navy-card-1200.webp" srcset="assets/img/foto-navy-card-800.webp 800w, assets/img/foto-navy-card-1200.webp 1200w" sizes="(max-width: 639px) 92vw, 380px" alt="Preset Klassik als echtes Foto: dunkelblaue gerade Laterne mit eingesetztem LED-Teelicht" width="1200" height="1200" loading="lazy" decoding="async">
             </div>
             <div class="card__body">
               <span class="card__tag">Ausgewogen</span>
@@ -180,7 +304,7 @@
           </article>
           <article class="card reveal" data-reveal-delay="2">
             <div class="card__media">
-              <img src="assets/img/card-twist.webp" alt="Preset Twist: Laterne mit um 45 Grad verwundenen Stäben" width="1200" height="1200" loading="lazy" decoding="async">
+              <img src="assets/img/foto-terrakotta-draufsicht-card.webp" alt="Preset Helix-Twist als echtes Foto: terrakottafarbene Laterne mit spiralförmig gedrehten Stäben" width="765" height="765" loading="lazy" decoding="async">
             </div>
             <div class="card__body">
               <span class="card__tag">Verdreht</span>
@@ -311,6 +435,37 @@
             <p class="body">Der Nachtmodus dunkelt das Umgebungslicht ab, damit du den Schattenwurf der Stäbe siehst. Die Farbe der Laterne wählst du in der Werkzeugleiste.</p>
             <p class="note">Die Laterne wird um eine echte LED-Kerze herum konstruiert. Kerzendurchmesser und Kerzenhöhe stellst du ein, das Kerzenfach im Boden passt sich daran an.</p>
           </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 8a · Detail & Makro -->
+    <section class="section wrap" id="makro" aria-labelledby="makro-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <p class="eyebrow">Detail &amp; Druck</p>
+          <h2 class="display-l" id="makro-title">Vom Slicer auf den Tisch</h2>
+          <p class="lede">Makroaufnahmen und Draufsichten zeigen Rippenstruktur, Topring und das gedruckte Kerzenfach aus der Nähe.</p>
+        </div>
+        <div class="macro-grid">
+          <figure class="media-card reveal" data-reveal-delay="1">
+            <div class="media-card__frame">
+              <img src="assets/img/foto-makro-rippen-1200.webp" srcset="assets/img/foto-makro-rippen-800.webp 800w, assets/img/foto-makro-rippen-1200.webp 1200w, assets/img/foto-makro-rippen-1600.webp 1600w" sizes="(max-width: 759px) 92vw, 560px" alt="Makroaufnahme aus dem Inneren einer dunkelblauen FDM-gedruckten Laterne: Schichten auf Rippen, Stabilisator-Ringen und Bodenplatte" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Makroaufnahme von innen: sichtbare FDM-Schichten an Rippen, Stabilisator-Bändern, Topring und Bodenplatte.</figcaption>
+          </figure>
+          <figure class="media-card reveal" data-reveal-delay="2">
+            <div class="media-card__frame">
+              <img src="assets/img/foto-draufsicht-navy-1200.webp" srcset="assets/img/foto-draufsicht-navy-800.webp 800w, assets/img/foto-draufsicht-navy-1200.webp 1200w, assets/img/foto-draufsicht-navy-1600.webp 1600w" sizes="(max-width: 759px) 92vw, 560px" alt="Draufsicht bei Tageslicht auf eine dunkelblaue 3D-gedruckte Laterne mit Topring und mittiger Kerzenvertiefung" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Draufsicht bei Tageslicht: gleichmäßiger Topring, gedrehte Rippen und die Vertiefung für das Teelicht im Boden.</figcaption>
+          </figure>
+          <figure class="media-card macro-grid__wide reveal" data-reveal-delay="1">
+            <div class="media-card__frame">
+              <img src="assets/img/foto-draufsicht-gruen.webp" alt="Senkrechte Draufsicht auf eine salbeigrüne Laterne mit radial angeordneten Rippen und Kerzenfach" width="1024" height="572" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Konzentrische Rippengeometrie und mittiges Kerzenfach von oben betrachtet.</figcaption>
+          </figure>
         </div>
       </div>
     </section>

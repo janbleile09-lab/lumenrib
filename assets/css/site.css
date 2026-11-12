@@ -865,7 +865,8 @@ ol[role="list"] {
   border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--line);
-  background: #0a0b0f;
+  background: #08090d;
+  box-shadow: 0 32px 80px -28px rgba(0, 0, 0, .75), 0 0 90px -30px rgba(226, 190, 150, .18);
   isolation: isolate;
 }
 
@@ -879,8 +880,8 @@ ol[role="list"] {
   position: absolute;
   inset: 0;
   z-index: 1;
-  background: radial-gradient(circle at 50% 40%, rgba(226, 190, 150, .16), transparent 62%);
-  mix-blend-mode: screen;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, .05);
+  border-radius: inherit;
   pointer-events: none;
 }
 
@@ -1125,6 +1126,293 @@ ol[role="list"] {
 }
 
 /* --------------------------------------------------------------------------
+   15b. Echte Laternen, Detail-Makro & Karussell (Apple-Stil)
+   -------------------------------------------------------------------------- */
+.media-card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.media-card__frame {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #0b0c10;
+}
+
+.media-card__frame img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.media-card__caption {
+  font-size: .875rem;
+  line-height: 1.5;
+  color: var(--fg-2);
+  max-width: 58ch;
+  padding-inline: 2px;
+}
+
+.real-grid {
+  display: grid;
+  gap: clamp(20px, 2.8vw, 32px);
+}
+
+.real-grid__lead .media-card__frame {
+  aspect-ratio: 16 / 9;
+}
+
+.real-grid__pair {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 2.8vw, 32px);
+}
+
+.real-grid__pair .media-card__frame {
+  aspect-ratio: 4 / 3;
+}
+
+@media (max-width: 759px) {
+  .real-grid__pair {
+    grid-template-columns: 1fr;
+  }
+}
+
+.macro-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(20px, 2.8vw, 32px);
+}
+
+.macro-grid .media-card__frame {
+  aspect-ratio: 1 / 1;
+}
+
+.macro-grid__wide {
+  grid-column: 1 / -1;
+}
+
+.macro-grid__wide .media-card__frame {
+  aspect-ratio: 16 / 9;
+}
+
+@media (max-width: 759px) {
+  .macro-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.carousel-section {
+  padding-block: clamp(72px, 10vw, 140px);
+}
+
+.carousel__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: clamp(28px, 4vw, 44px);
+}
+
+.carousel__intro {
+  display: grid;
+  gap: 10px;
+}
+
+.carousel__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.carousel__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: rgba(255, 255, 255, .05);
+  color: var(--fg);
+  cursor: pointer;
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+  transition:
+    background .2s var(--ease),
+    border-color .2s var(--ease),
+    transform .1s ease-out,
+    opacity .2s var(--ease);
+}
+
+.carousel__btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, .11);
+  border-color: rgba(255, 255, 255, .28);
+}
+
+.carousel__btn:active:not(:disabled) {
+  transform: scale(.95);
+}
+
+.carousel__btn:disabled {
+  opacity: .32;
+  cursor: default;
+}
+
+.carousel__btn svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+}
+
+.carousel__track {
+  display: flex;
+  gap: clamp(16px, 2.2vw, 28px);
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  --track-pad: max(clamp(20px, 5vw, 40px), calc((100vw - var(--maxw)) / 2 + clamp(20px, 5vw, 40px)));
+  scroll-padding-inline: var(--track-pad);
+  padding-inline: var(--track-pad);
+  padding-block: 4px 12px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.carousel__track::-webkit-scrollbar {
+  display: none;
+}
+
+.carousel__track:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: -2px;
+}
+
+.carousel__slide {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.carousel__frame {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: #0b0c10;
+}
+
+.carousel__frame img {
+  height: clamp(300px, 44vw, 500px);
+  width: auto;
+  max-width: min(84vw, 760px);
+  object-fit: cover;
+  display: block;
+  transition: transform .7s var(--ease);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .carousel__slide:hover .carousel__frame img {
+    transform: scale(1.025);
+  }
+}
+
+.carousel__caption {
+  font-size: .85rem;
+  line-height: 1.45;
+  color: var(--fg-2);
+  width: 0;
+  min-width: 100%;
+  max-width: 44ch;
+  padding-inline: 2px;
+}
+
+.carousel__dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  margin-top: clamp(16px, 2.5vw, 26px);
+}
+
+.carousel__dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  min-height: 44px;
+  padding: 0;
+  cursor: pointer;
+}
+
+.carousel__dot::after {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: rgba(245, 245, 247, .26);
+  transition: width .25s var(--ease), background .25s var(--ease);
+}
+
+.carousel__dot:hover::after {
+  background: rgba(245, 245, 247, .55);
+}
+
+.carousel__dot[aria-current="true"]::after {
+  width: 22px;
+  background: var(--accent);
+}
+
+[hidden].carousel__controls,
+[hidden].carousel__dots {
+  display: none;
+}
+
+@media (max-width: 639px) {
+  .carousel__slide {
+    scroll-snap-align: center;
+  }
+
+  /* Einheitliche Kachelbreite: Hoch- und Querformate stehen sonst als
+     schmale 166-px-Streifen neben 337-px-Bildern. Feste 4:5-Box pro Slide,
+     Bild fuellt sie beschnitten — wie in Apples Produktgalerien. */
+  .carousel__frame {
+    width: min(78vw, 340px);
+    aspect-ratio: 4 / 5;
+  }
+
+  .carousel__frame img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    object-fit: cover;
+  }
+}
+
+.trailer-wrap {
+  margin-top: 28px;
+}
+
+.trailer-video {
+  width: 100%;
+  display: block;
+}
+
+.section-gap-sm {
+  margin-top: clamp(24px, 3vw, 36px);
+}
+
+.section-gap-md {
+  margin-top: clamp(28px, 4vw, 48px);
+}
+
+/* --------------------------------------------------------------------------
    16. Motion — Scroll-Reveal
    -------------------------------------------------------------------------- */
 .reveal {
@@ -1204,6 +1492,10 @@ ol[role="list"] {
     scroll-behavior: auto !important;
   }
 
+  .carousel__track {
+    scroll-behavior: auto !important;
+  }
+
   .reveal {
     opacity: 1 !important;
     transform: none !important;
@@ -1212,6 +1504,9 @@ ol[role="list"] {
 
   .card,
   .card__media img,
+  .carousel__btn,
+  .carousel__dot::after,
+  .carousel__frame img,
   .btn,
   .nav,
   .nav-cta,
@@ -1229,6 +1524,8 @@ ol[role="list"] {
   .card:hover,
   .card.reveal.is-in:hover,
   .card:hover .card__media img,
+  .carousel__slide:hover .carousel__frame img,
+  .carousel__btn:active:not(:disabled),
   .btn:hover,
   .btn:active,
   .nav-cta:active {

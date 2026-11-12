@@ -13,15 +13,16 @@
   <meta property="og:locale" content="en_GB">
   <meta property="og:title" content="Lumenrib — Design parametric 3D lanterns yourself">
   <meta property="og:description" content="Design a lantern in your browser, export it as an STL file and print it yourself.">
-  <meta property="og:image" content="https://lumenrib.me/assets/img/wide-hero.webp">
+  <meta property="og:image" content="https://lumenrib.me/assets/img/og-lumenrib.jpg">
   <meta property="og:url" content="https://lumenrib.me/en/">
   <link rel="canonical" href="https://lumenrib.me/en/">
 
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%2308090d'/%3E%3Ccircle cx='16' cy='16' r='7' fill='%23e2be96'/%3E%3C/svg%3E">
-  <link rel="preload" as="image" href="../assets/img/hero-portrait.webp">
+  <link rel="preload" as="image" href="../assets/img/foto-nacht-schatten.webp">
   <link rel="stylesheet" href="../assets/css/site.css">
   <link rel="stylesheet" href="../assets/css/fonts.css">
   <script src="../assets/js/site.js" defer></script>
+  <script src="../assets/js/carousel.js" defer></script>
   <script src="../assets/js/track.js" defer></script>
 
   <link rel="alternate" hreflang="de" href="https://lumenrib.me/">
@@ -38,9 +39,9 @@
         <span>Lumenrib</span>
       </a>
       <ul class="nav-links">
-        <li><a class="nav-link" href="#process">Process</a></li>
+        <li><a class="nav-link" href="#gallery">Gallery</a></li>
         <li><a class="nav-link" href="#presets">Presets</a></li>
-        <li><a class="nav-link" href="#features">Features</a></li>
+        <li><a class="nav-link" href="#process">Process</a></li>
         <li><a class="nav-link" href="#details">Details</a></li>
         <li><a class="nav-link" href="contact.html">Contact</a></li>
       </ul>
@@ -67,7 +68,7 @@
         </div>
       </div>
       <div class="hero__media">
-        <img src="../assets/img/hero-portrait.webp" alt="A glowing 3D-printed lantern made of curved ribs, rendered in the Lumenrib configurator" width="1200" height="1500" loading="eager" decoding="async">
+        <img src="../assets/img/foto-nacht-schatten.webp" alt="A dark 3D-printed Lumenrib lantern with spiralled ribs and a lit tea light casting a sharp radial shadow pattern across the table and wall" width="765" height="1024" loading="eager" fetchpriority="high" decoding="async">
       </div>
     </section>
 
@@ -102,7 +103,7 @@
     <section class="section wrap">
       <div class="showcase reveal">
         <div class="showcase__media">
-          <img src="../assets/img/card-xmas.webp" alt="The Christmas preset: a lantern with decorative motifs on its ribs" width="1200" height="1200" loading="lazy" decoding="async">
+          <img src="../assets/img/foto-motive-herzen-1200.webp" srcset="../assets/img/foto-motive-herzen-800.webp 800w, ../assets/img/foto-motive-herzen-1200.webp 1200w, ../assets/img/foto-motive-herzen-1600.webp 1600w" sizes="(max-width: 899px) 92vw, 540px" alt="Dark navy 3D-printed Lumenrib lantern with raised heart motifs printed directly onto the ribs and an LED tea light inside" width="1200" height="1200" loading="lazy" decoding="async">
         </div>
         <div class="showcase__body">
           <span class="eyebrow">Motifs</span>
@@ -113,13 +114,136 @@
       </div>
       <div class="showcase showcase--flip reveal" style="margin-top: clamp(48px, 8vw, 110px)">
         <div class="showcase__media">
-          <img src="../assets/img/card-twist.webp" alt="The Twist preset: a lantern whose ribs are twisted around the vertical axis" width="1200" height="1200" loading="lazy" decoding="async">
+          <img src="../assets/img/foto-terrakotta-card.webp" alt="Terracotta 3D-printed Lumenrib lantern with spiralled ribs illuminated from inside by a warm candle" width="765" height="765" loading="lazy" decoding="async">
         </div>
         <div class="showcase__body">
           <span class="eyebrow">Twist</span>
           <h2 class="display-m">A gentle turn changes everything.</h2>
           <p class="body">Twist the ribs around the vertical axis and a straight, calm lantern becomes a flowing one. The twist angle runs from −90° to +90°, so you can turn it either way.</p>
           <p class="body">Combined with the curve tension of the bulge, the same ribs give you very different silhouettes.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Real lanterns -->
+    <section class="section wrap" id="real-lanterns" aria-labelledby="real-lanterns-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <span class="eyebrow">Printed &amp; photographed</span>
+          <h2 class="display-l" id="real-lanterns-title">Real lanterns</h2>
+          <p class="lede">Photographs of physically printed lanterns — from warm terracotta through sage green to matte navy.</p>
+        </div>
+        <div class="real-grid">
+          <figure class="media-card real-grid__lead reveal">
+            <div class="media-card__frame">
+              <img src="../assets/img/foto-duo-terrakotta.webp" alt="Two printed Lumenrib lanterns in terracotta and grey side by side with lit tea lights casting radial shadows" width="1024" height="572" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Two printed tea-light lanterns in terracotta and grey with lit candles and radial shadows.</figcaption>
+          </figure>
+          <div class="real-grid__pair">
+            <figure class="media-card reveal" data-reveal-delay="1">
+              <div class="media-card__frame">
+                <img src="../assets/img/foto-navy-frontal-1200.webp" srcset="../assets/img/foto-navy-frontal-800.webp 800w, ../assets/img/foto-navy-frontal-1200.webp 1200w, ../assets/img/foto-navy-frontal-1600.webp 1600w" sizes="(max-width: 759px) 92vw, 560px" alt="Dark navy FDM-printed Lumenrib lantern with straight ribs and a warm LED tea light" width="1200" height="900" loading="lazy" decoding="async">
+              </div>
+              <figcaption class="media-card__caption">Straight ribs in dark navy (FDM print) with a warm LED tea light inside.</figcaption>
+            </figure>
+            <figure class="media-card reveal" data-reveal-delay="2">
+              <div class="media-card__frame">
+                <img src="../assets/img/foto-gruen-quer.webp" alt="Sage green printed Lumenrib lantern with straight ribs and an LED tea light on a light studio background" width="1024" height="572" loading="lazy" decoding="async">
+              </div>
+              <figcaption class="media-card__caption">Sage green lantern with open rib spacing photographed in daylight.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Gallery Carousel -->
+    <section class="carousel-section" id="gallery" role="region" aria-roledescription="carousel" aria-labelledby="gallery-title" data-carousel>
+      <div class="wrap">
+        <div class="carousel__head reveal">
+          <div class="carousel__intro">
+            <span class="eyebrow">Gallery</span>
+            <h2 class="display-l" id="gallery-title">Light, shadow and printed form</h2>
+            <p class="lede">Nine photographs of printed lanterns — lit by candlelight and in studio light.</p>
+          </div>
+          <div class="carousel__controls" data-carousel-controls hidden>
+            <button type="button" class="carousel__btn" data-carousel-prev aria-label="Previous photo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>
+            </button>
+            <button type="button" class="carousel__btn" data-carousel-next aria-label="Next photo">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="carousel__track" tabindex="0" role="group" aria-label="Photo strip of printed lanterns" data-carousel-track>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-nacht-schatten.webp" alt="Dark twisted lantern at night with a lit tea light casting sharp radial shadows on table and wall" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Charcoal twist at night: crisp radial shadows across the table and wall.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-duo-terrakotta.webp" alt="Terracotta and grey twisted lanterns side by side with lit tea lights" width="1024" height="572" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Terracotta and grey side by side with lit tea lights.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-motive-herzen-1200.webp" srcset="../assets/img/foto-motive-herzen-800.webp 800w, ../assets/img/foto-motive-herzen-1200.webp 1200w, ../assets/img/foto-motive-herzen-1600.webp 1600w" sizes="(max-width: 639px) 86vw, 480px" alt="Dark navy 3D-printed lantern with heart motifs integrated along the ribs" width="1200" height="1200" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Dark navy lantern with heart motifs printed directly into the ribs.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-terrakotta-studio.webp" alt="Terracotta lantern front view with a lit candle and radial shadows on a neutral studio surface" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Terracotta edition with twisted ribs on a calm studio surface.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-grau-studio.webp" alt="Grey tea-light lantern with twisted ribs and warm candlelight" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Grey tea-light lantern with an even spiral curve.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-navy-frontal-1200.webp" srcset="../assets/img/foto-navy-frontal-800.webp 800w, ../assets/img/foto-navy-frontal-1200.webp 1200w, ../assets/img/foto-navy-frontal-1600.webp 1600w" sizes="(max-width: 639px) 86vw, 640px" alt="Dark navy printed lantern with straight ribs and an LED tea light" width="1200" height="900" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Classic proportions in dark navy with straight ribs and an LED candle.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-gruen-quer.webp" alt="Sage green lantern with straight ribs and an LED tea light in landscape framing" width="1024" height="572" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Sage green lantern with wide rib spacing.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-terrakotta-draufsicht.webp" alt="Elevated three-quarter view of the terracotta lantern looking through the top ring onto the candle" width="765" height="1024" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Elevated view looking through the top ring onto the candle inside.</figcaption>
+        </figure>
+        <figure class="carousel__slide" data-carousel-slide>
+          <div class="carousel__frame">
+            <img src="../assets/img/foto-duo-hoch.webp" alt="Portrait studio photograph of two printed twisted lanterns in terracotta and grey with lit candles" width="765" height="1020" loading="lazy" decoding="async">
+          </div>
+          <figcaption class="carousel__caption">Terracotta and grey in portrait framing against a calm studio backdrop.</figcaption>
+        </figure>
+      </div>
+      <div class="wrap">
+        <div class="carousel__dots" data-carousel-dots hidden>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 1 of 9" aria-current="true"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 2 of 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 3 of 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 4 of 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 5 of 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 6 of 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 7 of 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 8 of 9"></button>
+          <button type="button" class="carousel__dot" data-carousel-dot aria-label="Photo 9 of 9"></button>
         </div>
       </div>
     </section>
@@ -131,7 +255,7 @@
       <div class="grid grid--3" style="margin-top: clamp(28px, 4vw, 48px)">
         <article class="card reveal" data-reveal-delay="1">
           <div class="card__media">
-            <img src="../assets/img/card-tealight.webp" alt="Tea light preset: small bulbous lantern made of thin ribs, warm light inside casting a radial shadow pattern" width="1200" height="1200" loading="lazy" decoding="async">
+            <img src="../assets/img/foto-grau-card.webp" alt="Tea light preset as a real photo: grey bulbous lantern with a lit tea light casting radial shadows" width="765" height="765" loading="lazy" decoding="async">
           </div>
           <div class="card__body">
             <span class="card__tag">Recommended</span>
@@ -141,7 +265,7 @@
         </article>
         <article class="card reveal" data-reveal-delay="2">
           <div class="card__media">
-            <img src="../assets/img/card-classic.webp" alt="The Classic preset: a plain lantern with evenly curved ribs" width="1200" height="1200" loading="lazy" decoding="async">
+            <img src="../assets/img/foto-navy-card-1200.webp" srcset="../assets/img/foto-navy-card-800.webp 800w, ../assets/img/foto-navy-card-1200.webp 1200w" sizes="(max-width: 639px) 92vw, 380px" alt="Classic preset as a real photo: dark navy straight-ribbed lantern with an LED tea light" width="1200" height="1200" loading="lazy" decoding="async">
           </div>
           <div class="card__body">
             <span class="card__tag">Timeless</span>
@@ -171,7 +295,7 @@
         </article>
         <article class="card reveal" data-reveal-delay="2">
           <div class="card__media">
-            <img src="../assets/img/card-twist.webp" alt="The Twist preset: a lantern whose ribs are twisted around the vertical axis" width="1200" height="1200" loading="lazy" decoding="async">
+            <img src="../assets/img/foto-terrakotta-draufsicht-card.webp" alt="Helix Twist preset as a real photo: terracotta lantern with spiralled ribs" width="765" height="765" loading="lazy" decoding="async">
           </div>
           <div class="card__body">
             <span class="card__tag">Dynamic</span>
@@ -288,6 +412,37 @@
           <p class="body">Switch on night mode to see the lantern glow and cast shadows, then switch it off again to check the shape in daylight.</p>
           <p class="body">Choose a colour for the preview, and adjust any value until the lantern looks the way you want it to.</p>
           <p class="note">The lantern is built around a real candle or LED light. Candle diameter and height are adjustable, so the compartment fits what you have.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Print & Macro Detail -->
+    <section class="section wrap" id="macro" aria-labelledby="macro-title">
+      <div class="grid">
+        <div class="grid reveal">
+          <span class="eyebrow">Detail &amp; Print</span>
+          <h2 class="display-l" id="macro-title">From slicer to physical print</h2>
+          <p class="lede">Macro and top-down photographs show the rib structure, top ring and printed candle recess up close.</p>
+        </div>
+        <div class="macro-grid">
+          <figure class="media-card reveal" data-reveal-delay="1">
+            <div class="media-card__frame">
+              <img src="../assets/img/foto-makro-rippen-1200.webp" srcset="../assets/img/foto-makro-rippen-800.webp 800w, ../assets/img/foto-makro-rippen-1200.webp 1200w, ../assets/img/foto-makro-rippen-1600.webp 1600w" sizes="(max-width: 759px) 92vw, 560px" alt="Macro photograph from inside a dark navy FDM-printed lantern showing print layers across ribs, stabiliser rings and base plate" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Interior macro: visible FDM print layers along ribs, stabiliser rings, top ring and base plate.</figcaption>
+          </figure>
+          <figure class="media-card reveal" data-reveal-delay="2">
+            <div class="media-card__frame">
+              <img src="../assets/img/foto-draufsicht-navy-1200.webp" srcset="../assets/img/foto-draufsicht-navy-800.webp 800w, ../assets/img/foto-draufsicht-navy-1200.webp 1200w, ../assets/img/foto-draufsicht-navy-1600.webp 1600w" sizes="(max-width: 759px) 92vw, 560px" alt="Top-down daylight photograph of a dark navy 3D-printed lantern showing the top ring and central candle recess" width="1200" height="1200" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Top-down daylight view: even top ring, twisted ribs and the recessed candle pocket in the base.</figcaption>
+          </figure>
+          <figure class="media-card macro-grid__wide reveal" data-reveal-delay="1">
+            <div class="media-card__frame">
+              <img src="../assets/img/foto-draufsicht-gruen.webp" alt="Overhead view of a sage green lantern showing radial rib spacing and the central candle recess" width="1024" height="572" loading="lazy" decoding="async">
+            </div>
+            <figcaption class="media-card__caption">Concentric rib geometry and centred candle pocket viewed from directly above.</figcaption>
+          </figure>
         </div>
       </div>
     </section>
