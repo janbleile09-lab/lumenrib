@@ -27,6 +27,12 @@
       motifWidthScale: 100,     // Width aspect ratio scale (%)
       motifRelief: 2.4,         // Proud 3D relief projection in front of the outer rib surface (mm)
       motifHeightRatio: 50,     // Vertical center position of symbols (% of height)
+      greetingEnabled: false,   // Recessed 3D Christmas greeting band enabled (default false)
+      greetingText: 'FROHE WEIHNACHTEN', // Greeting text (max 24 chars)
+      greetingSize: 12,         // Capital height of greeting letters (mm, 8..24)
+      greetingRelief: 1.8,      // Proud 3D letter relief above recessed band face (mm, 1.2..2.6)
+      greetingCount: 3,         // Number of greeting bands around circumference (1..6)
+      greetingHeightRatio: 62,  // Vertical center position of greeting band (% of height, 30..72)
       baseThickness: 5.0,       // Total height of bottom base plate rim (mm)
       recessDepth: 2.0,         // Depth of anti-slip candle recess (mm)
       candleClearance: 1.0,     // Radial clearance around candle in tray (mm)
@@ -1071,6 +1077,7 @@
         : (numRows === 2 ? [-0.15, +0.15] : [-0.22, 0, +0.22]);
 
       const mixCycle = ['tree', 'star', 'crystal'];
+      const greetingPlan = state.greetingEnabled ? getGreetingPlacementPlan(false) : null;
 
       for (let rIdx = 0; rIdx < rowOffsets.length; rIdx++) {
         const yRow = Math.max(
@@ -1081,11 +1088,524 @@
 
         for (let m = 0; m < countPerRow; m++) {
           const slotRibIdx = Math.round((m / countPerRow) * numRibs + staggerSlots) % numRibs;
+          if (greetingPlan && doesMotifCollideWithGreeting(slotRibIdx, yRow, motifH, widthScale, greetingPlan, numRibs, H, ribD)) {
+            continue;
+          }
           let subType = state.motifType;
           if (subType === 'mix') {
             subType = mixCycle[(m + rIdx) % mixCycle.length];
           }
           buildSingleMotif(subType, slotRibIdx, yRow);
+        }
+      }
+
+      if (positions.length === 0) return null;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals();
+      return geo;
+    }
+
+    let lastGreetingWarnKey = '';
+
+    function getGreetingPlacementPlan(logWarnings = true) {
+      const glyphApi = (typeof window !== 'undefined' && window.LumenGlyphs)
+        ? window.LumenGlyphs
+        : (typeof LumenGlyphs !== 'undefined' ? LumenGlyphs : null);
+      if (!glyphApi) return null;
+
+      let cleanText = glyphApi.sanitizeGreetingText(state.greetingText, 24);
+      if (!state.greetingEnabled || !cleanText) {
+        updateGreetingInfoBadge(cleanText || '', Number(state.greetingSize) || 12, false, false);
+        return null;
+      }
+
+      const H = state.height;
+      const numRibs = Math.round(state.ribCount);
+      const ribD = state.ribDepth;
+      const count = Math.max(1, Math.min(6, Math.round(state.greetingCount || 3)));
+      const requestedSize = Math.max(8, Math.min(24, Number(state.greetingSize) || 12));
+      const reliefMm = Math.max(1.2, Math.min(2.6, Number(state.greetingRelief) || 1.8));
+      const requestedRatio = Math.max(30, Math.min(72, Number(state.greetingHeightRatio) || 62)) / 100;
+      const yDesired = requestedRatio * H;
+
+      const zBandFront = -0.60;
+      const zBandRidge = -0.50;
+      const zBandBack = Math.min(-2.20, -ribD + 0.60);
+      const bandHalfThick = 0.5 * (zBandRidge - zBandBack);
+      const bevelRadH = bandHalfThick * 1.08; // 42.8° radial roof/bottom taper
+
+      // Compute allowed vertical zones avoiding base plate (+4mm), top ring (-4mm), and stabilizer rings (±4mm)
+      const yMinAllowed = state.baseThickness + 4.0;
+      const yMaxAllowed = H - state.topRingHeight - 4.0;
+      const activeStab = state.stabilizerMode === 'none' ? 0 : Math.round(state.stabilizerCount || 0);
+      const stabNorms = getStabilizerNormalizedHeights(activeStab)
+        .map(t => t * H)
+        .filter(yR => yR > yMinAllowed - 4.0 && yR < yMaxAllowed + 4.0)
+        .sort((a, b) => a - b);
+
+      const freeZones = [];
+      let curBot = yMinAllowed;
+      for (let i = 0; i < stabNorms.length; i++) {
+        const forbidBot = stabNorms[i] - 4.0;
+        const forbidTop = stabNorms[i] + 4.0;
+        if (forbidBot > curBot + 1.0) {
+          freeZones.push({ bot: curBot, top: Math.min(yMaxAllowed, forbidBot) });
+        }
+        curBot = Math.max(curBot, forbidTop);
+      }
+      if (yMaxAllowed > curBot + 1.0) {
+        freeZones.push({ bot: curBot, top: yMaxAllowed });
+      }
+      if (freeZones.length === 0) {
+        freeZones.push({ bot: yMinAllowed, top: Math.max(yMinAllowed + 12, yMaxAllowed) });
+      }
+
+      // Estimate rib pitch near desired height for bottom V-arch height
+      const { r: rEst } = evaluateOuterProfile(Math.max(0.15, Math.min(0.85, requestedRatio)));
+      const rShellEst = Math.max(20, rEst - ribD * 0.35);
+      const ribPitchEst = (2 * Math.PI * rShellEst) / numRibs;
+      const archClimbEst = 0.5 * ribPitchEst * 1.08;
+
+      function spansForSize(sMm) {
+        const padY = Math.max(1.6, sMm * 0.15);
+        const flatHalfH = sMm * 0.54 + padY;
+        const topSpan = flatHalfH + bevelRadH;
+        const botSpan = flatHalfH + bevelRadH + archClimbEst;
+        return { padY, flatHalfH, topSpan, botSpan, totalSpan: topSpan + botSpan };
+      }
+
+      let effSize = requestedSize;
+      const widestZone = freeZones.reduce((best, z) => ((z.top - z.bot) > (best.top - best.bot) ? z : best), freeZones[0]);
+      const maxZoneH = widestZone.top - widestZone.bot;
+      while (effSize > 6.0 && spansForSize(effSize).totalSpan > maxZoneH) {
+        effSize = Math.max(6.0, +(effSize - 0.2).toFixed(2));
+      }
+
+      const initialSpans = spansForSize(effSize);
+      let yCenter = yDesired;
+      let bestDist = Infinity;
+      for (let i = 0; i < freeZones.length; i++) {
+        const z = freeZones[i];
+        const minC = z.bot + initialSpans.botSpan;
+        const maxC = z.top - initialSpans.topSpan;
+        if (maxC >= minC) {
+          const candidate = Math.max(minC, Math.min(maxC, yDesired));
+          const dist = Math.abs(candidate - yDesired);
+          if (dist < bestDist) {
+            bestDist = dist;
+            yCenter = candidate;
+          }
+        }
+      }
+      if (bestDist === Infinity) {
+        yCenter = Math.max(
+          widestZone.bot + initialSpans.botSpan,
+          Math.min(widestZone.top - initialSpans.topSpan, 0.5 * (widestZone.bot + widestZone.top))
+        );
+      }
+
+      const heightShifted = Math.abs(yCenter - yDesired) > 0.6;
+
+      // Exact circumference and available arc per band at yCenter
+      const { r: rOuter } = evaluateOuterProfile(yCenter / H);
+      const rShell = Math.max(20, rOuter - ribD * 0.35);
+      const circumferenceMm = 2 * Math.PI * rShell;
+      const ribPitchMm = circumferenceMm / numRibs;
+      const maxBaysPerBand = count === 1
+        ? Math.max(2, numRibs - 2)
+        : Math.max(1, Math.floor(numRibs / count) - 1);
+      const maxArcMm = maxBaysPerBand * ribPitchMm;
+
+      // Automatically scale down font size (down to 6.0 mm) if text exceeds available arc
+      let padX = Math.max(1.8, effSize * 0.20);
+      let layout = glyphApi.layoutGreetingString(cleanText, effSize);
+      while (effSize > 6.0 && (layout.totalWidthMm + 2 * padX > maxArcMm)) {
+        effSize = Math.max(6.0, +(effSize - 0.2).toFixed(2));
+        padX = Math.max(1.8, effSize * 0.20);
+        layout = glyphApi.layoutGreetingString(cleanText, effSize);
+      }
+
+      // If still too wide at 6.0 mm, truncate on word boundary and warn in console
+      let wasTruncated = false;
+      if (layout.totalWidthMm + 2 * padX > maxArcMm) {
+        wasTruncated = true;
+        const words = cleanText.split(' ').filter(Boolean);
+        while (words.length > 1) {
+          words.pop();
+          const candidateText = words.join(' ');
+          const candLayout = glyphApi.layoutGreetingString(candidateText, effSize);
+          if (candLayout.totalWidthMm + 2 * padX <= maxArcMm) {
+            cleanText = candidateText;
+            layout = candLayout;
+            break;
+          }
+        }
+        while (cleanText.length > 1 && (layout.totalWidthMm + 2 * padX > maxArcMm)) {
+          cleanText = cleanText.slice(0, -1).trim();
+          layout = glyphApi.layoutGreetingString(cleanText, effSize);
+        }
+      }
+
+      const finalSpans = spansForSize(effSize);
+      const archClimbH = 0.5 * ribPitchMm * 1.08;
+      const yFlatBot = yCenter - finalSpans.flatHalfH;
+      const yFlatTop = yCenter + finalSpans.flatHalfH;
+      const yBandTotalBot = yFlatBot - bevelRadH - archClimbH;
+      const yBandTotalTop = yFlatTop + bevelRadH;
+
+      const neededWidthMm = layout.totalWidthMm + 2 * padX;
+      const spanBays = Math.max(1, Math.min(maxBaysPerBand, Math.ceil(neededWidthMm / ribPitchMm)));
+
+      const bands = [];
+      for (let bIdx = 0; bIdx < count; bIdx++) {
+        const kLeft = Math.round((bIdx / count) * numRibs - spanBays * 0.5);
+        const kRight = kLeft + spanBays;
+        const centerRib = kLeft + spanBays * 0.5;
+        bands.push({ kLeft, kRight, centerRib, spanBays });
+      }
+
+      if (logWarnings) {
+        const warnKey = `${cleanText}|${effSize.toFixed(1)}|${Math.round(yCenter)}|${heightShifted}|${wasTruncated}`;
+        if (warnKey !== lastGreetingWarnKey) {
+          lastGreetingWarnKey = warnKey;
+          if (heightShifted) {
+            console.warn(
+              `[Lumenrib Weihnachts-Text] Höhenlage von ${yDesired.toFixed(1)} mm auf ${yCenter.toFixed(1)} mm (${Math.round((yCenter / H) * 100)} %) verschoben, um >= 4 mm Abstand zu Stützringen/Rändern einzuhalten.`
+            );
+          }
+          if (wasTruncated) {
+            console.warn(
+              `[Lumenrib Weihnachts-Text] Text bei Minimalgröße 6.0 mm auf Wortgrenze gekürzt auf "${cleanText}" (verfügbarer Bogen: ${maxArcMm.toFixed(1)} mm).`
+            );
+          }
+        }
+      }
+
+      updateGreetingInfoBadge(cleanText, effSize, effSize < requestedSize - 0.05, heightShifted);
+
+      return {
+        cleanText,
+        effSize,
+        requestedSize,
+        reliefMm,
+        count,
+        yCenter,
+        yFlatBot,
+        yFlatTop,
+        yBandTotalBot,
+        yBandTotalTop,
+        bevelRadH,
+        archClimbH,
+        zBandFront,
+        zBandRidge,
+        zBandBack,
+        ribPitchMm,
+        spanBays,
+        bands,
+        layout
+      };
+    }
+
+    function doesMotifCollideWithGreeting(slotRibIdx, yRow, motifH, widthScale, plan, numRibs, H, ribD) {
+      if (!plan) return false;
+      const motifBot = yRow - motifH * 0.62;
+      const motifTop = yRow + motifH * 0.55;
+      if (motifTop < plan.yBandTotalBot - 1.5 || motifBot > plan.yBandTotalTop + 1.5) {
+        return false;
+      }
+      const { r: rOuter } = evaluateOuterProfile(Math.max(0.08, Math.min(0.92, yRow / H)));
+      const ribPitchAtRow = (2 * Math.PI * Math.max(20, rOuter - ribD * 0.35)) / numRibs;
+      const motifHalfW = motifH * 0.48 * widthScale;
+      const motifHalfRibs = (motifHalfW / ribPitchAtRow) + 0.55;
+
+      for (let i = 0; i < plan.bands.length; i++) {
+        const b = plan.bands[i];
+        const bandCenterMod = ((b.centerRib % numRibs) + numRibs) % numRibs;
+        let diff = Math.abs(slotRibIdx - bandCenterMod);
+        if (diff > numRibs * 0.5) diff = numRibs - diff;
+        if (diff <= b.spanBays * 0.5 + motifHalfRibs) {
+          return true;
+        }
+      }
+      return false;
+    }
+
+    // ============================================================================
+    // 3D CHRISTMAS GREETING BAND & SUPPORT-FREE <= 45° RELIEF TEXT ENGINE
+    // ============================================================================
+    function buildGreetingGeometry() {
+      const plan = getGreetingPlacementPlan(true);
+      if (!plan) return null;
+
+      const H = state.height;
+      const numRibs = Math.round(state.ribCount);
+      const ribD = state.ribDepth;
+      const ribW = state.ribWidth;
+      const twistRad = THREE.MathUtils.degToRad(state.twistAngle);
+      const dTheta = (Math.PI * 2) / numRibs;
+
+      const positions = [];
+
+      function shellPointMm(baseRibIdx, xMm, yMm, zRelOuterMm) {
+        const yClamped = Math.max(state.baseThickness + 1.8, Math.min(H - state.topRingHeight - 1.8, yMm));
+        const t = yClamped / H;
+        const { r: rOuter } = evaluateOuterProfile(t);
+        const rShell = Math.max(20, rOuter - ribD * 0.35);
+        const rad = rOuter + zRelOuterMm;
+        const centerAngle = baseRibIdx * dTheta + twistRad * t;
+        const angle = centerAngle + (xMm / rShell);
+        return [rad * Math.cos(angle), yClamped, -rad * Math.sin(angle)];
+      }
+
+      function addReliefLoft(baseRibIdx, slices) {
+        if (!slices || slices.length < 2) return;
+        const rings = [];
+        for (let i = 0; i < slices.length; i++) {
+          const s = slices[i];
+          const xMid = 0.5 * (s.xL + s.xR);
+          const halfW = 0.5 * (s.xR - s.xL);
+          const xLBack = xMid - halfW * 0.92;
+          const xRBack = xMid + halfW * 0.92;
+
+          rings.push([
+            shellPointMm(baseRibIdx, xMid,   s.y, s.zRidge),
+            shellPointMm(baseRibIdx, s.xR,   s.y, s.zFront),
+            shellPointMm(baseRibIdx, xRBack, s.y, s.zBack),
+            shellPointMm(baseRibIdx, xMid,   s.y, s.zBack - 0.20),
+            shellPointMm(baseRibIdx, xLBack, s.y, s.zBack),
+            shellPointMm(baseRibIdx, s.xL,   s.y, s.zFront)
+          ]);
+        }
+
+        const n = 6;
+        for (let i = 0; i < rings.length - 1; i++) {
+          const rA = rings[i];
+          const rB = rings[i + 1];
+          for (let c = 0; c < n; c++) {
+            const cNext = (c + 1) % n;
+            positions.push(...rA[c], ...rA[cNext], ...rB[cNext]);
+            positions.push(...rA[c], ...rB[cNext], ...rB[c]);
+          }
+        }
+        const first = rings[0];
+        const last = rings[rings.length - 1];
+        for (let c = 1; c < n - 1; c++) {
+          positions.push(...first[0], ...first[c + 1], ...first[c]);
+          positions.push(...last[0], ...last[c], ...last[c + 1]);
+        }
+      }
+
+      const {
+        effSize,
+        reliefMm,
+        yCenter,
+        yFlatBot,
+        yFlatTop,
+        bevelRadH,
+        zBandFront,
+        zBandRidge,
+        zBandBack,
+        bands,
+        layout
+      } = plan;
+
+      const zBandMid = 0.5 * (zBandRidge + zBandBack);
+      const ribEmbedMm = Math.max(0.85, ribW * 0.38);
+
+      // Helper for rib pitch at any height y
+      function ribPitchAtY(yMm) {
+        const t = Math.max(0.05, Math.min(0.95, yMm / H));
+        const { r: rOuter } = evaluateOuterProfile(t);
+        const rShell = Math.max(20, rOuter - ribD * 0.35);
+        return (2 * Math.PI * rShell) / numRibs;
+      }
+
+      for (let bIdx = 0; bIdx < bands.length; bIdx++) {
+        const band = bands[bIdx];
+        const { kLeft, spanBays, centerRib } = band;
+
+        // 1. Build closed recessed wall per rib bay with 42.8° bottom V-arch and 42.8° top/bottom Dachform bevels
+        for (let bay = 0; bay < spanBays; bay++) {
+          const bayMidRib = kLeft + bay + 0.5;
+          const pCenter = ribPitchAtY(yCenter);
+          const halfGap = 0.5 * pCenter;
+          const climbH = halfGap * 1.08; // 42.8° support-free rise between adjacent ribs
+          const yBevelBot = yFlatBot - bevelRadH;
+          const yArchStart = yBevelBot - climbH;
+          const yBevelTop = yFlatTop + bevelRadH;
+
+          // Left & Right 42.8° rising gothic half-arches from rib k and rib k+1 meeting at bay center (x = 0)
+          [-1, +1].forEach(dir => {
+            const xRib = dir * halfGap;
+            const xRibOuter = dir * (halfGap + ribEmbedMm * 0.6);
+            addReliefLoft(bayMidRib, [
+              {
+                y: yArchStart,
+                xL: Math.min(xRibOuter, xRib - dir * 0.5),
+                xR: Math.max(xRibOuter, xRib - dir * 0.5),
+                zFront: zBandMid + 0.15,
+                zRidge: zBandMid + 0.25,
+                zBack: zBandBack
+              },
+              {
+                y: yBevelBot,
+                xL: dir < 0 ? -halfGap - ribEmbedMm * 0.7 : -0.45,
+                xR: dir < 0 ? +0.45 : +halfGap + ribEmbedMm * 0.7,
+                zFront: zBandMid + 0.20,
+                zRidge: zBandMid + 0.30,
+                zBack: zBandBack
+              },
+              {
+                y: yFlatBot,
+                xL: dir < 0 ? -halfGap - ribEmbedMm * 0.8 : -0.45,
+                xR: dir < 0 ? +0.45 : +halfGap + ribEmbedMm * 0.8,
+                zFront: zBandFront,
+                zRidge: zBandRidge,
+                zBack: zBandBack
+              }
+            ]);
+          });
+
+          // Main recessed band wall in this bay with 4 vertical stations + 42.8° top roof bevel (Dachform)
+          const wallSlices = [
+            {
+              y: yBevelBot,
+              xL: -halfGap - ribEmbedMm * 0.7,
+              xR: +halfGap + ribEmbedMm * 0.7,
+              zFront: zBandMid + 0.15,
+              zRidge: zBandMid + 0.25,
+              zBack: zBandMid - 0.15
+            }
+          ];
+          const vSteps = 4;
+          for (let vs = 0; vs <= vSteps; vs++) {
+            const fy = vs / vSteps;
+            const yCur = yFlatBot + (yFlatTop - yFlatBot) * fy;
+            const halfGapCur = 0.5 * ribPitchAtY(yCur);
+            wallSlices.push({
+              y: yCur,
+              xL: -halfGapCur - ribEmbedMm,
+              xR: +halfGapCur + ribEmbedMm,
+              zFront: zBandFront,
+              zRidge: zBandRidge,
+              zBack: zBandBack
+            });
+          }
+          const halfGapTop = 0.5 * ribPitchAtY(yBevelTop);
+          wallSlices.push({
+            y: yBevelTop,
+            xL: -halfGapTop - ribEmbedMm * 0.7,
+            xR: +halfGapTop + ribEmbedMm * 0.7,
+            zFront: zBandMid + 0.15,
+            zRidge: zBandMid + 0.25,
+            zBack: zBandMid - 0.15
+          });
+          addReliefLoft(bayMidRib, wallSlices);
+        }
+
+        // 2. End transitions (Endübergang): grow band ends cleanly into bounding ribs kLeft and kRight at <= 42.8°
+        [-1, +1].forEach(endDir => {
+          const endRibIdx = endDir < 0 ? kLeft : kLeft + spanBays;
+          const xInward = -endDir * (ribEmbedMm * 0.95);
+          const xOutward = endDir * (ribEmbedMm * 0.45);
+          const xL = Math.min(xInward, xOutward);
+          const xR = Math.max(xInward, xOutward);
+          const endRampH = 0.55 * 1.08;
+          addReliefLoft(endRibIdx, [
+            { y: yFlatBot - endRampH, xL, xR, zFront: zBandFront, zRidge: zBandRidge, zBack: zBandBack },
+            { y: yFlatBot + 0.4,      xL, xR, zFront: -0.20,      zRidge: -0.15,      zBack: zBandBack },
+            { y: yFlatTop - 0.4,      xL, xR, zFront: -0.20,      zRidge: -0.15,      zBack: zBandBack },
+            { y: yFlatTop + endRampH, xL, xR, zFront: zBandFront, zRidge: zBandRidge, zBack: zBandBack }
+          ]);
+        });
+
+        // 3. Proud 3D Greeting Glyph Relief on the recessed band surface (100% <= 43.3° overhang)
+        const yGlyphBase = yCenter - effSize * 0.5;
+        const strokeW = layout.strokeW; // >= 1.6 mm
+        const innerH = Math.max(strokeW * 1.4, effSize - strokeW);
+        const zGlyphBack = zBandFront - 0.45; // -1.05 mm (embedded inside band wall)
+        const zGlyphFront = zBandFront + reliefMm * 0.92;
+        const zGlyphRidge = zBandFront + reliefMm;
+        const bevelH = (reliefMm + 0.10) * 1.06; // 43.3° radial bottom & top ramp
+
+        for (let gIdx = 0; gIdx < layout.items.length; gIdx++) {
+          const item = layout.items[gIdx];
+          const { def, xStart, innerW } = item;
+
+          // 3a. Horizontal glyph bars [uL, uR, v] with 43.3° bottom chamfer & 43.3° top bevel
+          for (let b = 0; b < def.bars.length; b++) {
+            const [uL, uR, v] = def.bars[b];
+            const xL = xStart + uL * innerW;
+            const xR = Math.max(xL + strokeW, xStart + uR * innerW + strokeW);
+            const yBot = yGlyphBase + v * innerH;
+            const yTop = yBot + strokeW;
+
+            addReliefLoft(centerRib, [
+              { y: yBot - bevelH, xL: xL + 0.10, xR: xR - 0.10, zFront: zBandFront,  zRidge: zBandRidge,  zBack: zGlyphBack },
+              { y: yBot,          xL,            xR,            zFront: zGlyphFront, zRidge: zGlyphRidge, zBack: zGlyphBack },
+              { y: yTop,          xL,            xR,            zFront: zGlyphFront, zRidge: zGlyphRidge, zBack: zGlyphBack },
+              { y: yTop + bevelH, xL: xL + 0.10, xR: xR - 0.10, zFront: zBandFront,  zRidge: zBandRidge,  zBack: zGlyphBack }
+            ]);
+          }
+
+          // 3b. Vertical & diagonal glyph stems [u0, v0, u1, v1] with <= 42.0° tangential slope & 43.3° radial bevels
+          for (let s = 0; s < def.stems.length; s++) {
+            let [u0, v0, u1, v1] = def.stems[s];
+            if (v0 > v1) {
+              const tu = u0; u0 = u1; u1 = tu;
+              const tv = v0; v0 = v1; v1 = tv;
+            }
+            let x0 = xStart + strokeW * 0.5 + u0 * innerW;
+            let x1 = xStart + strokeW * 0.5 + u1 * innerW;
+            const y0 = yGlyphBase + v0 * innerH;
+            const y1 = Math.max(y0 + strokeW * 0.75, yGlyphBase + v1 * innerH + strokeW);
+
+            // Enforce <= 42.0° tangential overhang on diagonal stems
+            const maxDx = (y1 - y0) * 0.90;
+            const curDx = x1 - x0;
+            if (Math.abs(curDx) > maxDx) {
+              const xMidStem = 0.5 * (x0 + x1);
+              const halfClamped = 0.5 * maxDx * Math.sign(curDx);
+              x0 = xMidStem - halfClamped;
+              x1 = xMidStem + halfClamped;
+            }
+
+            const stemSlices = [
+              {
+                y: y0 - bevelH,
+                xL: x0 - strokeW * 0.45,
+                xR: x0 + strokeW * 0.45,
+                zFront: zBandFront,
+                zRidge: zBandRidge,
+                zBack: zGlyphBack
+              }
+            ];
+            const steps = Math.max(1, Math.min(3, Math.ceil((y1 - y0) / 5.0)));
+            for (let st = 0; st <= steps; st++) {
+              const f = st / steps;
+              const xCur = x0 + (x1 - x0) * f;
+              const yCur = y0 + (y1 - y0) * f;
+              stemSlices.push({
+                y: yCur,
+                xL: xCur - strokeW * 0.5,
+                xR: xCur + strokeW * 0.5,
+                zFront: zGlyphFront,
+                zRidge: zGlyphRidge,
+                zBack: zGlyphBack
+              });
+            }
+            stemSlices.push({
+              y: y1 + bevelH,
+              xL: x1 - strokeW * 0.45,
+              xR: x1 + strokeW * 0.45,
+              zFront: zBandFront,
+              zRidge: zBandRidge,
+              zBack: zGlyphBack
+            });
+
+            addReliefLoft(centerRib, stemSlices);
+          }
         }
       }
 
@@ -1181,13 +1701,23 @@
       const stabGeo = buildStabilizerRingsGeometry();
       // 5. Optional Support-Free 3D Sculpted Decorative Christmas Trees, Stars & Winter Symbols
       const motifsGeo = buildMotifsGeometry();
+      // 6. Optional Support-Free 3D Christmas Greeting Band & Relief Text
+      const greetingGeo = buildGreetingGeometry();
       let breakawayPreviewGeo = null;
       let motifsPreviewGeo = null;
 
       const geosToMerge = [baseGeo, topRingGeo, ribsGeo];
+      const highlightGeos = [];
       if (motifsGeo) {
-        motifsPreviewGeo = motifsGeo.clone();
+        highlightGeos.push(motifsGeo.clone());
         geosToMerge.push(motifsGeo);
+      }
+      if (greetingGeo) {
+        highlightGeos.push(greetingGeo.clone());
+        geosToMerge.push(greetingGeo);
+      }
+      if (highlightGeos.length > 0) {
+        motifsPreviewGeo = mergeBufferGeometries(highlightGeos);
       }
       if (stabGeo) {
         if (state.stabilizerMode === 'breakaway') {
@@ -1460,6 +1990,111 @@
       rebuildAll();
     }
 
+    let greetingDebounceTimer = null;
+
+    function updateGreetingInfoBadge(cleanText, effSizeMm, autoScaled, heightShifted) {
+      const infoEl = document.getElementById('val-greetingInfo');
+      if (!infoEl) return;
+      const len = cleanText ? cleanText.length : 0;
+      const sizeStr = `${Number(effSizeMm || state.greetingSize || 12).toFixed(1)} mm`;
+      const scaleTag = autoScaled ? ' (auto)' : '';
+      const shiftTag = heightShifted ? ' • Zone angepasst' : '';
+      infoEl.textContent = `${sizeStr}${scaleTag} • ${len}/24 Zeichen${shiftTag}`;
+    }
+
+    function syncGreetingUI() {
+      const enabled = Boolean(state.greetingEnabled);
+      const btnOff = document.getElementById('greeting-btn-off');
+      const btnOn = document.getElementById('greeting-btn-on');
+      const activeCls = 'py-2.5 px-2 rounded-xl text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/40 transition-all flex flex-col items-center gap-1';
+      const inactiveCls = 'py-2.5 px-2 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all flex flex-col items-center gap-1';
+      if (btnOff) btnOff.className = !enabled ? activeCls : inactiveCls;
+      if (btnOn) btnOn.className = enabled ? activeCls : inactiveCls;
+
+      const wrap = document.getElementById('greeting-controls-wrap');
+      if (wrap) {
+        if (enabled) {
+          wrap.classList.remove('opacity-40', 'pointer-events-none');
+        } else {
+          wrap.classList.add('opacity-40', 'pointer-events-none');
+        }
+      }
+
+      const textInput = document.getElementById('param-greetingText');
+      if (textInput && document.activeElement !== textInput) {
+        textInput.value = state.greetingText || '';
+      }
+
+      document.querySelectorAll('.greeting-chip').forEach(chip => {
+        const chipText = chip.dataset.chip || '';
+        if (chipText && chipText === state.greetingText) {
+          chip.className = 'greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-amber-500/25 text-amber-200 border border-amber-400/40 transition-all';
+        } else {
+          chip.className = 'greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all';
+        }
+      });
+
+      const glyphApi = (typeof window !== 'undefined' && window.LumenGlyphs) ? window.LumenGlyphs : null;
+      const clean = glyphApi ? glyphApi.sanitizeGreetingText(state.greetingText, 24) : (state.greetingText || '');
+      updateGreetingInfoBadge(clean, state.greetingSize, false, false);
+    }
+
+    function setGreetingEnabled(flag, skipRebuild = false) {
+      if (typeof flag === 'boolean') {
+        state.greetingEnabled = flag;
+      } else {
+        state.greetingEnabled = !state.greetingEnabled;
+      }
+      syncGreetingUI();
+      if (!skipRebuild) {
+        rebuildAll();
+      }
+    }
+
+    function toggleGreeting() {
+      setGreetingEnabled(!state.greetingEnabled, false);
+    }
+
+    function setGreetingPreset(textVal) {
+      if (greetingDebounceTimer) {
+        clearTimeout(greetingDebounceTimer);
+        greetingDebounceTimer = null;
+      }
+      const glyphApi = (typeof window !== 'undefined' && window.LumenGlyphs) ? window.LumenGlyphs : null;
+      const sanitized = glyphApi ? glyphApi.sanitizeGreetingText(textVal, 24) : String(textVal || '').slice(0, 24);
+      state.greetingText = sanitized || 'FROHE WEIHNACHTEN';
+      state.greetingEnabled = true;
+      const textInput = document.getElementById('param-greetingText');
+      if (textInput) textInput.value = state.greetingText;
+      syncGreetingUI();
+      rebuildAll();
+    }
+
+    function onGreetingTextInput(_arg, rawValue) {
+      const glyphApi = (typeof window !== 'undefined' && window.LumenGlyphs) ? window.LumenGlyphs : null;
+      const rawStr = String(rawValue == null ? '' : rawValue);
+      const hasTrailingSpace = rawStr.length > 0 && rawStr[rawStr.length - 1] === ' ';
+      let filtered = glyphApi ? glyphApi.sanitizeGreetingText(rawStr, 24) : rawStr.slice(0, 24);
+      const textInput = document.getElementById('param-greetingText');
+      if (textInput) {
+        const displayVal = (hasTrailingSpace && filtered.length > 0 && filtered.length < 24) ? `${filtered} ` : filtered;
+        if (textInput.value !== displayVal) {
+          textInput.value = displayVal;
+        }
+      }
+      updateGreetingInfoBadge(filtered, state.greetingSize, false, false);
+
+      if (greetingDebounceTimer) {
+        clearTimeout(greetingDebounceTimer);
+      }
+      greetingDebounceTimer = setTimeout(() => {
+        greetingDebounceTimer = null;
+        state.greetingText = filtered || 'FROHE WEIHNACHTEN';
+        syncGreetingUI();
+        rebuildAll();
+      }, 340);
+    }
+
     function formatUpperPinStepLabel(stepVal) {
       const s = Math.round(stepVal);
       if (s <= 0) return 'Nur 1 Pin (Aus)';
@@ -1536,7 +2171,7 @@
         } else if (key === 'stabilizerNeck') {
           label.textContent = val.toFixed(2);
         } else {
-          const decimals = ['ribWidth', 'ribDepth', 'topRingHeight', 'stabilizerWidth', 'stabilizerThickness', 'motifRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(key) ? 1 : 0;
+          const decimals = ['ribWidth', 'ribDepth', 'topRingHeight', 'stabilizerWidth', 'stabilizerThickness', 'motifRelief', 'greetingRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(key) ? 1 : 0;
           label.textContent = val.toFixed(decimals);
         }
       }
@@ -1643,7 +2278,8 @@
           recessRimWidth: 3.0,
           candleDia: 38,
           candleHeight: 18,
-          motifType: 'none'
+          motifType: 'none',
+          greetingEnabled: false
         },
         classic: {
           height: 160,
@@ -1656,7 +2292,8 @@
           ribWidth: 2.6,
           ribDepth: 4.5,
           twistAngle: 0,
-          motifType: 'none'
+          motifType: 'none',
+          greetingEnabled: false
         },
         xmas: {
           height: 168,
@@ -1675,7 +2312,13 @@
           motifSize: 32,
           motifWidthScale: 105,
           motifRelief: 2.6,
-          motifHeightRatio: 50
+          motifHeightRatio: 50,
+          greetingEnabled: true,
+          greetingText: 'FROHE WEIHNACHTEN',
+          greetingSize: 12,
+          greetingRelief: 1.8,
+          greetingCount: 3,
+          greetingHeightRatio: 62
         },
         lounge: {
           height: 150,
@@ -1688,7 +2331,8 @@
           ribWidth: 2.6,
           ribDepth: 4.8,
           twistAngle: 0,
-          motifType: 'none'
+          motifType: 'none',
+          greetingEnabled: false
         },
         twist: {
           height: 175,
@@ -1701,7 +2345,8 @@
           ribWidth: 2.8,
           ribDepth: 4.6,
           twistAngle: 45,
-          motifType: 'none'
+          motifType: 'none',
+          greetingEnabled: false
         },
         tall: {
           height: 230,
@@ -1714,7 +2359,8 @@
           ribWidth: 2.8,
           ribDepth: 4.8,
           twistAngle: 0,
-          motifType: 'none'
+          motifType: 'none',
+          greetingEnabled: false
         }
       };
 
@@ -1722,17 +2368,23 @@
       if (!p) return;
 
       Object.keys(p).forEach(k => {
-        if (k === 'motifType') return;
+        if (k === 'motifType' || k === 'greetingEnabled' || k === 'greetingText') return;
         state[k] = p[k];
         const input = document.getElementById(`param-${k}`);
         if (input) input.value = p[k];
         const label = document.getElementById(`val-${k}`);
-        if (label) {
-          const decimals = ['ribWidth', 'ribDepth', 'topRingHeight', 'motifRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(k) ? 1 : 0;
+        if (label && typeof p[k] === 'number') {
+          const decimals = ['ribWidth', 'ribDepth', 'topRingHeight', 'motifRelief', 'greetingRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(k) ? 1 : 0;
           label.textContent = p[k].toFixed(decimals);
         }
       });
 
+      if (typeof p.greetingText === 'string') {
+        state.greetingText = p.greetingText;
+      }
+      if (typeof p.greetingEnabled === 'boolean') {
+        setGreetingEnabled(p.greetingEnabled, true);
+      }
       if (p.motifType) {
         setMotifType(p.motifType);
       }
@@ -1754,21 +2406,23 @@
     function resetToDefaults() {
       Object.keys(defaultParams).forEach(k => {
         state[k] = defaultParams[k];
+        if (k === 'greetingEnabled') return;
         const input = document.getElementById(`param-${k}`);
         if (input) input.value = defaultParams[k];
         const label = document.getElementById(`val-${k}`);
-        if (label) {
+        if (label && typeof defaultParams[k] === 'number') {
           if (k === 'upperPinStep') {
             label.textContent = formatUpperPinStepLabel(defaultParams[k]);
           } else if (k === 'stabilizerNeck') {
             label.textContent = defaultParams[k].toFixed(2);
           } else {
-            label.textContent = ['ribWidth', 'ribDepth', 'topRingHeight', 'stabilizerWidth', 'stabilizerThickness', 'motifRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(k)
+            label.textContent = ['ribWidth', 'ribDepth', 'topRingHeight', 'stabilizerWidth', 'stabilizerThickness', 'motifRelief', 'greetingRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(k)
               ? defaultParams[k].toFixed(1)
               : defaultParams[k];
           }
         }
       });
+      setGreetingEnabled(defaultParams.greetingEnabled, true);
       setMotifType(defaultParams.motifType);
       updateBreakawayDescText();
       applyPreset('tealight');
@@ -2266,6 +2920,7 @@
           closeExportModal, toggleZenMode, toggleCandle, triggerCandleDropAnimation,
           toggleSectionView, toggleNightMode, resetToDefaults, enableSectionView,
           toggleGlassSleeve, openExportModal, applySafePrintOptimization, confirmAndDownloadSTL,
+          setGreetingEnabled, toggleGreeting, setGreetingPreset, onGreetingTextInput,
         };
         const target = table[fn];
         if (typeof target !== 'function') return;

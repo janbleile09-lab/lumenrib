@@ -651,6 +651,112 @@
           </div>
         </div>
 
+        <!-- CHRISTMAS TEXT (3D MOTTO BAND) -->
+        <div class="space-y-4 pt-4 border-t border-white/10">
+          <div>
+            <div class="flex items-center gap-2">
+              <h3 class="text-sm font-semibold text-white">Christmas text</h3>
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">Support-free ≤45°</span>
+            </div>
+            <p class="text-xs text-gray-400 mt-0.5">Recessed band inside the rib depth with proud 3D relief text (fully included in the exported STL).</p>
+          </div>
+
+          <!-- On/Off Toggle -->
+          <div class="grid grid-cols-2 gap-2">
+            <button type="button" data-act="setGreetingEnabled" data-args="[false]" id="greeting-btn-off" class="py-2.5 px-2 rounded-xl text-xs font-semibold bg-amber-500/20 text-amber-200 border border-amber-400/40 transition-all flex flex-col items-center gap-1">
+              <span class="text-base leading-none">⊘</span>
+              <span>No text</span>
+            </button>
+            <button type="button" data-act="setGreetingEnabled" data-args="[true]" id="greeting-btn-on" class="py-2.5 px-2 rounded-xl text-xs font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all flex flex-col items-center gap-1">
+              <span class="text-base leading-none text-amber-300">✦</span>
+              <span>Christmas text</span>
+            </button>
+          </div>
+
+          <div id="greeting-controls-wrap" class="space-y-4 pt-2 border-t border-white/10 opacity-40 pointer-events-none transition-opacity">
+            <!-- Preset motto chips -->
+            <div class="space-y-1.5">
+              <label class="text-xs text-gray-300 font-medium">Greeting presets</label>
+              <div class="flex flex-wrap gap-1.5">
+                <button type="button" data-act="setGreetingPreset" data-args='["FROHE WEIHNACHTEN"]' data-chip="FROHE WEIHNACHTEN" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-amber-500/25 text-amber-200 border border-amber-400/40 transition-all">FROHE WEIHNACHTEN</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["MERRY CHRISTMAS"]' data-chip="MERRY CHRISTMAS" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">MERRY CHRISTMAS</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["FROHES FEST"]' data-chip="FROHES FEST" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">FROHES FEST</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["STILLE NACHT"]' data-chip="STILLE NACHT" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">STILLE NACHT</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["HO HO HO"]' data-chip="HO HO HO" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">HO HO HO</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["WINTERZAUBER"]' data-chip="WINTERZAUBER" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">WINTERZAUBER</button>
+              </div>
+            </div>
+
+            <!-- Custom text input with debounce -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <label for="param-greetingText" class="text-gray-300 font-medium">Custom text (max. 24 characters)</label>
+              </div>
+              <input type="text" id="param-greetingText" maxlength="24" value="FROHE WEIHNACHTEN" data-on="onGreetingTextInput" data-arg="greetingText" class="select-text w-full px-3 py-2 rounded-xl bg-studio-800 border border-white/15 text-xs font-mono text-white focus:outline-none focus:border-amber-400/60" placeholder="FROHE WEIHNACHTEN" />
+              <div class="flex items-center justify-between text-[11px] px-2.5 py-1.5 rounded-lg bg-studio-950/80 border border-white/10">
+                <span class="text-gray-400">Effective font size:</span>
+                <span id="val-greetingInfo" class="font-mono font-semibold text-amber-300">12.0 mm • 17/24 chars</span>
+              </div>
+            </div>
+
+            <!-- Font Size (Cap Height) -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <label class="text-gray-300 font-medium">Font size (cap height)</label>
+                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingSize">12</span> mm</span>
+              </div>
+              <input type="range" id="param-greetingSize" min="8" max="24" step="1" value="12" data-on="updateParam" data-arg="greetingSize" />
+              <div class="flex justify-between text-[10px] text-gray-500">
+                <span>8 mm (compact)</span>
+                <span>12 mm (standard)</span>
+                <span>24 mm (large)</span>
+              </div>
+            </div>
+
+            <!-- Relief Height above Band -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <label class="text-gray-300 font-medium">Text relief height (above band)</label>
+                <span class="font-mono text-amber-400 font-semibold">+<span id="val-greetingRelief">1.8</span> mm</span>
+              </div>
+              <input type="range" id="param-greetingRelief" min="1.2" max="2.6" step="0.1" value="1.8" data-on="updateParam" data-arg="greetingRelief" />
+              <div class="flex justify-between text-[10px] text-gray-500">
+                <span>1.2 mm (subtle)</span>
+                <span>1.8 mm (optimal)</span>
+                <span>2.6 mm (bold)</span>
+              </div>
+            </div>
+
+            <!-- Number of Greeting Bands around Circumference -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <label class="text-gray-300 font-medium">Greeting bands around circumference</label>
+                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingCount">3</span>×</span>
+              </div>
+              <input type="range" id="param-greetingCount" min="1" max="6" step="1" value="3" data-on="updateParam" data-arg="greetingCount" />
+              <div class="flex justify-between text-[10px] text-gray-500">
+                <span>1× (front)</span>
+                <span>3× (all around)</span>
+                <span>6× (dense)</span>
+              </div>
+            </div>
+
+            <!-- Vertical Height Position -->
+            <div class="space-y-1.5">
+              <div class="flex justify-between text-xs">
+                <label class="text-gray-300 font-medium">Vertical band position</label>
+                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingHeightRatio">62</span> %</span>
+              </div>
+              <input type="range" id="param-greetingHeightRatio" min="30" max="72" step="1" value="62" data-on="updateParam" data-arg="greetingHeightRatio" />
+              <div class="flex justify-between text-[10px] text-gray-500">
+                <span>30 % (lower)</span>
+                <span>62 % (upper third)</span>
+                <span>72 % (top)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Print Engineering Explanation Box -->
         <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 space-y-1.5">
           <div class="flex items-center gap-2 text-xs font-semibold text-amber-300">
@@ -951,6 +1057,7 @@
     </div>
   </div>
 
+    <script src="../assets/js/lumen-glyphs.js"></script>
     <script src="../assets/js/configurator.en.js"></script>
 </body>
 </html>
