@@ -27,8 +27,9 @@
       motifWidthScale: 100,     // Width aspect ratio scale (%)
       motifRelief: 2.4,         // Proud 3D relief projection in front of the outer rib surface (mm)
       motifHeightRatio: 50,     // Vertical center position of symbols (% of height)
-      greetingEnabled: false,   // Recessed 3D Christmas greeting band enabled (default false)
-      greetingText: 'FROHE WEIHNACHTEN', // Greeting text (max 24 chars)
+      greetingEnabled: false,   // Cutout stencil or 3D Christmas text band enabled (default false)
+      greetingStyle: 'cutout',  // 'cutout' (stencil pill plaque) or 'relief' (recessed 3D relief band)
+      greetingText: 'XMAS',     // Greeting text (max 24 chars)
       greetingSize: 12,         // Capital height of greeting letters (mm, 8..24)
       greetingRelief: 1.8,      // Proud 3D letter relief above recessed band face (mm, 1.2..2.6)
       greetingCount: 3,         // Number of greeting bands around circumference (1..6)
@@ -220,14 +221,28 @@
     }
 
     // Builds a single curved, rounded-profile rib from bottom plate to top stabilizer ring
-    function buildRibsGeometry() {
+    // Builds a single curved, rounded-profile rib from bottom plate to top stabilizer ring
+    function pointInPoly2D(px, py, poly) {
+      let inside = false;
+      for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+        const xi = poly[i][0], yi = poly[i][1];
+        const xj = poly[j][0], yj = poly[j][1];
+        const intersect = ((yi > py) !== (yj > py)) &&
+          (px < (xj - xi) * (py - yi) / ((yj - yi) || 1e-12) + xi);
+        if (intersect) inside = !inside;
+      }
+      return inside;
+    }
+
+    function buildRibsGeometry(cutoutExclusions = []) {
       const numRibs = Math.round(state.ribCount);
       const H = state.height;
       const ribW = state.ribWidth;
       const ribD = state.ribDepth;
       const twistRad = THREE.MathUtils.degToRad(state.twistAngle);
+      const hasExclusions = Array.isArray(cutoutExclusions) && cutoutExclusions.length > 0;
 
-      const heightSteps = 44;
+      const heightSteps = hasExclusions ? 96 : 44;
       const csSegments = 10; // Cross-section points around each rib (rounded rectangle)
       const rootBoostFactor = (state.rootBoost || 0) / 100;
 
@@ -243,30 +258,21 @@
         unitCrossSection.push({ uUnit, vUnit });
       }
 
-      // Sample spine along t in [0.008 .. 0.992] so ribs embed cleanly into base plate and top ring
-      const ringsSingleRib = [];
-      let maxOverhangAngleDeg = 0;
-
       // Calculate exact tangential spacing at the top ring so adjacent ribs arch together at <=32°
       // just before the top ring starts (eliminates flat horizontal bridging under the top ring!)
       const rTopCenter = (state.topInnerDia / 2) + (ribD / 2);
       const topChordSpacing = (2 * Math.PI * rTopCenter) / numRibs;
-      const topArchStartT = Math.max(0.86, 1 - (( state.topRingHeight + 4.2 ) / H));
+      const topArchStartT = Math.max(0.86, 1 - ((state.topRingHeight + 4.2) / H));
 
-      for (let s = 0; s <= heightSteps; s++) {
-        const t = 0.008 + (s / heightSteps) * 0.984;
+      function evalRibSample(t) {
         const { r: rOuter, y } = evaluateOuterProfile(t);
 
-        // Smooth root-stiffening flare in the bottom 25% of the rib to fight cantilever resonance
         let boost = 0;
         if (t < 0.25 && rootBoostFactor > 0) {
           const uRoot = 1 - (t / 0.25);
           boost = rootBoostFactor * (uRoot * uRoot);
         }
 
-        // Self-supporting Gothic Arch flare at the top transition into the Top Ring (t > topArchStartT):
-        // Gently widens each rib tangentially at a print-safe ~30° angle so adjacent ribs merge into a
-        // continuous closed arch right under the top ring without any mid-air horizontal overhang!
         let topArchWidthAdd = 0;
         if (t > topArchStartT) {
           const uTop = Math.min(1, (t - topArchStartT) / (0.992 - topArchStartT));
@@ -277,53 +283,91 @@
         const localRibW = ribW * (1 + boost * 0.85) + topArchWidthAdd;
         const localRibD = ribD * (1 + boost * 0.65);
         const rCenter = rOuter - localRibD / 2;
+        const rShell = Math.max(18, rOuter - ribD * 0.35);
+        const phiTwist = twistRad * t;
+        return { t, rOuter, rCenter, rShell, y, phiTwist, localRibW, localRibD };
+      }
 
+      const ringsSingleRib = [];
+      let maxOverhangAngleDeg = 0;
+
+      for (let s = 0; s <= heightSteps; s++) {
+        const t = 0.008 + (s / heightSteps) * 0.984;
+        const sample = evalRibSample(t);
         if (s > 0) {
-          const prev = evaluateOuterProfile(0.008 + ((s - 1) / heightSteps) * 0.984);
-          const dr = Math.abs(rOuter - prev.r);
-          const dy = Math.max(0.001, y - prev.y);
+          const prev = ringsSingleRib[s - 1];
+          const dr = Math.abs(sample.rOuter - prev.rOuter);
+          const dy = Math.max(0.001, sample.y - prev.y);
           const angleFromVertical = THREE.MathUtils.radToDeg(Math.atan2(dr, dy));
           if (t < 0.5 && angleFromVertical > maxOverhangAngleDeg) {
             maxOverhangAngleDeg = angleFromVertical;
           }
         }
+        ringsSingleRib.push(sample);
+      }
 
-        const phiTwist = twistRad * t;
-        ringsSingleRib.push({ rCenter, y, phiTwist, localRibW, localRibD });
+      function isExcludedAt(baseAngle, sample) {
+        if (!hasExclusions) return false;
+        const angle = baseAngle + sample.phiTwist;
+        const halfW = sample.localRibW * 0.45;
+        for (let i = 0; i < cutoutExclusions.length; i++) {
+          const ex = cutoutExclusions[i];
+          if (sample.y < ex.yMin || sample.y > ex.yMax) continue;
+          let dA = angle - ex.centerAngle;
+          while (dA > Math.PI) dA -= Math.PI * 2;
+          while (dA < -Math.PI) dA += Math.PI * 2;
+          const xMm = dA * sample.rShell;
+          if (xMm + halfW < ex.xMin || xMm - halfW > ex.xMax) continue;
+          if (
+            pointInPoly2D(xMm, sample.y, ex.polyCCW) ||
+            pointInPoly2D(xMm - halfW, sample.y, ex.polyCCW) ||
+            pointInPoly2D(xMm + halfW, sample.y, ex.polyCCW)
+          ) {
+            return true;
+          }
+        }
+        return false;
+      }
+
+      function makeRingVerts(baseAngle, sample) {
+        const angle = baseAngle + sample.phiTwist;
+        const cosA = Math.cos(angle);
+        const sinA = Math.sin(angle);
+        const ringVerts = [];
+        for (let c = 0; c < csSegments; c++) {
+          const { uUnit, vUnit } = unitCrossSection[c];
+          const u = uUnit * sample.localRibD;
+          const v = vUnit * sample.localRibW;
+          const rad = sample.rCenter + u;
+          ringVerts.push([
+            rad * cosA - v * sinA,
+            sample.y,
+            -rad * sinA - v * cosA
+          ]);
+        }
+        return ringVerts;
+      }
+
+      function findBoundarySample(baseAngle, tInside, tOutside) {
+        let lo = tOutside, hi = tInside;
+        for (let iter = 0; iter < 10; iter++) {
+          const mid = 0.5 * (lo + hi);
+          if (isExcludedAt(baseAngle, evalRibSample(mid))) {
+            hi = mid;
+          } else {
+            lo = mid;
+          }
+        }
+        return evalRibSample(lo);
       }
 
       const positions = [];
 
-      for (let k = 0; k < numRibs; k++) {
-        const baseAngle = (k / numRibs) * Math.PI * 2;
-
-        // Compute 3D vertex rings for this rib
-        const ribRings = [];
-        for (let s = 0; s <= heightSteps; s++) {
-          const { rCenter, y, phiTwist, localRibW, localRibD } = ringsSingleRib[s];
-          const angle = baseAngle + phiTwist;
-          const cosA = Math.cos(angle);
-          const sinA = Math.sin(angle);
-
-          // Radial unit vector (cosA, 0, -sinA), Tangential unit vector (-sinA, 0, -cosA)
-          const ringVerts = [];
-          for (let c = 0; c < csSegments; c++) {
-            const { uUnit, vUnit } = unitCrossSection[c];
-            const u = uUnit * localRibD;
-            const v = vUnit * localRibW;
-            const rad = rCenter + u;
-            const px = rad * cosA - v * sinA;
-            const py = y;
-            const pz = -rad * sinA - v * cosA;
-            ringVerts.push([px, py, pz]);
-          }
-          ribRings.push(ringVerts);
-        }
-
-        // Stitch side quads along the rib
-        for (let s = 0; s < heightSteps; s++) {
-          const ringA = ribRings[s];
-          const ringB = ribRings[s + 1];
+      function emitRibSegment(segRings) {
+        if (segRings.length < 2) return;
+        for (let s = 0; s < segRings.length - 1; s++) {
+          const ringA = segRings[s];
+          const ringB = segRings[s + 1];
           for (let c = 0; c < csSegments; c++) {
             const cNext = (c + 1) % csSegments;
             const v00 = ringA[c];
@@ -335,13 +379,46 @@
             positions.push(...v00, ...v11, ...v01);
           }
         }
-
-        // Bottom & Top end caps of each rib for a watertight manifold mesh
-        const bottomRing = ribRings[0];
-        const topRing = ribRings[heightSteps];
+        const bottomRing = segRings[0];
+        const topRing = segRings[segRings.length - 1];
         for (let c = 1; c < csSegments - 1; c++) {
           positions.push(...bottomRing[0], ...bottomRing[c + 1], ...bottomRing[c]);
           positions.push(...topRing[0], ...topRing[c], ...topRing[c + 1]);
+        }
+      }
+
+      for (let k = 0; k < numRibs; k++) {
+        const baseAngle = (k / numRibs) * Math.PI * 2;
+        if (!hasExclusions) {
+          const ribRings = ringsSingleRib.map(sample => makeRingVerts(baseAngle, sample));
+          emitRibSegment(ribRings);
+          continue;
+        }
+
+        const excluded = ringsSingleRib.map(sample => isExcludedAt(baseAngle, sample));
+        let s = 0;
+        while (s <= heightSteps) {
+          while (s <= heightSteps && excluded[s]) s++;
+          if (s > heightSteps) break;
+          const sStart = s;
+          while (s + 1 <= heightSteps && !excluded[s + 1]) s++;
+          const sEnd = s;
+          s++;
+
+          const segSamples = [];
+          if (sStart > 0) {
+            segSamples.push(findBoundarySample(baseAngle, ringsSingleRib[sStart - 1].t, ringsSingleRib[sStart].t));
+          }
+          for (let i = sStart; i <= sEnd; i++) {
+            segSamples.push(ringsSingleRib[i]);
+          }
+          if (sEnd < heightSteps) {
+            segSamples.push(findBoundarySample(baseAngle, ringsSingleRib[sEnd + 1].t, ringsSingleRib[sEnd].t));
+          }
+          const spanY = segSamples[segSamples.length - 1].y - segSamples[0].y;
+          if (segSamples.length >= 2 && spanY >= 0.45) {
+            emitRibSegment(segSamples.map(sample => makeRingVerts(baseAngle, sample)));
+          }
         }
       }
 
@@ -708,20 +785,295 @@
     }
 
     // ============================================================================
-    // 2-LAYER 3D SCULPTED RELIEF MOTIF ENGINE (100% Support-Free <= 43° Overhang)
+    // SHARED CURVED-SHELL EXTRUSION & POLYGON HELPERS
     // ============================================================================
-    // Solves both visual recognizability AND support-free FDM 3D printing:
-    // 1. True Proportional Millimeter Sizing (`motifSize` scales BOTH height and width,
-    //    spanning across multiple ribs without being squished into 1 rib gap!).
-    // 2. Proud 3D Faceted Front Relief (`+motifRelief` mm in front of the outer rib surface):
-    //    The symbol silhouette stands proud in front of the vertical ribs with a 3D origami
-    //    center ridge so vertical ribs NEVER slice through the front of the Christmas tree,
-    //    Star, Snowflake, or Heart!
-    // 3. Recessed 42° Rib-Plane Carrier: Wherever a wide lower branch (e.g. Tier 1 of the
-    //    Christmas Tree or lower rays of the Star) crosses an open air gap between ribs,
-    //    a recessed 42° gothic carrier bridges from the adjacent ribs behind the trunk so
-    //    every single overhang is strictly <= 43° without needing any Slicer supports!
-    function buildMotifsGeometry() {
+    function signedArea2D(pts) {
+      let a = 0;
+      for (let i = 0; i < pts.length; i++) {
+        const p0 = pts[i], p1 = pts[(i + 1) % pts.length];
+        a += p0[0] * p1[1] - p1[0] * p0[1];
+      }
+      return 0.5 * a;
+    }
+
+    function ensureCCW2D(pts) {
+      return signedArea2D(pts) < 0 ? pts.slice().reverse() : pts.slice();
+    }
+
+    function ensureCW2D(pts) {
+      return signedArea2D(pts) > 0 ? pts.slice().reverse() : pts.slice();
+    }
+
+    function offsetPolygon2D(polyCCW, d) {
+      const n = polyCCW.length;
+      const out = [];
+      for (let i = 0; i < n; i++) {
+        const pPrev = polyCCW[(i - 1 + n) % n];
+        const pCurr = polyCCW[i];
+        const pNext = polyCCW[(i + 1) % n];
+        const dx1 = pCurr[0] - pPrev[0], dy1 = pCurr[1] - pPrev[1];
+        const dx2 = pNext[0] - pCurr[0], dy2 = pNext[1] - pCurr[1];
+        const l1 = Math.hypot(dx1, dy1) || 1;
+        const l2 = Math.hypot(dx2, dy2) || 1;
+        const n1x = -dy1 / l1, n1y = dx1 / l1;
+        const n2x = -dy2 / l2, n2y = dx2 / l2;
+        const a1x = pPrev[0] + n1x * d, a1y = pPrev[1] + n1y * d;
+        const a2x = pCurr[0] + n2x * d, a2y = pCurr[1] + n2y * d;
+        const det = dx1 * dy2 - dy1 * dx2;
+        if (Math.abs(det) < 1e-6) {
+          out.push([pCurr[0] + n1x * d, pCurr[1] + n1y * d]);
+        } else {
+          const rx = a2x - a1x, ry = a2y - a1y;
+          const t = (rx * dy2 - ry * dx2) / det;
+          let ix = a1x + t * dx1, iy = a1y + t * dy1;
+          const mx = ix - pCurr[0], my = iy - pCurr[1];
+          const mLen = Math.hypot(mx, my);
+          const maxMiter = Math.abs(d) * 2.6;
+          if (mLen > maxMiter && mLen > 1e-6) {
+            ix = pCurr[0] + (mx / mLen) * maxMiter;
+            iy = pCurr[1] + (my / mLen) * maxMiter;
+          }
+          out.push([ix, iy]);
+        }
+      }
+      return out;
+    }
+
+    function subdividePoly2D(pts, maxSegLen = 3.5) {
+      const out = [];
+      for (let i = 0; i < pts.length; i++) {
+        const p0 = pts[i];
+        const p1 = pts[(i + 1) % pts.length];
+        const dist = Math.hypot(p1[0] - p0[0], p1[1] - p0[1]);
+        const steps = Math.max(1, Math.ceil(dist / maxSegLen));
+        for (let k = 0; k < steps; k++) {
+          const f = k / steps;
+          out.push([p0[0] + (p1[0] - p0[0]) * f, p0[1] + (p1[1] - p0[1]) * f]);
+        }
+      }
+      return out;
+    }
+
+    function polyBounds2D(pts) {
+      let xMin = Infinity, xMax = -Infinity, yMin = Infinity, yMax = -Infinity;
+      for (let i = 0; i < pts.length; i++) {
+        const [x, y] = pts[i];
+        if (x < xMin) xMin = x;
+        if (x > xMax) xMax = x;
+        if (y < yMin) yMin = y;
+        if (y > yMax) yMax = y;
+      }
+      return { xMin, xMax, yMin, yMax };
+    }
+
+    function shellPointMmGlobal(baseRibIdx, xMm, yMm, zRelOuterMm) {
+      const H = state.height;
+      const numRibs = Math.round(state.ribCount);
+      const ribD = state.ribDepth;
+      const twistRad = THREE.MathUtils.degToRad(state.twistAngle);
+      const dTheta = (Math.PI * 2) / numRibs;
+      const yClamped = Math.max(state.baseThickness + 1.4, Math.min(H - state.topRingHeight - 1.4, yMm));
+      const t = yClamped / H;
+      const { r: rOuter } = evaluateOuterProfile(t);
+      const rShell = Math.max(18, rOuter - ribD * 0.35);
+      const rad = rOuter + zRelOuterMm;
+      const centerAngle = baseRibIdx * dTheta + twistRad * t;
+      const angle = centerAngle + (xMm / rShell);
+      return [rad * Math.cos(angle), yClamped, -rad * Math.sin(angle)];
+    }
+
+    function refineTriangulation2D(pts, tris, maxEdgeLen = 4.2) {
+      const maxD2 = maxEdgeLen * maxEdgeLen;
+      for (let pass = 0; pass < 10; pass++) {
+        const edgeMap = new Map();
+        for (let tIdx = 0; tIdx < tris.length; tIdx++) {
+          const [a, b, c] = tris[tIdx];
+          edgeMap.set(`${a}_${b}`, { tIdx, third: c });
+          edgeMap.set(`${b}_${c}`, { tIdx, third: a });
+          edgeMap.set(`${c}_${a}`, { tIdx, third: b });
+        }
+        const splits = [];
+        for (const [key, e1] of edgeMap.entries()) {
+          const sep = key.indexOf('_');
+          const u = Number(key.slice(0, sep));
+          const v = Number(key.slice(sep + 1));
+          if (u >= v) continue;
+          const e2 = edgeMap.get(`${v}_${u}`);
+          if (!e2 || e1.tIdx === e2.tIdx) continue;
+          const pu = pts[u], pv = pts[v];
+          const dx = pv[0] - pu[0], dy = pv[1] - pu[1];
+          const d2 = dx * dx + dy * dy;
+          if (d2 > maxD2) {
+            splits.push({ u, v, d2, t1: e1.tIdx, r: e1.third, t2: e2.tIdx, s: e2.third });
+          }
+        }
+        if (splits.length === 0) break;
+        splits.sort((a, b) => b.d2 - a.d2);
+        const dirty = new Uint8Array(tris.length);
+        let didSplit = 0;
+        for (let i = 0; i < splits.length; i++) {
+          const sp = splits[i];
+          if (dirty[sp.t1] || dirty[sp.t2]) continue;
+          const pu = pts[sp.u], pv = pts[sp.v], pr = pts[sp.r], ps = pts[sp.s];
+          const mx = 0.5 * (pu[0] + pv[0]);
+          const my = 0.5 * (pu[1] + pv[1]);
+          const ux = pv[0] - pu[0], uy = pv[1] - pu[1];
+          const segLen = Math.hypot(ux, uy) || 1;
+          const alt1 = Math.abs(ux * (pr[1] - pu[1]) - uy * (pr[0] - pu[0])) / segLen;
+          const alt2 = Math.abs(ux * (ps[1] - pu[1]) - uy * (ps[0] - pu[0])) / segLen;
+          const dmR = Math.hypot(mx - pr[0], my - pr[1]);
+          const dmS = Math.hypot(mx - ps[0], my - ps[1]);
+          // Guard against collinear ear splits (e.g. bisection midpoint landing on boundary midpoint vertex)
+          if (alt1 < 0.25 || alt2 < 0.25 || dmR < 0.25 || dmS < 0.25) continue;
+          dirty[sp.t1] = 1;
+          dirty[sp.t2] = 1;
+          const mIdx = pts.length;
+          pts.push([mx, my]);
+          tris[sp.t1] = [sp.u, mIdx, sp.r];
+          tris[sp.t2] = [sp.v, mIdx, sp.s];
+          tris.push([mIdx, sp.v, sp.r], [mIdx, sp.u, sp.s]);
+          didSplit++;
+        }
+        if (didSplit === 0) break;
+      }
+    }
+
+    function extrudeCurvedShape(positions, baseRibIdx, outerPolyCCW, holesCW, zFront, zBack, maxSegLen = 3.5) {
+      const outer = subdividePoly2D(ensureCCW2D(outerPolyCCW), maxSegLen);
+      const holes = (holesCW || []).map(h => subdividePoly2D(ensureCW2D(h), maxSegLen));
+
+      const contourV2 = outer.map(([x, y]) => new THREE.Vector2(x, y));
+      const holesV2 = holes.map(h => h.map(([x, y]) => new THREE.Vector2(x, y)));
+      const tris = THREE.ShapeUtils.triangulateShape(contourV2, holesV2);
+      if (!tris || tris.length === 0) return;
+
+      const allPts = outer.slice();
+      for (let i = 0; i < holes.length; i++) {
+        allPts.push(...holes[i]);
+      }
+
+      refineTriangulation2D(allPts, tris, Math.max(3.8, maxSegLen * 1.4));
+
+      const front3D = allPts.map(([x, y]) => shellPointMmGlobal(baseRibIdx, x, y, zFront));
+      const back3D = allPts.map(([x, y]) => shellPointMmGlobal(baseRibIdx, x, y, zBack));
+
+      const directedEdges = new Set();
+      const boundaryEdges = [];
+      for (let i = 0; i < tris.length; i++) {
+        const [a, b, c] = tris[i];
+        positions.push(...front3D[a], ...front3D[b], ...front3D[c]);
+        positions.push(...back3D[a], ...back3D[c], ...back3D[b]);
+        directedEdges.add(`${a}_${b}`);
+        directedEdges.add(`${b}_${c}`);
+        directedEdges.add(`${c}_${a}`);
+        boundaryEdges.push([a, b], [b, c], [c, a]);
+      }
+
+      for (let i = 0; i < boundaryEdges.length; i++) {
+        const [u, v] = boundaryEdges[i];
+        if (!directedEdges.has(`${v}_${u}`)) {
+          const f0 = front3D[u], f1 = front3D[v];
+          const b0 = back3D[u], b1 = back3D[v];
+          positions.push(...f0, ...b0, ...b1);
+          positions.push(...f0, ...b1, ...f1);
+        }
+      }
+    }
+
+    // ============================================================================
+    // HOLLOW-FRAME SILHOUETTE MOTIF ENGINE (STARS, TREES, HEARTS, SNOWFLAKES)
+    // ============================================================================
+    function makeMotifPolygons(subType, yCenter, motifH, widthScale) {
+      const R = motifH * 0.5;
+      const W = motifH * 0.48 * widthScale;
+      const fwBase = Math.min(2.3, Math.max(1.1, motifH * 0.085));
+      const fw = Math.min(fwBase, Math.min(R, W) * 0.145);
+
+      let outer = [];
+      let inner = [];
+
+      if (subType === 'star') {
+        const scaleX = (W / R) * 1.16;
+        const innerR = R * 0.43;
+        for (let i = 0; i < 10; i++) {
+          const rad = (i % 2 === 0) ? R : innerR;
+          const ang = Math.PI / 2 + (i * Math.PI) / 5;
+          outer.push([Math.cos(ang) * rad * scaleX, yCenter + Math.sin(ang) * rad]);
+        }
+        outer = ensureCCW2D(outer);
+        inner = ensureCW2D(offsetPolygon2D(outer, fw));
+      } else if (subType === 'tree') {
+        const yBot   = yCenter - R;
+        const yT1In  = yCenter - R * 0.24;
+        const yT2Tip = yCenter - R * 0.14;
+        const yT2In  = yCenter + R * 0.26;
+        const yT3Tip = yCenter + R * 0.36;
+        const yPeak  = yCenter + R;
+        const w1 = W, w1In = W * 0.44, w2 = W * 0.80, w2In = W * 0.34, w3 = W * 0.56;
+        outer = ensureCCW2D([
+          [0, yPeak],
+          [-w3, yT3Tip],
+          [-w2In, yT2In],
+          [-w2, yT2Tip],
+          [-w1In, yT1In],
+          [-w1, yBot],
+          [+w1, yBot],
+          [+w1In, yT1In],
+          [+w2, yT2Tip],
+          [+w2In, yT2In],
+          [+w3, yT3Tip]
+        ]);
+        inner = ensureCW2D(offsetPolygon2D(outer, fw));
+      } else if (subType === 'heart') {
+        const steps = 28;
+        const scaleW = Math.max(0.32, (W - fwBase * 1.15) / W);
+        const scaleR = Math.max(0.32, (R - fwBase * 1.25) / R);
+        for (let i = 0; i < steps; i++) {
+          const t = (i / steps) * Math.PI * 2;
+          const hx = 16 * Math.pow(Math.sin(t), 3);
+          const hy = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t);
+          outer.push([(hx / 16) * W, yCenter + ((hy + 2.5) / 14.7) * R]);
+          inner.push([(hx / 16) * W * scaleW, yCenter + ((hy + 2.5) / 14.7) * R * scaleR - fwBase * 0.08]);
+        }
+        outer = ensureCCW2D(outer);
+        inner = ensureCW2D(inner);
+      } else {
+        const scaleX = W / R;
+        const armW = Math.max(1.0, R * 0.14);
+        const tipR = R;
+        const rootR = R * 0.44;
+        for (let i = 0; i < 6; i++) {
+          const a = Math.PI / 2 + (i * Math.PI) / 3;
+          const ca = Math.cos(a), sa = Math.sin(a);
+          const nx = -sa, ny = ca;
+          outer.push([(ca * rootR - nx * armW * 0.72) * scaleX, yCenter + sa * rootR - ny * armW * 0.72]);
+          outer.push([(ca * (tipR - armW * 0.85) - nx * armW * 0.72) * scaleX, yCenter + sa * (tipR - armW * 0.85) - ny * armW * 0.72]);
+          outer.push([(ca * tipR) * scaleX, yCenter + sa * tipR]);
+          outer.push([(ca * (tipR - armW * 0.85) + nx * armW * 0.72) * scaleX, yCenter + sa * (tipR - armW * 0.85) + ny * armW * 0.72]);
+          outer.push([(ca * rootR + nx * armW * 0.72) * scaleX, yCenter + sa * rootR + ny * armW * 0.72]);
+
+          inner.push([ca * R * 0.25 * scaleX, yCenter + sa * R * 0.25]);
+        }
+        outer = ensureCCW2D(outer);
+        inner = ensureCW2D(inner);
+      }
+
+      let exclCCW;
+      if (subType === 'crystal') {
+        exclCCW = ensureCCW2D(inner.map(([x, y]) => [x * 1.15, yCenter + (y - yCenter) * 1.15]));
+      } else if (subType === 'heart') {
+        exclCCW = ensureCCW2D(inner.map(([x, y], idx) => {
+          const ox = outer[idx][0], oy = outer[idx][1];
+          return [0.42 * ox + 0.58 * x, 0.42 * oy + 0.58 * y];
+        }));
+      } else {
+        exclCCW = ensureCCW2D(offsetPolygon2D(outer, fw * 0.45));
+      }
+
+      return { outer, inner, exclCCW };
+    }
+
+    function buildMotifsGeometry(greetingPlan = null, cutoutExclusions = null) {
       if (!state.motifType || state.motifType === 'none' || state.motifCount <= 0) {
         return null;
       }
@@ -734,368 +1086,58 @@
 
       const countPerRow = Math.min(Math.floor(numRibs / 2), Math.max(2, Math.round(state.motifCount || 6)));
       const numRows = Math.max(1, Math.min(3, Math.round(state.motifRows || 2)));
-      const motifH = Math.max(14, state.motifSize || 30);
+      const motifH = Math.max(14, state.motifSize || 22);
       const widthScale = (state.motifWidthScale || 100) / 100;
-      const reliefMm = Math.max(1.0, state.motifRelief || 2.4);
-      const centerRatio = (state.motifHeightRatio || 50) / 100;
+      const zFront = Math.max(0.2, Number(state.motifRelief) || 0.6);
+      const zBack = -Math.min(ribD, Math.max(1.8, ribD * 0.85));
+      const centerRatio = (state.motifHeightRatio || 49) / 100;
 
       const positions = [];
 
-      // Maps local millimeter coordinates `(xMm, yMm, zRelOuterMm)` around `baseRibIdx` onto the 3D lantern shell.
-      // `zRelOuterMm = 0` is the exact outer surface of the ribs;
-      // `zRelOuterMm > 0` projects proud in front of the ribs (3D relief!);
-      // `zRelOuterMm < 0` embeds into the rib depth (`-ribD` is the inner rib wall).
-      function shellPointMm(baseRibIdx, xMm, yMm, zRelOuterMm) {
-        const yClamped = Math.max(state.baseThickness + 1.8, Math.min(H - state.topRingHeight - 1.8, yMm));
-        const t = yClamped / H;
-        const { r: rOuter } = evaluateOuterProfile(t);
-        const rShell = Math.max(20, rOuter - ribD * 0.35);
-        const rad = rOuter + zRelOuterMm;
-        const centerAngle = baseRibIdx * dTheta + twistRad * t;
-        const angle = centerAngle + (xMm / rShell);
-        return [rad * Math.cos(angle), yClamped, -rad * Math.sin(angle)];
-      }
-
-      // Lofts a watertight 3D faceted relief solid from a vertical sequence of horizontal slices.
-      // Each slice: `{ y, xL, xR, zFront, zRidge, zBack }`
-      // - `xL`, `xR`: left and right horizontal positions in mm
-      // - `zFront`: outer edge relief height in front of ribs (mm)
-      // - `zRidge`: center ridge 3D pyramid height in front of ribs (mm)
-      // - `zBack`: inner embedding depth into the ribs (mm, typically negative)
-      function addReliefLoft(baseRibIdx, slices) {
-        if (!slices || slices.length < 2) return;
-        const rings = [];
-        for (let i = 0; i < slices.length; i++) {
-          const s = slices[i];
-          const xMid = 0.5 * (s.xL + s.xR);
-          const halfW = 0.5 * (s.xR - s.xL);
-          // Slight inward back-taper so side walls angle cleanly into the ribs
-          const xLBack = xMid - halfW * 0.92;
-          const xRBack = xMid + halfW * 0.92;
-
-          // 6-vertex faceted cross-section:
-          // 0: Front-Center Ridge, 1: Front-Right, 2: Back-Right, 3: Back-Center, 4: Back-Left, 5: Front-Left
-          rings.push([
-            shellPointMm(baseRibIdx, xMid,   s.y, s.zRidge),
-            shellPointMm(baseRibIdx, s.xR,   s.y, s.zFront),
-            shellPointMm(baseRibIdx, xRBack, s.y, s.zBack),
-            shellPointMm(baseRibIdx, xMid,   s.y, s.zBack - 0.25),
-            shellPointMm(baseRibIdx, xLBack, s.y, s.zBack),
-            shellPointMm(baseRibIdx, s.xL,   s.y, s.zFront)
-          ]);
-        }
-
-        const n = 6;
-        for (let i = 0; i < rings.length - 1; i++) {
-          const rA = rings[i];
-          const rB = rings[i + 1];
-          for (let c = 0; c < n; c++) {
-            const cNext = (c + 1) % n;
-            positions.push(...rA[c], ...rA[cNext], ...rB[cNext]);
-            positions.push(...rA[c], ...rB[cNext], ...rB[c]);
-          }
-        }
-        // Watertight bottom & top end caps
-        const first = rings[0];
-        const last = rings[rings.length - 1];
-        for (let c = 1; c < n - 1; c++) {
-          positions.push(...first[0], ...first[c + 1], ...first[c]);
-          positions.push(...last[0], ...last[c], ...last[c + 1]);
-        }
-      }
-
-      // Adds a self-supporting 45°-keel 3D bar between two arbitrary `(x, y)` points on the shell
-      // (used for snowflake crystal side-arms & recessed rib-plane support arches)
-      function addFacetedBarMm(baseRibIdx, x0, y0, w0, x1, y1, w1, zFront, zRidge, zBack, steps = 5) {
-        const rings = [];
-        for (let s = 0; s <= steps; s++) {
-          const f = s / steps;
-          const x = x0 + (x1 - x0) * f;
-          const y = y0 + (y1 - y0) * f;
-          const w = w0 + (w1 - w0) * f;
-          const ramp = (s === 0 || s === steps) ? 0.15 : 1.0;
-          const zF = zFront * ramp;
-          const zR = zRidge * ramp;
-          const keelDrop = Math.min(1.6, w * 0.48);
-
-          rings.push([
-            shellPointMm(baseRibIdx, x,            y + keelDrop * 0.25, zR),
-            shellPointMm(baseRibIdx, x + w * 0.5,  y,                   zF),
-            shellPointMm(baseRibIdx, x + w * 0.42, y,                   zBack),
-            shellPointMm(baseRibIdx, x,            y - keelDrop,        zBack - 0.2),
-            shellPointMm(baseRibIdx, x - w * 0.42, y,                   zBack),
-            shellPointMm(baseRibIdx, x - w * 0.5,  y,                   zF)
-          ]);
-        }
-        const n = 6;
-        for (let s = 0; s < steps; s++) {
-          const rA = rings[s];
-          const rB = rings[s + 1];
-          for (let c = 0; c < n; c++) {
-            const cNext = (c + 1) % n;
-            positions.push(...rA[c], ...rA[cNext], ...rB[cNext]);
-            positions.push(...rA[c], ...rB[cNext], ...rB[c]);
-          }
-        }
-        const first = rings[0];
-        const last = rings[steps];
-        for (let c = 1; c < n - 1; c++) {
-          positions.push(...first[0], ...first[c + 1], ...first[c]);
-          positions.push(...last[0], ...last[c], ...last[c + 1]);
-        }
-      }
-
-      // Adds recessed 42° Gothic Support Arches in the rib plane (`zFront = -0.15 mm`, `zBack = -ribD * 0.72`)
-      // underneath wide motif overhangs so they bridge across rib gaps 100% support-free while staying
-      // visually recessed behind the proud `+2.4 mm` 3D motif silhouette!
-      function addRecessedRibCarrier(baseRibIdx, targetHalfWidthMm, yBridgeTop) {
-        const t = Math.max(0.08, Math.min(0.92, yBridgeTop / H));
-        const { r: rOuter } = evaluateOuterProfile(t);
-        const ribPitchMm = ((2 * Math.PI) / numRibs) * (rOuter - ribD * 0.35);
-        const zBackCarrier = -ribD * 0.68;
-        const zFrontCarrier = -0.10; // Recessed behind the outer rib face so the proud trunk stands out!
-
-        // Determine how many rib pitches `targetHalfWidthMm` spans
-        const maxSpanRibs = Math.max(1, Math.ceil(targetHalfWidthMm / ribPitchMm));
-        for (let r = 0; r < maxSpanRibs; r++) {
-          const xInnerRib = r * ribPitchMm;
-          const xOuterRib = Math.min(targetHalfWidthMm * 0.96, (r + 1) * ribPitchMm);
-          if (xOuterRib <= xInnerRib + 1.0) continue;
-          const xMidGap = 0.5 * (xInnerRib + xOuterRib);
-          const halfGap = 0.5 * (xOuterRib - xInnerRib);
-          const climbH = Math.max(2.6, halfGap * 1.08); // 42° support-free rise!
-          const yStart = yBridgeTop - climbH;
-
-          // Left & Right rising 42° gothic half-arches from each rib meeting at `yBridgeTop`
-          [-1, +1].forEach(dir => {
-            addReliefLoft(baseRibIdx, [
-              { y: yStart,              xL: dir * xInnerRib - 0.9, xR: dir * xInnerRib + 0.9, zFront: zFrontCarrier - 0.5, zRidge: zFrontCarrier - 0.3, zBack: zBackCarrier },
-              { y: yBridgeTop - 0.4,    xL: Math.min(dir * xInnerRib, dir * xMidGap) - 0.8, xR: Math.max(dir * xInnerRib, dir * xMidGap) + 0.8, zFront: zFrontCarrier, zRidge: zFrontCarrier + 0.15, zBack: zBackCarrier },
-              { y: yBridgeTop + 0.8,    xL: Math.min(dir * xInnerRib, dir * xMidGap) - 0.6, xR: Math.max(dir * xInnerRib, dir * xMidGap) + 0.6, zFront: zFrontCarrier, zRidge: zFrontCarrier + 0.15, zBack: zBackCarrier }
-            ]);
-            addReliefLoft(baseRibIdx, [
-              { y: yStart,              xL: dir * xOuterRib - 0.9, xR: dir * xOuterRib + 0.9, zFront: zFrontCarrier - 0.5, zRidge: zFrontCarrier - 0.3, zBack: zBackCarrier },
-              { y: yBridgeTop - 0.4,    xL: Math.min(dir * xOuterRib, dir * xMidGap) - 0.8, xR: Math.max(dir * xOuterRib, dir * xMidGap) + 0.8, zFront: zFrontCarrier, zRidge: zFrontCarrier + 0.15, zBack: zBackCarrier },
-              { y: yBridgeTop + 0.8,    xL: Math.min(dir * xOuterRib, dir * xMidGap) - 0.6, xR: Math.max(dir * xOuterRib, dir * xMidGap) + 0.6, zFront: zFrontCarrier, zRidge: zFrontCarrier + 0.15, zBack: zBackCarrier }
-            ]);
-          });
-        }
-      }
-
-      function buildSingleMotif(type, slotRibIdx, yCenter) {
-        const R = motifH * 0.5; // Vertical half-height in mm
-        // Proportional half-width in mm (clamped so adjacent motifs never collide and overhangs stay <= 43°)
-        const W = motifH * 0.46 * widthScale;
-        const zBack = -ribD * 0.58;
-        const zEdge = reliefMm * 0.78;
-        const zPeak = reliefMm * 1.32;
-        const bevelH = Math.max(2.0, reliefMm * 1.05); // 45° radial ramp height
-
-        if (type === 'tree') {
-          // =========================================================================
-          // 🎄 3D TANNENBAUM (Classic 3-Tiered Christmas Tree with Trunk & Star Tip)
-          // =========================================================================
-          const yBot      = yCenter - R;
-          const yTrunkTop = yCenter - R * 0.44;
-          const yTier1Bot = yCenter - R * 0.32;
-          const yTier1Top = yCenter - R * 0.16;
-          const yWaist1   = yCenter - R * 0.11;
-          const yTier2Wide= yCenter + R * 0.20;
-          const yTier2Top = yCenter + R * 0.28;
-          const yWaist2   = yCenter + R * 0.33;
-          const yTier3Wide= yCenter + R * 0.56;
-          const yTreePeak = yCenter + R * 1.02;
-
-          // Enforce <= 43° self-supporting expansion on Tier 2 and Tier 3
-          const wTrunk = Math.max(2.2, W * 0.20);
-          const wTier1 = W * 1.00;
-          const wWaist1 = W * 0.36;
-          const maxAddTier2 = (yTier2Wide - yWaist1) * 0.94;
-          const wTier2 = Math.min(W * 0.80, wWaist1 + maxAddTier2);
-          const wWaist2 = W * 0.26;
-          const maxAddTier3 = (yTier3Wide - yWaist2) * 0.94;
-          const wTier3 = Math.min(W * 0.56, wWaist2 + maxAddTier3);
-
-          // 1. Recessed 42° Rib-Plane Carrier under Tier 1 so the wide lower branch prints 100% support-free
-          addRecessedRibCarrier(slotRibIdx, wTier1, yTier1Bot);
-
-          // 2. Proud 3D Sculpted Christmas Tree (Trunk + 3 Stepped Branch Tiers + Sharp Peak)
-          addReliefLoft(slotRibIdx, [
-            // Trunk base: 45° radial ramp out from central rib
-            { y: yBot,            xL: -wTrunk * 0.65, xR: +wTrunk * 0.65, zFront: -0.2,        zRidge: 0.0,         zBack },
-            { y: yBot + bevelH,   xL: -wTrunk,        xR: +wTrunk,        zFront: zEdge * 0.9, zRidge: zPeak * 0.9, zBack },
-            // Crisp vertical Baumstamm (Tree Trunk)
-            { y: yTrunkTop,       xL: -wTrunk * 1.05, xR: +wTrunk * 1.05, zFront: zEdge * 0.9, zRidge: zPeak * 0.9, zBack },
-            // 1. Untere Ast-Etage (Flares out at 45° on top of the recessed rib carrier to full width wTier1!)
-            { y: yTier1Bot,       xL: -wTier1,        xR: +wTier1,        zFront: zEdge,       zRidge: zPeak * 1.08, zBack },
-            { y: yTier1Top,       xL: -wTier1 * 0.88, xR: +wTier1 * 0.88, zFront: zEdge,       zRidge: zPeak * 1.05, zBack },
-            // Sharp horizontal branch step inward to Waist 1 (100% supported by Tier 1 directly below!)
-            { y: yWaist1,         xL: -wWaist1,       xR: +wWaist1,       zFront: zEdge * 0.85,zRidge: zPeak * 0.95, zBack },
-            // 2. Mittlere Ast-Etage (Climbs outward at <= 43° to wTier2)
-            { y: yTier2Wide,      xL: -wTier2,        xR: +wTier2,        zFront: zEdge,       zRidge: zPeak * 1.08, zBack },
-            { y: yTier2Top,       xL: -wTier2 * 0.88, xR: +wTier2 * 0.88, zFront: zEdge,       zRidge: zPeak * 1.04, zBack },
-            // Sharp horizontal branch step inward to Waist 2 (100% supported by Tier 2 directly below!)
-            { y: yWaist2,         xL: -wWaist2,       xR: +wWaist2,       zFront: zEdge * 0.85,zRidge: zPeak * 0.95, zBack },
-            // 3. Obere Baumkrone (Climbs outward at <= 42° to wTier3)
-            { y: yTier3Wide,      xL: -wTier3,        xR: +wTier3,        zFront: zEdge,       zRidge: zPeak * 1.06, zBack },
-            // Tapers cleanly up to the proud Tannenbaum-Spitze!
-            { y: yCenter + R*0.84,xL: -wTier3 * 0.36, xR: +wTier3 * 0.36, zFront: zEdge * 0.8, zRidge: zPeak * 0.9,  zBack },
-            { y: yTreePeak,       xL: -0.45,          xR: +0.45,          zFront: 0.0,         zRidge: 0.3,          zBack }
-          ]);
-
-        } else if (type === 'star') {
-          // =========================================================================
-          // ★ 3D WEIHNACHTSSTERN (6-Point Faceted Advent Star with 3D Pyramid Jewel)
-          // =========================================================================
-          const yBotTip    = yCenter - R * 1.02;
-          const yBotNeck   = yCenter - R * 0.54;
-          const yLowRay    = yCenter - R * 0.20;
-          const yLowRayTop = yCenter - R * 0.13;
-          const yStarWaist = yCenter - R * 0.05;
-          const yUpRay     = yCenter + R * 0.28;
-          const yUpRayTop  = yCenter + R * 0.35;
-          const yTopNeck   = yCenter + R * 0.42;
-          const yTopTip    = yCenter + R * 1.02;
-
-          const wBotNeck   = Math.max(2.4, W * 0.28);
-          const wLowRay    = W * 0.94;
-          const wWaist     = W * 0.36;
-          const maxAddUp   = (yUpRay - yStarWaist) * 0.95;
-          const wUpRay     = Math.min(W * 1.02, wWaist + maxAddUp);
-          const wTopNeck   = W * 0.28;
-
-          // 1. Recessed 42° Rib-Plane Carrier under the wide lower star rays
-          addRecessedRibCarrier(slotRibIdx, wLowRay, yLowRay);
-
-          // 2. Proud 3D Faceted 6-Point Star Silhouette
-          addReliefLoft(slotRibIdx, [
-            // Bottom Star Point
-            { y: yBotTip,         xL: -0.45,          xR: +0.45,          zFront: -0.1,        zRidge: 0.2,          zBack },
-            { y: yBotTip + bevelH,xL: -wBotNeck * 0.6,xR: +wBotNeck * 0.6,zFront: zEdge * 0.8, zRidge: zPeak * 0.9,  zBack },
-            { y: yBotNeck,        xL: -wBotNeck,      xR: +wBotNeck,      zFront: zEdge * 0.9, zRidge: zPeak * 1.0,  zBack },
-            // Lower-Left & Lower-Right Star Rays
-            { y: yLowRay,         xL: -wLowRay,       xR: +wLowRay,       zFront: zEdge,       zRidge: zPeak * 1.22, zBack },
-            { y: yLowRayTop,      xL: -wLowRay * 0.86,xR: +wLowRay * 0.86,zFront: zEdge,       zRidge: zPeak * 1.25, zBack },
-            // Deep Star Waist (supported from below by lower rays!)
-            { y: yStarWaist,      xL: -wWaist,        xR: +wWaist,        zFront: zEdge * 0.9, zRidge: zPeak * 1.38, zBack },
-            // Upper-Left & Upper-Right Main Star Rays (42° self-supporting climb)
-            { y: yUpRay,          xL: -wUpRay,        xR: +wUpRay,        zFront: zEdge,       zRidge: zPeak * 1.22, zBack },
-            { y: yUpRayTop,       xL: -wUpRay * 0.84, xR: +wUpRay * 0.84, zFront: zEdge,       zRidge: zPeak * 1.15, zBack },
-            // Sharp step inward to Upper Star Spire Neck (supported from below!)
-            { y: yTopNeck,        xL: -wTopNeck,      xR: +wTopNeck,      zFront: zEdge * 0.9, zRidge: zPeak * 1.05, zBack },
-            // Tall Top Star Spire
-            { y: yCenter + R*0.78,xL: -wTopNeck * 0.45,xR: +wTopNeck*0.45,zFront: zEdge * 0.75,zRidge: zPeak * 0.85, zBack },
-            { y: yTopTip,         xL: -0.45,          xR: +0.45,          zFront: 0.0,         zRidge: 0.3,          zBack }
-          ]);
-
-        } else if (type === 'crystal') {
-          // =========================================================================
-          // ❄ 3D SCHNEEKRISTALL (Nordic 6-Arm Snowflake with Barbs & Raised Hex Core)
-          // =========================================================================
-          const barW = Math.max(2.2, motifH * 0.105);
-          const hexW = W * 0.44;
-          const hexH = R * 0.38;
-
-          // 1. Recessed 42° Rib-Plane Carrier for the wide crystal arms
-          addRecessedRibCarrier(slotRibIdx, W * 0.88, yCenter - R * 0.38);
-
-          // 2. Central Vertical Crystal Pillar with Lower & Upper Chevron Barbs + Raised Hex Core
-          addReliefLoft(slotRibIdx, [
-            { y: yCenter - R * 1.00, xL: -0.5,        xR: +0.5,        zFront: -0.1,        zRidge: 0.2,          zBack },
-            { y: yCenter - R * 0.78, xL: -W * 0.16,   xR: +W * 0.16,   zFront: zEdge * 0.85,zRidge: zPeak,        zBack },
-            // Lower crystal barb chevron
-            { y: yCenter - R * 0.56, xL: -W * 0.46,   xR: +W * 0.46,   zFront: zEdge,       zRidge: zPeak * 1.08, zBack },
-            { y: yCenter - R * 0.46, xL: -W * 0.20,   xR: +W * 0.20,   zFront: zEdge * 0.9, zRidge: zPeak,        zBack },
-            // Central Raised Hexagonal Ice Core
-            { y: yCenter - hexH,     xL: -hexW * 0.65,xR: +hexW * 0.65,zFront: zEdge * 1.05,zRidge: zPeak * 1.32, zBack },
-            { y: yCenter,            xL: -hexW,       xR: +hexW,       zFront: zEdge * 1.12,zRidge: zPeak * 1.40, zBack },
-            { y: yCenter + hexH,     xL: -hexW * 0.65,xR: +hexW * 0.65,zFront: zEdge * 1.05,zRidge: zPeak * 1.32, zBack },
-            // Upper crystal barb chevron
-            { y: yCenter + R * 0.46, xL: -W * 0.20,   xR: +W * 0.20,   zFront: zEdge * 0.9, zRidge: zPeak,        zBack },
-            { y: yCenter + R * 0.68, xL: -W * 0.46,   xR: +W * 0.46,   zFront: zEdge,       zRidge: zPeak * 1.08, zBack },
-            { y: yCenter + R * 0.76, xL: -W * 0.22,   xR: +W * 0.22,   zFront: zEdge * 0.9, zRidge: zPeak,        zBack },
-            { y: yCenter + R * 1.00, xL: -0.5,        xR: +0.5,        zFront: 0.0,         zRidge: 0.3,          zBack }
-          ]);
-
-          // 3. Four Diagonal 40° Snowflake Arms with Side Dendrite Barbs
-          [-1, +1].forEach(dir => {
-            // Lower diagonal crystal arm (climbs from outer bottom rib inward to Hex Core)
-            addFacetedBarMm(slotRibIdx, dir * W * 0.92, yCenter - R * 0.56, barW * 0.9, 0, yCenter, barW * 1.25, zEdge, zPeak * 1.15, zBack, 5);
-            // Upper diagonal crystal arm (climbs from Hex Core outward to upper crystal tip)
-            addFacetedBarMm(slotRibIdx, 0, yCenter, barW * 1.25, dir * W * 0.95, yCenter + R * 0.58, barW * 0.9, zEdge, zPeak * 1.15, zBack, 5);
-            // Vertical outer crystal dendrite barb on each upper arm
-            addFacetedBarMm(slotRibIdx, dir * W * 0.58, yCenter + R * 0.32, barW * 0.85, dir * W * 0.60, yCenter + R * 0.72, barW * 0.65, zEdge * 0.95, zPeak, zBack, 3);
-          });
-
-        } else if (type === 'heart') {
-          // =========================================================================
-          // ♥ 3D WINTER-HERZ (Sculpted Solid 3D Relief Heart with Deep Upper Cleft)
-          // =========================================================================
-          const yBotTip   = yCenter - R * 0.94;
-          const yLowCurve = yCenter - R * 0.42;
-          const yMidCheek = yCenter + R * 0.06;
-          const yMaxCheek = yCenter + R * 0.30;
-          const yCleftBot = yCenter + R * 0.32;
-          const yLobeMid  = yCenter + R * 0.64;
-          const yLobeTop  = yCenter + R * 0.88;
-
-          // Enforce <= 43° self-supporting lower heart curve
-          const wLow  = Math.min(W * 0.48, (yLowCurve - yBotTip) * 0.92);
-          const wMid  = Math.min(W * 0.88, wLow + (yMidCheek - yLowCurve) * 0.92);
-          const wFull = Math.min(W * 1.02, wMid + (yMaxCheek - yMidCheek) * 0.92);
-
-          // 1. Solid Lower & Middle Heart Body (from sharp bottom tip up to the top cleft split)
-          addReliefLoft(slotRibIdx, [
-            { y: yBotTip,          xL: -0.5,        xR: +0.5,        zFront: -0.1,        zRidge: 0.2,          zBack },
-            { y: yBotTip + bevelH, xL: -wLow * 0.45,xR: +wLow * 0.45,zFront: zEdge * 0.85,zRidge: zPeak * 0.95, zBack },
-            { y: yLowCurve,        xL: -wLow,       xR: +wLow,       zFront: zEdge,       zRidge: zPeak * 1.12, zBack },
-            { y: yMidCheek,        xL: -wMid,       xR: +wMid,       zFront: zEdge * 1.05,zRidge: zPeak * 1.25, zBack },
-            { y: yMaxCheek,        xL: -wFull,      xR: +wFull,      zFront: zEdge * 1.05,zRidge: zPeak * 1.22, zBack },
-            { y: yCleftBot,        xL: -wFull * 0.98,xR: +wFull*0.98,zFront: zEdge,       zRidge: zPeak * 1.10, zBack }
-          ]);
-
-          // 2. Left & Right Rounded Upper Heart Lobes (sit directly on top of the solid lower heart -> 0 overhang!)
-          [-1, +1].forEach(side => {
-            const xOuter0 = side * wFull * 0.98;
-            const xInner0 = side * wFull * 0.03;
-            const xOuter1 = side * wFull * 0.86;
-            const xInner1 = side * wFull * 0.18;
-            const xOuter2 = side * wFull * 0.58;
-            const xInner2 = side * wFull * 0.34;
-
-            addReliefLoft(slotRibIdx, [
-              { y: yCleftBot - 0.3, xL: Math.min(xOuter0, xInner0), xR: Math.max(xOuter0, xInner0), zFront: zEdge,        zRidge: zPeak * 1.15, zBack },
-              { y: yLobeMid,        xL: Math.min(xOuter1, xInner1), xR: Math.max(xOuter1, xInner1), zFront: zEdge * 0.95, zRidge: zPeak * 1.08, zBack },
-              { y: yLobeTop,        xL: Math.min(xOuter2, xInner2), xR: Math.max(xOuter2, xInner2), zFront: zEdge * 0.65, zRidge: zPeak * 0.75, zBack }
-            ]);
-          });
-        }
-      }
-
       const rowOffsets = numRows === 1
         ? [0]
-        : (numRows === 2 ? [-0.15, +0.15] : [-0.22, 0, +0.22]);
+        : (numRows === 2 ? [-0.23, +0.225] : [-0.24, 0, +0.24]);
 
       const mixCycle = ['tree', 'star', 'crystal'];
-      const greetingPlan = state.greetingEnabled ? getGreetingPlacementPlan(false) : null;
+      const gPlan = greetingPlan || (state.greetingEnabled ? getGreetingPlacementPlan(false) : null);
+      const hasSingleFrontPlaque = Boolean(gPlan && gPlan.count === 1);
 
       for (let rIdx = 0; rIdx < rowOffsets.length; rIdx++) {
         const yRow = Math.max(
-          state.baseThickness + motifH * 0.68,
-          Math.min(H - state.topRingHeight - motifH * 0.68, (centerRatio + rowOffsets[rIdx]) * H)
+          state.baseThickness + motifH * 0.56,
+          Math.min(H - state.topRingHeight - motifH * 0.56, (centerRatio + rowOffsets[rIdx]) * H)
         );
-        const staggerSlots = (rIdx % 2 === 1) ? (numRibs / (countPerRow * 2)) : 0;
+        const rowShift = hasSingleFrontPlaque
+          ? (rIdx % 2 === 0 ? 0.5 : 0)
+          : (rIdx % 2 === 1 ? 0.5 : 0);
+        const staggerSlots = rowShift * (numRibs / countPerRow);
 
         for (let m = 0; m < countPerRow; m++) {
-          const slotRibIdx = Math.round((m / countPerRow) * numRibs + staggerSlots) % numRibs;
-          if (greetingPlan && doesMotifCollideWithGreeting(slotRibIdx, yRow, motifH, widthScale, greetingPlan, numRibs, H, ribD)) {
+          const slotRibIdx = ((m / countPerRow) * numRibs + staggerSlots) % numRibs;
+          if (gPlan && doesMotifCollideWithGreeting(slotRibIdx, yRow, motifH, widthScale, gPlan, numRibs, H, ribD)) {
             continue;
           }
           let subType = state.motifType;
           if (subType === 'mix') {
-            subType = mixCycle[(m + rIdx) % mixCycle.length];
+            subType = (numRows === 2)
+              ? (rIdx === 0 ? 'tree' : 'star')
+              : mixCycle[(m + rIdx) % mixCycle.length];
           }
-          buildSingleMotif(subType, slotRibIdx, yRow);
+          const { outer, inner, exclCCW } = makeMotifPolygons(subType, yRow, motifH, widthScale);
+          extrudeCurvedShape(positions, slotRibIdx, outer, [inner], zFront, zBack, 3.0);
+
+          if (cutoutExclusions) {
+            const bounds = polyBounds2D(exclCCW);
+            const centerAngle = slotRibIdx * dTheta + twistRad * (yRow / H);
+            cutoutExclusions.push({
+              centerAngle,
+              xMin: bounds.xMin,
+              xMax: bounds.xMax,
+              yMin: bounds.yMin,
+              yMax: bounds.yMax,
+              polyCCW: exclCCW
+            });
+          }
         }
       }
 
@@ -1120,24 +1162,26 @@
         return null;
       }
 
+      const style = (state.greetingStyle === 'relief') ? 'relief' : 'cutout';
       const H = state.height;
       const numRibs = Math.round(state.ribCount);
       const ribD = state.ribDepth;
-      const count = Math.max(1, Math.min(6, Math.round(state.greetingCount || 3)));
-      const requestedSize = Math.max(8, Math.min(24, Number(state.greetingSize) || 12));
-      const reliefMm = Math.max(1.2, Math.min(2.6, Number(state.greetingRelief) || 1.8));
-      const requestedRatio = Math.max(30, Math.min(72, Number(state.greetingHeightRatio) || 62)) / 100;
+      const count = Math.max(1, Math.min(6, Math.round(state.greetingCount || 1)));
+      const requestedSize = Math.max(8, Math.min(24, Number(state.greetingSize) || 13));
+      const reliefMm = style === 'cutout'
+        ? Math.max(0.2, Math.min(2.6, Number(state.greetingRelief) || 0.6))
+        : Math.max(1.2, Math.min(2.6, Number(state.greetingRelief) || 1.8));
+      const requestedRatio = Math.max(30, Math.min(72, Number(state.greetingHeightRatio) || 48)) / 100;
       const yDesired = requestedRatio * H;
 
       const zBandFront = -0.60;
       const zBandRidge = -0.50;
       const zBandBack = Math.min(-2.20, -ribD + 0.60);
       const bandHalfThick = 0.5 * (zBandRidge - zBandBack);
-      const bevelRadH = bandHalfThick * 1.08; // 42.8° radial roof/bottom taper
+      const bevelRadH = style === 'cutout' ? 0 : bandHalfThick * 1.08;
 
-      // Compute allowed vertical zones avoiding base plate (+4mm), top ring (-4mm), and stabilizer rings (±4mm)
-      const yMinAllowed = state.baseThickness + 4.0;
-      const yMaxAllowed = H - state.topRingHeight - 4.0;
+      const yMinAllowed = state.baseThickness + (style === 'cutout' ? 2.5 : 4.0);
+      const yMaxAllowed = H - state.topRingHeight - (style === 'cutout' ? 2.5 : 4.0);
       const activeStab = state.stabilizerMode === 'none' ? 0 : Math.round(state.stabilizerCount || 0);
       const stabNorms = getStabilizerNormalizedHeights(activeStab)
         .map(t => t * H)
@@ -1161,13 +1205,17 @@
         freeZones.push({ bot: yMinAllowed, top: Math.max(yMinAllowed + 12, yMaxAllowed) });
       }
 
-      // Estimate rib pitch near desired height for bottom V-arch height
       const { r: rEst } = evaluateOuterProfile(Math.max(0.15, Math.min(0.85, requestedRatio)));
-      const rShellEst = Math.max(20, rEst - ribD * 0.35);
+      const rShellEst = Math.max(18, rEst - ribD * 0.35);
       const ribPitchEst = (2 * Math.PI * rShellEst) / numRibs;
-      const archClimbEst = 0.5 * ribPitchEst * 1.08;
+      const archClimbEst = style === 'cutout' ? 0 : 0.5 * ribPitchEst * 1.08;
 
       function spansForSize(sMm) {
+        if (style === 'cutout') {
+          const padY = Math.max(3.0, sMm * 0.25);
+          const flatHalfH = sMm * 0.5 + padY;
+          return { padY, flatHalfH, topSpan: flatHalfH, botSpan: flatHalfH, totalSpan: 2 * flatHalfH };
+        }
         const padY = Math.max(1.6, sMm * 0.15);
         const flatHalfH = sMm * 0.54 + padY;
         const topSpan = flatHalfH + bevelRadH;
@@ -1207,26 +1255,37 @@
 
       const heightShifted = Math.abs(yCenter - yDesired) > 0.6;
 
-      // Exact circumference and available arc per band at yCenter
       const { r: rOuter } = evaluateOuterProfile(yCenter / H);
-      const rShell = Math.max(20, rOuter - ribD * 0.35);
+      const rShell = Math.max(18, rOuter - ribD * 0.35);
       const circumferenceMm = 2 * Math.PI * rShell;
       const ribPitchMm = circumferenceMm / numRibs;
       const maxBaysPerBand = count === 1
         ? Math.max(2, numRibs - 2)
         : Math.max(1, Math.floor(numRibs / count) - 1);
-      const maxArcMm = maxBaysPerBand * ribPitchMm;
+      const maxArcMm = (style === 'cutout' && count === 1)
+        ? Math.min(maxBaysPerBand * ribPitchMm, circumferenceMm * 0.34)
+        : maxBaysPerBand * ribPitchMm;
 
-      // Automatically scale down font size (down to 6.0 mm) if text exceeds available arc
-      let padX = Math.max(1.8, effSize * 0.20);
-      let layout = glyphApi.layoutGreetingString(cleanText, effSize);
-      while (effSize > 6.0 && (layout.totalWidthMm + 2 * padX > maxArcMm)) {
-        effSize = Math.max(6.0, +(effSize - 0.2).toFixed(2));
-        padX = Math.max(1.8, effSize * 0.20);
-        layout = glyphApi.layoutGreetingString(cleanText, effSize);
+      function computePadX(sz) {
+        if (style === 'cutout') {
+          const sp = spansForSize(sz);
+          return Math.max(7.2, sp.flatHalfH * 0.88);
+        }
+        return Math.max(1.8, sz * 0.20);
       }
 
-      // If still too wide at 6.0 mm, truncate on word boundary and warn in console
+      const layoutFn = (style === 'cutout' && typeof glyphApi.layoutCutoutGreeting === 'function')
+        ? glyphApi.layoutCutoutGreeting
+        : glyphApi.layoutGreetingString;
+
+      let padX = computePadX(effSize);
+      let layout = layoutFn(cleanText, effSize);
+      while (effSize > 6.0 && (layout.totalWidthMm + 2 * padX > maxArcMm)) {
+        effSize = Math.max(6.0, +(effSize - 0.2).toFixed(2));
+        padX = computePadX(effSize);
+        layout = layoutFn(cleanText, effSize);
+      }
+
       let wasTruncated = false;
       if (layout.totalWidthMm + 2 * padX > maxArcMm) {
         wasTruncated = true;
@@ -1234,7 +1293,7 @@
         while (words.length > 1) {
           words.pop();
           const candidateText = words.join(' ');
-          const candLayout = glyphApi.layoutGreetingString(candidateText, effSize);
+          const candLayout = layoutFn(candidateText, effSize);
           if (candLayout.totalWidthMm + 2 * padX <= maxArcMm) {
             cleanText = candidateText;
             layout = candLayout;
@@ -1243,12 +1302,12 @@
         }
         while (cleanText.length > 1 && (layout.totalWidthMm + 2 * padX > maxArcMm)) {
           cleanText = cleanText.slice(0, -1).trim();
-          layout = glyphApi.layoutGreetingString(cleanText, effSize);
+          layout = layoutFn(cleanText, effSize);
         }
       }
 
       const finalSpans = spansForSize(effSize);
-      const archClimbH = 0.5 * ribPitchMm * 1.08;
+      const archClimbH = style === 'cutout' ? 0 : 0.5 * ribPitchMm * 1.08;
       const yFlatBot = yCenter - finalSpans.flatHalfH;
       const yFlatTop = yCenter + finalSpans.flatHalfH;
       const yBandTotalBot = yFlatBot - bevelRadH - archClimbH;
@@ -1259,24 +1318,31 @@
 
       const bands = [];
       for (let bIdx = 0; bIdx < count; bIdx++) {
-        const kLeft = Math.round((bIdx / count) * numRibs - spanBays * 0.5);
-        const kRight = kLeft + spanBays;
-        const centerRib = kLeft + spanBays * 0.5;
-        bands.push({ kLeft, kRight, centerRib, spanBays });
+        if (style === 'cutout') {
+          const centerRib = (bIdx / count) * numRibs;
+          const kLeft = Math.floor(centerRib - spanBays * 0.5);
+          const kRight = kLeft + spanBays;
+          bands.push({ kLeft, kRight, centerRib, spanBays });
+        } else {
+          const kLeft = Math.round((bIdx / count) * numRibs - spanBays * 0.5);
+          const kRight = kLeft + spanBays;
+          const centerRib = kLeft + spanBays * 0.5;
+          bands.push({ kLeft, kRight, centerRib, spanBays });
+        }
       }
 
       if (logWarnings) {
-        const warnKey = `${cleanText}|${effSize.toFixed(1)}|${Math.round(yCenter)}|${heightShifted}|${wasTruncated}`;
+        const warnKey = `${style}|${cleanText}|${effSize.toFixed(1)}|${Math.round(yCenter)}|${heightShifted}|${wasTruncated}`;
         if (warnKey !== lastGreetingWarnKey) {
           lastGreetingWarnKey = warnKey;
           if (heightShifted) {
             console.warn(
-              `[Lumenrib Christmas Text] Vertical position shifted from ${yDesired.toFixed(1)} mm to ${yCenter.toFixed(1)} mm (${Math.round((yCenter / H) * 100)} %) to maintain >= 4 mm clearance from stabilizer rings/edges.`
+              `[Lumenrib Christmas Text] Vertical position adjusted from ${yDesired.toFixed(1)} mm to ${yCenter.toFixed(1)} mm (${Math.round((yCenter / H) * 100)} %) to maintain >= 4 mm clearance from rings and edges.`
             );
           }
           if (wasTruncated) {
             console.warn(
-              `[Lumenrib Christmas Text] Text truncated at 6.0 mm minimum size on word boundary to "${cleanText}" (available arc: ${maxArcMm.toFixed(1)} mm).`
+              `[Lumenrib Christmas Text] Text truncated at word boundary at 6.0 mm minimum size to "${cleanText}" (available arc: ${maxArcMm.toFixed(1)} mm).`
             );
           }
         }
@@ -1285,11 +1351,16 @@
       updateGreetingInfoBadge(cleanText, effSize, effSize < requestedSize - 0.05, heightShifted);
 
       return {
+        style,
         cleanText,
         effSize,
         requestedSize,
         reliefMm,
         count,
+        padX,
+        padY: finalSpans.padY,
+        flatHalfH: finalSpans.flatHalfH,
+        neededWidthMm,
         yCenter,
         yFlatBot,
         yFlatTop,
@@ -1309,13 +1380,13 @@
 
     function doesMotifCollideWithGreeting(slotRibIdx, yRow, motifH, widthScale, plan, numRibs, H, ribD) {
       if (!plan) return false;
-      const motifBot = yRow - motifH * 0.62;
-      const motifTop = yRow + motifH * 0.55;
-      if (motifTop < plan.yBandTotalBot - 1.5 || motifBot > plan.yBandTotalTop + 1.5) {
+      const motifBot = yRow - motifH * 0.50;
+      const motifTop = yRow + motifH * 0.50;
+      if (motifTop <= plan.yBandTotalBot - 0.2 || motifBot >= plan.yBandTotalTop + 0.2) {
         return false;
       }
       const { r: rOuter } = evaluateOuterProfile(Math.max(0.08, Math.min(0.92, yRow / H)));
-      const ribPitchAtRow = (2 * Math.PI * Math.max(20, rOuter - ribD * 0.35)) / numRibs;
+      const ribPitchAtRow = (2 * Math.PI * Math.max(18, rOuter - ribD * 0.35)) / numRibs;
       const motifHalfW = motifH * 0.48 * widthScale;
       const motifHalfRibs = (motifHalfW / ribPitchAtRow) + 0.55;
 
@@ -1331,11 +1402,43 @@
       return false;
     }
 
+    function makeCapsulePoly2D(widthMm, heightMm, yCenter, capSteps = 12) {
+      const halfH = heightMm * 0.5;
+      const rCap = Math.min(halfH, widthMm * 0.45);
+      const straightHalf = Math.max(0.5, widthMm * 0.5 - rCap);
+      const crown = Math.min(0.9, halfH * 0.08);
+      const pts = [];
+      // Right semicircle: -PI/2 -> +PI/2 (CCW)
+      for (let i = 0; i <= capSteps; i++) {
+        const a = -Math.PI * 0.5 + (i / capSteps) * Math.PI;
+        pts.push([straightHalf + Math.cos(a) * rCap, yCenter + Math.sin(a) * halfH]);
+      }
+      // Subtle curved top span (+straightHalf -> -straightHalf)
+      const spanSteps = Math.max(4, Math.ceil((straightHalf * 2) / 3.0));
+      for (let i = 1; i < spanSteps; i++) {
+        const f = i / spanSteps;
+        const x = straightHalf - 2 * straightHalf * f;
+        pts.push([x, yCenter + halfH + Math.sin(Math.PI * f) * crown]);
+      }
+      // Left semicircle: +PI/2 -> +3*PI/2 (CCW)
+      for (let i = 0; i <= capSteps; i++) {
+        const a = Math.PI * 0.5 + (i / capSteps) * Math.PI;
+        pts.push([-straightHalf + Math.cos(a) * rCap, yCenter + Math.sin(a) * halfH]);
+      }
+      // Subtle curved bottom span (-straightHalf -> +straightHalf)
+      for (let i = 1; i < spanSteps; i++) {
+        const f = i / spanSteps;
+        const x = -straightHalf + 2 * straightHalf * f;
+        pts.push([x, yCenter - halfH - Math.sin(Math.PI * f) * crown]);
+      }
+      return ensureCCW2D(pts);
+    }
+
     // ============================================================================
-    // 3D CHRISTMAS GREETING BAND & SUPPORT-FREE <= 45° RELIEF TEXT ENGINE
+    // 3D CHRISTMAS GREETING PLAQUE (CUTOUT STENCIL) & RELIEF TEXT ENGINE
     // ============================================================================
-    function buildGreetingGeometry() {
-      const plan = getGreetingPlacementPlan(true);
+    function buildGreetingGeometry(planArg = null, cutoutExclusions = null) {
+      const plan = planArg || getGreetingPlacementPlan(true);
       if (!plan) return null;
 
       const H = state.height;
@@ -1346,6 +1449,55 @@
       const dTheta = (Math.PI * 2) / numRibs;
 
       const positions = [];
+
+      if (plan.style === 'cutout') {
+        const plaqueH = plan.flatHalfH * 2;
+        const plaqueW = Math.max(plaqueH * 1.15, plan.layout.totalWidthMm + 2 * plan.padX);
+        const zFront = Math.max(0.2, plan.reliefMm);
+        const zBack = -Math.min(ribD, Math.max(2.2, ribD * 0.90));
+
+        const outerPlaqueCCW = makeCapsulePoly2D(plaqueW, plaqueH, plan.yCenter, 12);
+        const glyphHolesCW = [];
+        const yBotText = plan.yCenter - 0.5 * plan.effSize;
+
+        for (let i = 0; i < plan.layout.items.length; i++) {
+          const item = plan.layout.items[i];
+          const x0 = item.xStart;
+          for (let hIdx = 0; hIdx < item.holesNorm.length; hIdx++) {
+            const holeNorm = item.holesNorm[hIdx];
+            const hole2D = holeNorm.map(([u, v]) => [x0 + u * item.boxW, yBotText + v * plan.effSize]);
+            glyphHolesCW.push(ensureCW2D(hole2D));
+          }
+        }
+
+        // Rib exclusion inset by 1.65mm inside pill rim: ribs anchor solidly inside border without crossing letters!
+        const insetDist = Math.min(1.65, plan.padY * 0.55);
+        const exclCCW = ensureCCW2D(offsetPolygon2D(outerPlaqueCCW, insetDist));
+        const exclBounds = polyBounds2D(exclCCW);
+
+        for (let bIdx = 0; bIdx < plan.bands.length; bIdx++) {
+          const band = plan.bands[bIdx];
+          extrudeCurvedShape(positions, band.centerRib, outerPlaqueCCW, glyphHolesCW, zFront, zBack, 2.5);
+
+          if (cutoutExclusions) {
+            const centerAngle = band.centerRib * dTheta + twistRad * (plan.yCenter / H);
+            cutoutExclusions.push({
+              centerAngle,
+              xMin: exclBounds.xMin,
+              xMax: exclBounds.xMax,
+              yMin: exclBounds.yMin,
+              yMax: exclBounds.yMax,
+              polyCCW: exclCCW
+            });
+          }
+        }
+
+        if (positions.length === 0) return null;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+        geo.computeVertexNormals();
+        return geo;
+      }
 
       function shellPointMm(baseRibIdx, xMm, yMm, zRelOuterMm) {
         const yClamped = Math.max(state.baseThickness + 1.8, Math.min(H - state.topRingHeight - 1.8, yMm));
@@ -1694,15 +1846,17 @@
       ];
       const topRingGeo = buildClosedLatheGeometry(topRingProfile, 72);
 
-      // 3. Curved Parametric Ribs (including top gothic arch transition)
-      const { geo: ribsGeo, maxOverhangAngleDeg } = buildRibsGeometry();
+      // 3. Collect cutout plaques & hollow motifs first so vertical ribs cleanly stop inside borders
+      const cutoutExclusions = [];
+      const greetingPlan = getGreetingPlacementPlan(true);
+      const greetingGeo = buildGreetingGeometry(greetingPlan, cutoutExclusions);
+      const motifsGeo = buildMotifsGeometry(greetingPlan, cutoutExclusions);
 
-      // 4. Optional Anti-Vibration Stabilizer Rings (Breakaway or Permanent)
+      // 4. Curved Parametric Ribs (clipped cleanly at hollow motif / cutout interiors)
+      const { geo: ribsGeo, maxOverhangAngleDeg } = buildRibsGeometry(cutoutExclusions);
+
+      // 5. Optional Anti-Vibration Stabilizer Rings (Breakaway or Permanent)
       const stabGeo = buildStabilizerRingsGeometry();
-      // 5. Optional Support-Free 3D Sculpted Decorative Christmas Trees, Stars & Winter Symbols
-      const motifsGeo = buildMotifsGeometry();
-      // 6. Optional Support-Free 3D Christmas Greeting Band & Relief Text
-      const greetingGeo = buildGreetingGeometry();
       let breakawayPreviewGeo = null;
       let motifsPreviewGeo = null;
 
@@ -1764,20 +1918,22 @@
       lanternMesh.receiveShadow = true;
       lanternGroup.add(lanternMesh);
 
-      // Subtle 3D Relief Specular / Contrast Overlay on the decorative motifs so their 3D facets pop clearly in the viewport
+      // Subtle surface finish overlay on decorative plaques & motifs
       if (motifsPreviewGeo) {
         const baseCol = new THREE.Color(state.lanternColor);
-        const highlightCol = baseCol.clone().lerp(new THREE.Color(0xfff3db), 0.28);
+        const highlightCol = baseCol.clone().lerp(new THREE.Color(0xfff3db), 0.05);
         const motifHighlightMat = new THREE.MeshStandardMaterial({
           color: highlightCol,
-          roughness: 0.36,
-          metalness: 0.14,
+          roughness: 0.54,
+          metalness: 0.08,
+          side: THREE.DoubleSide,
           polygonOffset: true,
           polygonOffsetFactor: -1,
           polygonOffsetUnits: -1,
           clippingPlanes: activeClips
         });
         const motifHighlightMesh = new THREE.Mesh(motifsPreviewGeo, motifHighlightMat);
+        motifHighlightMesh.name = 'motifHighlight';
         lanternGroup.add(motifHighlightMesh);
       }
 
@@ -1941,14 +2097,21 @@
         const topGap = (0.98 - prevT) * state.height;
         if (topGap > maxUpperSpanMm) maxUpperSpanMm = topGap;
       }
-      const freeSpanMm = Math.max(8, Math.round(maxUpperSpanMm));
+      const hasCircumferentialTie = (state.motifType !== 'none' && state.motifCount >= 4) || state.greetingEnabled;
+      const rawFreeSpanMm = Math.max(8, Math.round(maxUpperSpanMm));
+      const freeSpanMm = (activeRings === 0 && state.height <= 115 && hasCircumferentialTie)
+        ? Math.max(8, Math.round(rawFreeSpanMm * 0.42))
+        : rawFreeSpanMm;
       state.lastFreeSpanMm = freeSpanMm;
       const spans = activeRings + 1;
       const stiffnessGain = Math.pow(spans, 3);
       const spanBadge = document.getElementById('free-span-badge');
       if (spanBadge) {
         if (activeRings > 0) {
-          spanBadge.textContent = `~${freeSpanMm} mm (${stiffnessGain}× steifer)`;
+          spanBadge.textContent = `~${freeSpanMm} mm (${stiffnessGain}× stiffer)`;
+          spanBadge.className = 'font-mono font-bold text-teal-300';
+        } else if (state.height <= 115 && hasCircumferentialTie) {
+          spanBadge.textContent = `~${freeSpanMm} mm (supported by motifs)`;
           spanBadge.className = 'font-mono font-bold text-teal-300';
         } else {
           spanBadge.textContent = `${freeSpanMm} mm (unsupported!)`;
@@ -2034,9 +2197,25 @@
         }
       });
 
+      const style = state.greetingStyle === 'relief' ? 'relief' : 'cutout';
+      const styleCutoutBtn = document.getElementById('greeting-style-cutout');
+      const styleReliefBtn = document.getElementById('greeting-style-relief');
+      const styleActiveCls = 'py-2 px-2 rounded-lg text-[11px] font-semibold bg-amber-500/25 text-amber-200 border border-amber-400/40 transition-all';
+      const styleInactiveCls = 'py-2 px-2 rounded-lg text-[11px] font-medium bg-studio-800 text-gray-400 hover:text-white border border-white/10 transition-all';
+      if (styleCutoutBtn) styleCutoutBtn.className = style === 'cutout' ? styleActiveCls : styleInactiveCls;
+      if (styleReliefBtn) styleReliefBtn.className = style === 'relief' ? styleActiveCls : styleInactiveCls;
+
       const glyphApi = (typeof window !== 'undefined' && window.LumenGlyphs) ? window.LumenGlyphs : null;
       const clean = glyphApi ? glyphApi.sanitizeGreetingText(state.greetingText, 24) : (state.greetingText || '');
       updateGreetingInfoBadge(clean, state.greetingSize, false, false);
+    }
+
+    function setGreetingStyle(styleVal, skipRebuild = false) {
+      state.greetingStyle = (styleVal === 'relief') ? 'relief' : 'cutout';
+      syncGreetingUI();
+      if (!skipRebuild) {
+        rebuildAll();
+      }
     }
 
     function setGreetingEnabled(flag, skipRebuild = false) {
@@ -2255,7 +2434,7 @@
     function applyPreset(presetName) {
       if (window.lumenTrack) window.lumenTrack('preset', { preset: String(presetName).slice(0, 40) });
       const presets = {
-        tealight: {
+          tealight: {
           height: 110,
           bellyDia: 124,
           topInnerDia: 62,
@@ -2267,6 +2446,7 @@
           ribDepth: 4.0,
           twistAngle: 15,
           topRingHeight: 3.2,
+          stabilizerMode: 'breakaway',
           stabilizerCount: 2,
           stabilizerWidth: 3.0,
           stabilizerThickness: 3.2,
@@ -2292,33 +2472,45 @@
           ribWidth: 2.6,
           ribDepth: 4.5,
           twistAngle: 0,
+          stabilizerMode: 'breakaway',
           motifType: 'none',
           greetingEnabled: false
         },
         xmas: {
-          height: 168,
-          bellyDia: 204,
-          topInnerDia: 96,
-          baseOuterDia: 110,
-          bellyHeightRatio: 46,
-          curveTension: 55,
-          ribCount: 48,
-          ribWidth: 2.6,
-          ribDepth: 4.5,
+          height: 105,
+          bellyDia: 104,
+          topInnerDia: 58,
+          baseOuterDia: 68,
+          bellyHeightRatio: 43,
+          curveTension: 54,
+          ribCount: 36,
+          ribWidth: 2.1,
+          ribDepth: 3.8,
           twistAngle: 0,
+          topRingHeight: 3.2,
+          stabilizerMode: 'none',
+          rootBoost: 15,
+          baseThickness: 5.0,
+          recessDepth: 2.0,
+          candleClearance: 1.0,
+          recessRimWidth: 3.0,
+          candleDia: 38,
+          candleHeight: 18,
           motifType: 'mix',
           motifCount: 6,
           motifRows: 2,
-          motifSize: 32,
-          motifWidthScale: 105,
-          motifRelief: 2.6,
-          motifHeightRatio: 50,
+          motifSize: 22,
+          motifWidthScale: 100,
+          motifRelief: 0.6,
+          motifHeightRatio: 49,
           greetingEnabled: true,
-          greetingText: 'FROHE WEIHNACHTEN',
-          greetingSize: 12,
-          greetingRelief: 1.8,
-          greetingCount: 3,
-          greetingHeightRatio: 62
+          greetingStyle: 'cutout',
+          greetingText: 'XMAS',
+          greetingSize: 13,
+          greetingRelief: 0.6,
+          greetingCount: 1,
+          greetingHeightRatio: 48,
+          lanternColor: '#23262e'
         },
         lounge: {
           height: 150,
@@ -2331,6 +2523,7 @@
           ribWidth: 2.6,
           ribDepth: 4.8,
           twistAngle: 0,
+          stabilizerMode: 'breakaway',
           motifType: 'none',
           greetingEnabled: false
         },
@@ -2345,6 +2538,7 @@
           ribWidth: 2.8,
           ribDepth: 4.6,
           twistAngle: 45,
+          stabilizerMode: 'breakaway',
           motifType: 'none',
           greetingEnabled: false
         },
@@ -2359,6 +2553,7 @@
           ribWidth: 2.8,
           ribDepth: 4.8,
           twistAngle: 0,
+          stabilizerMode: 'breakaway',
           motifType: 'none',
           greetingEnabled: false
         }
@@ -2368,7 +2563,7 @@
       if (!p) return;
 
       Object.keys(p).forEach(k => {
-        if (k === 'motifType' || k === 'greetingEnabled' || k === 'greetingText') return;
+        if (k === 'motifType' || k === 'greetingEnabled' || k === 'greetingStyle' || k === 'greetingText' || k === 'stabilizerMode' || k === 'lanternColor') return;
         state[k] = p[k];
         const input = document.getElementById(`param-${k}`);
         if (input) input.value = p[k];
@@ -2382,11 +2577,20 @@
       if (typeof p.greetingText === 'string') {
         state.greetingText = p.greetingText;
       }
+      if (typeof p.greetingStyle === 'string') {
+        setGreetingStyle(p.greetingStyle, true);
+      }
       if (typeof p.greetingEnabled === 'boolean') {
         setGreetingEnabled(p.greetingEnabled, true);
       }
       if (p.motifType) {
         setMotifType(p.motifType);
+      }
+      if (p.stabilizerMode) {
+        setStabilizerMode(p.stabilizerMode);
+      }
+      if (p.lanternColor) {
+        setLanternColor(p.lanternColor);
       }
 
       // Highlight active preset button
@@ -2433,11 +2637,18 @@
       if (lanternMesh && lanternMesh.material) {
         lanternMesh.material.color.set(hexColor);
       }
+      if (lanternGroup) {
+        const hl = lanternGroup.children.find(ch => ch.name === 'motifHighlight');
+        if (hl && hl.material) {
+          hl.material.color.copy(new THREE.Color(hexColor).lerp(new THREE.Color(0xfff3db), 0.05));
+        }
+      }
+      const targetBtn = btnEl || document.querySelector(`.color-swatch[data-color="${hexColor}"]`);
       document.querySelectorAll('.color-swatch').forEach(el => {
         el.className = 'color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform';
       });
-      if (btnEl) {
-        btnEl.className = 'color-swatch w-6 h-6 rounded-full border-2 border-white scale-110 transition-transform';
+      if (targetBtn) {
+        targetBtn.className = 'color-swatch w-6 h-6 rounded-full border-2 border-white scale-110 transition-transform';
       }
     }
 
@@ -2564,12 +2775,16 @@
       // 1. Stability & Anti-Vibration Evaluation
       let stabilityLevel = 'good';
       const stepVal = Math.round(state.upperPinStep !== undefined ? state.upperPinStep : 4);
-      const pinSummary = stepVal <= 0 ? '1 Hebel-Pin/Stab' : `1 Pin + jeder ${stepVal}. Stab 2. Pin`;
+      const pinSummary = stepVal <= 0 ? '1 lever pin/rib' : `1 pin + 2nd pin every ${stepVal}th rib`;
       const stabModeText = state.stabilizerMode === 'breakaway'
-        ? `${activeStabRings} Top-Down Hebel-Snap Ringen (${pinSummary}, ${state.stabilizerNeck.toFixed(2)} mm V-Kerbe)`
-        : (state.stabilizerMode === 'permanent' ? `${activeStabRings} festen 42°-Vasen-Ringen` : 'without intermediate rings');
-      let stabilityTitle = `PETG-Hebel-Snap & Stabil (Max. frei ~${freeSpanMm} mm)`;
-      let stabilityDesc = `Thanks to ${stabModeText} the rings can be peeled off from the top by pressing down on the inner lever collar (6.5× lever arm) in a domino effect, without breaking a rib.`;
+        ? `${activeStabRings} Top-Down Lever-Snap rings (${pinSummary}, ${state.stabilizerNeck.toFixed(2)} mm V-notch)`
+        : (state.stabilizerMode === 'permanent' ? `${activeStabRings} fixed 42° vase rings` : 'without intermediate rings');
+      let stabilityTitle = state.stabilizerMode === 'none'
+        ? `Compact & stable (max. free ~${freeSpanMm} mm)`
+        : `PETG Lever-Snap & stable (max. free ~${freeSpanMm} mm)`;
+      let stabilityDesc = state.stabilizerMode === 'none'
+        ? 'No breakaway rings needed — the compact lantern body is braced smoothly by the motif and plaque bridges.'
+        : `Thanks to ${stabModeText} the rings can be peeled off from the top by pressing down on the inner lever collar (6.5× lever arm) in a domino effect, without breaking a rib.`;
 
       if (state.ribWidth < 2.0 || state.ribDepth < 3.0 || ribCrossArea < 6.5) {
         stabilityLevel = 'danger';
@@ -2593,13 +2808,20 @@
 
       // 2. Print Failure / Danger Check (Nozzle collision, curling overhangs, spaghetti risk)
       let dangerLevel = 'good';
-      let dangerTitle = 'Harmless (no failure risk)';
+      let dangerTitle = 'Safe (no failure risk)';
       let dangerDesc = `A maximum overhang of ${overhang}° is in the safe range. No curling and no collision risk for the nozzle.`;
+
+      const gPlanCheck = state.greetingEnabled ? getGreetingPlacementPlan(false) : null;
+      const hasCutoutFloatingTips = Boolean(
+        gPlanCheck &&
+        gPlanCheck.style === 'cutout' &&
+        /[MNTWXYEFPBRKSZ235789]/.test(gPlanCheck.cleanText || '')
+      );
 
       if (overhang > 63 || (overhang > 56 && state.ribWidth < 2.0)) {
         dangerLevel = 'danger';
         dangerTitle = 'Increased failure & collision risk!';
-        dangerDesc = `The ${overhang}° overhang is very shallow. The free rib edges can curl upwards while cooling, so the nozzle hits them and the print fails ("Spaghetti-Druck").`;
+        dangerDesc = `The ${overhang}° overhang is very shallow. The free rib edges can curl upwards while cooling, so the nozzle hits them and the print fails.`;
         score -= 38;
         needsOptimization = true;
       } else if (overhang > 54 || Math.abs(state.twistAngle) > 65) {
@@ -2608,12 +2830,16 @@
         dangerDesc = `A ${overhang}° overhang needs good part cooling (100 % fan) and reduced overhang speed so the lamellae layer cleanly.`;
         score -= 14;
         needsOptimization = true;
+      } else if (hasCutoutFloatingTips) {
+        dangerTitle = 'Printable — small tree support recommended for text';
+        dangerDesc = `Frame, all ${state.ribCount} ribs, stars and trees print completely support-free (${overhang}°). For floating inner V-tips inside cutout letters (e.g. X, M), enable Tree (Auto) support in Bambu Studio or switch to 3D Relief.`;
+        score -= 3;
       }
 
       // 3. Candle Fit & Tray Floor Check
       let candleLevel = 'good';
-      let candleTitle = 'Perfekter Sitz & Einlass';
-      let candleDesc = `Your Ø${state.candleDia} mm candle fits comfortably through the Ø${state.topInnerDia} mm opening (+${openingDiff.toFixed(0)} mm clearance) and sits securely in theer ${state.recessDepth.toFixed(1)} mm tiefen Mulde.`;
+      let candleTitle = 'Perfect fit & clearance';
+      let candleDesc = `Your Ø${state.candleDia} mm candle fits comfortably through the Ø${state.topInnerDia} mm opening (+${openingDiff.toFixed(0)} mm clearance) and sits securely in the ${state.recessDepth.toFixed(1)} mm deep recess.`;
 
       if (openingDiff < 0) {
         candleLevel = 'danger';
@@ -2623,8 +2849,8 @@
         needsOptimization = true;
       } else if (openingDiff < 4 || floorThickness < 1.6) {
         candleLevel = 'warn';
-        candleTitle = 'Sehr knappe Toleranz';
-        candleDesc = `the opening clearance is only +${openingDiff.toFixed(0)} mm (or the floor thickness ${floorThickness.toFixed(1)} mm is tight). A little more clearance makes insertion easier.`;
+        candleTitle = 'Very tight tolerance';
+        candleDesc = `The opening clearance is only +${openingDiff.toFixed(0)} mm (or floor thickness ${floorThickness.toFixed(1)} mm is tight). A little more clearance makes insertion easier.`;
         score -= 8;
         needsOptimization = true;
       }
@@ -2642,17 +2868,17 @@
         rateEl.className = 'text-2xl font-bold font-mono text-teal-400';
         barEl.className = 'h-full bg-teal-400 rounded-full transition-all duration-500';
         badgeEl.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-teal-500/20 text-teal-300 border border-teal-500/30';
-        badgeEl.textContent = 'Sehr sicher';
+        badgeEl.textContent = 'Very safe';
       } else if (score >= 65) {
         rateEl.className = 'text-2xl font-bold font-mono text-amber-400';
         barEl.className = 'h-full bg-amber-400 rounded-full transition-all duration-500';
         badgeEl.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30';
-        badgeEl.textContent = 'Mittel';
+        badgeEl.textContent = 'Moderate';
       } else {
         rateEl.className = 'text-2xl font-bold font-mono text-rose-400';
         barEl.className = 'h-full bg-rose-400 rounded-full transition-all duration-500';
         badgeEl.className = 'text-[10px] font-mono px-2 py-0.5 rounded-full bg-rose-500/20 text-rose-300 border border-rose-500/30';
-        badgeEl.textContent = 'Risiko hoch!';
+        badgeEl.textContent = 'High risk!';
       }
 
       applyCardTheme(
@@ -2919,7 +3145,7 @@
           closeExportModal, toggleZenMode, toggleCandle, triggerCandleDropAnimation,
           toggleSectionView, toggleNightMode, resetToDefaults, enableSectionView,
           toggleGlassSleeve, openExportModal, applySafePrintOptimization, confirmAndDownloadSTL,
-          setGreetingEnabled, toggleGreeting, setGreetingPreset, onGreetingTextInput,
+          setGreetingEnabled, setGreetingStyle, toggleGreeting, setGreetingPreset, onGreetingTextInput,
         };
         const target = table[fn];
         if (typeof target !== 'function') return;

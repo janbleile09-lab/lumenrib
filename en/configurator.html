@@ -195,12 +195,12 @@
       <!-- Modern Filament Colors -->
       <div id="ui-color-bar" class="glass-panel px-3 py-2 rounded-2xl flex items-center gap-2 shadow-xl transition-opacity duration-300">
         <span class="text-[11px] text-gray-400 mr-1 hidden sm:inline">Colour:</span>
-        <button data-act="setLanternColor" data-args='["#d6c5b3", null]' data-el="1" title="Warm Sand / Travertin" class="color-swatch w-6 h-6 rounded-full border-2 border-white scale-110 transition-transform" style="background:#d6c5b3;"></button>
-        <button data-act="setLanternColor" data-args='["#849287", null]' data-el="1" title="Nordic Sage" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#849287;"></button>
-        <button data-act="setLanternColor" data-args='["#7c7a72", null]' data-el="1" title="Taupe / Olivgrau" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#7c7a72;"></button>
-        <button data-act="setLanternColor" data-args='["#f4f3ef", null]' data-el="1" title="Silk Matte White" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#f4f3ef;"></button>
-        <button data-act="setLanternColor" data-args='["#23262e", null]' data-el="1" title="Obsidian Anthrazit" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#23262e;"></button>
-        <button data-act="setLanternColor" data-args='["#c27d63", null]' data-el="1" title="Muted Terracotta" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#c27d63;"></button>
+        <button data-act="setLanternColor" data-args='["#d6c5b3", null]' data-color="#d6c5b3" data-el="1" title="Warm Sand / Travertin" class="color-swatch w-6 h-6 rounded-full border-2 border-white scale-110 transition-transform" style="background:#d6c5b3;"></button>
+        <button data-act="setLanternColor" data-args='["#849287", null]' data-color="#849287" data-el="1" title="Nordic Sage" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#849287;"></button>
+        <button data-act="setLanternColor" data-args='["#7c7a72", null]' data-color="#7c7a72" data-el="1" title="Taupe / Olive Grey" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#7c7a72;"></button>
+        <button data-act="setLanternColor" data-args='["#f4f3ef", null]' data-color="#f4f3ef" data-el="1" title="Silk Matte White" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#f4f3ef;"></button>
+        <button data-act="setLanternColor" data-args='["#23262e", null]' data-color="#23262e" data-el="1" title="Obsidian Charcoal" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#23262e;"></button>
+        <button data-act="setLanternColor" data-args='["#c27d63", null]' data-color="#c27d63" data-el="1" title="Muted Terracotta" class="color-swatch w-6 h-6 rounded-full border border-white/20 hover:scale-110 transition-transform" style="background:#c27d63;"></button>
       </div>
 
       <!-- Interactive View Toggles -->
@@ -280,7 +280,7 @@
             <label class="text-gray-300 font-medium">Total lantern height</label>
             <span class="font-mono text-amber-400 font-semibold"><span id="val-height">110</span> mm</span>
           </div>
-          <input type="range" id="param-height" min="90" max="280" step="2" value="110" data-on="updateParam" data-arg="height" />
+          <input type="range" id="param-height" min="90" max="280" step="1" value="110" data-on="updateParam" data-arg="height" />
           <div class="flex justify-between text-[10px] text-gray-500">
             <span>90 mm (mini)</span>
             <span>110 mm (tea light standard)</span>
@@ -294,9 +294,9 @@
             <label class="text-gray-300 font-medium">Max. belly diameter (outer)</label>
             <span class="font-mono text-amber-400 font-semibold"><span id="val-bellyDia">124</span> mm</span>
           </div>
-          <input type="range" id="param-bellyDia" min="110" max="250" step="2" value="124" data-on="updateParam" data-arg="bellyDia" />
+          <input type="range" id="param-bellyDia" min="92" max="250" step="2" value="124" data-on="updateParam" data-arg="bellyDia" />
           <div class="flex justify-between text-[10px] text-gray-500">
-            <span>110 mm</span>
+            <span>92 mm</span>
             <span>124 mm (tea light)</span>
             <span>250 mm</span>
           </div>
@@ -308,7 +308,7 @@
             <label class="text-gray-300 font-medium">Top opening (inner diameter)</label>
             <span class="font-mono text-amber-400 font-semibold"><span id="val-topInnerDia">62</span> mm</span>
           </div>
-          <input type="range" id="param-topInnerDia" min="60" max="160" step="1" value="62" data-on="updateParam" data-arg="topInnerDia" />
+          <input type="range" id="param-topInnerDia" min="52" max="160" step="1" value="62" data-on="updateParam" data-arg="topInnerDia" />
           <p class="text-[11px] text-gray-400">
             Must be larger than the candle diameter (<span id="hint-candle-dia" class="text-gray-200 font-mono">38 mm</span>) so the candle can be inserted from the top.
           </p>
@@ -320,7 +320,7 @@
             <label class="text-gray-300 font-medium">Base diameter (bottom)</label>
             <span class="font-mono text-amber-400 font-semibold"><span id="val-baseOuterDia">84</span> mm</span>
           </div>
-          <input type="range" id="param-baseOuterDia" min="75" max="180" step="1" value="84" data-on="updateParam" data-arg="baseOuterDia" />
+          <input type="range" id="param-baseOuterDia" min="64" max="180" step="1" value="84" data-on="updateParam" data-arg="baseOuterDia" />
         </div>
 
         <!-- Belly Vertical Position -->
@@ -577,12 +577,12 @@
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
               <label class="text-gray-300 font-medium">Overall size (height & width)</label>
-              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifSize">30</span> mm</span>
+              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifSize">22</span> mm</span>
             </div>
-            <input type="range" id="param-motifSize" min="16" max="54" step="1" value="30" data-on="updateParam" data-arg="motifSize" />
+            <input type="range" id="param-motifSize" min="16" max="54" step="1" value="22" data-on="updateParam" data-arg="motifSize" />
             <div class="flex justify-between text-[10px] text-gray-500">
               <span>16 mm (subtle)</span>
-              <span>30 mm (ideal visibility)</span>
+              <span>22 mm (compact)</span>
               <span>54 mm (statement)</span>
             </div>
           </div>
@@ -604,12 +604,12 @@
           <!-- 3D Relief Projection Depth in Front of Ribs -->
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
-              <label class="text-gray-300 font-medium">3D relief depth (protrusion in front of the ribs)</label>
-              <span class="font-mono text-amber-400 font-semibold">+<span id="val-motifRelief">2.4</span> mm</span>
+              <label class="text-gray-300 font-medium">Frame protrusion (in front of ribs)</label>
+              <span class="font-mono text-amber-400 font-semibold">+<span id="val-motifRelief">0.6</span> mm</span>
             </div>
-            <input type="range" id="param-motifRelief" min="1.2" max="4.0" step="0.2" value="2.4" data-on="updateParam" data-arg="motifRelief" />
+            <input type="range" id="param-motifRelief" min="0.2" max="3.0" step="0.1" value="0.6" data-on="updateParam" data-arg="motifRelief" />
             <p class="text-[11px] text-gray-400">
-              Lifts the symbol proudly in front of the ribs so the silhouette (e.g. a 3-tier Christmas tree) is not interrupted by the ribs.
+              Raised outline frame integrated with the rib wall — vertical ribs stop cleanly inside the border so candlelight shines straight through the symbol.
             </p>
           </div>
 
@@ -645,9 +645,9 @@
           <div class="space-y-1.5">
             <div class="flex justify-between text-xs">
               <label class="text-gray-300 font-medium">Height centre on the lantern</label>
-              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifHeightRatio">50</span> %</span>
+              <span class="font-mono text-amber-400 font-semibold"><span id="val-motifHeightRatio">49</span> %</span>
             </div>
-            <input type="range" id="param-motifHeightRatio" min="32" max="70" step="2" value="50" data-on="updateParam" data-arg="motifHeightRatio" />
+            <input type="range" id="param-motifHeightRatio" min="32" max="70" step="1" value="49" data-on="updateParam" data-arg="motifHeightRatio" />
           </div>
         </div>
 
@@ -656,9 +656,9 @@
           <div>
             <div class="flex items-center gap-2">
               <h3 class="text-sm font-semibold text-white">Christmas text</h3>
-              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">Support-free ≤45°</span>
+              <span class="text-[10px] font-mono uppercase px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/30">Cutout / Relief</span>
             </div>
-            <p class="text-xs text-gray-400 mt-0.5">Recessed band inside the rib depth with proud 3D relief text (fully included in the exported STL).</p>
+            <p class="text-xs text-gray-400 mt-0.5">Choose a cut-through stencil plaque or a 3D relief band around the ribs (fully included in the exported STL).</p>
           </div>
 
           <!-- On/Off Toggle -->
@@ -674,16 +674,26 @@
           </div>
 
           <div id="greeting-controls-wrap" class="space-y-4 pt-2 border-t border-white/10 opacity-40 pointer-events-none transition-opacity">
+            <!-- Style: Cutout Plaque vs 3D Relief Band -->
+            <div class="space-y-1.5">
+              <label class="text-xs text-gray-300 font-medium">Style</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" data-act="setGreetingStyle" data-args='["cutout"]' id="greeting-style-cutout" class="py-2 px-2 rounded-lg text-[11px] font-semibold bg-amber-500/25 text-amber-200 border border-amber-400/40 transition-all">Cutout plaque</button>
+                <button type="button" data-act="setGreetingStyle" data-args='["relief"]' id="greeting-style-relief" class="py-2 px-2 rounded-lg text-[11px] font-medium bg-studio-800 text-gray-400 hover:text-white border border-white/10 transition-all">3D relief band</button>
+              </div>
+            </div>
+
             <!-- Preset motto chips -->
             <div class="space-y-1.5">
               <label class="text-xs text-gray-300 font-medium">Greeting presets</label>
               <div class="flex flex-wrap gap-1.5">
-                <button type="button" data-act="setGreetingPreset" data-args='["FROHE WEIHNACHTEN"]' data-chip="FROHE WEIHNACHTEN" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-amber-500/25 text-amber-200 border border-amber-400/40 transition-all">FROHE WEIHNACHTEN</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["XMAS"]' data-chip="XMAS" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-semibold bg-amber-500/25 text-amber-200 border border-amber-400/40 transition-all">XMAS</button>
                 <button type="button" data-act="setGreetingPreset" data-args='["MERRY CHRISTMAS"]' data-chip="MERRY CHRISTMAS" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">MERRY CHRISTMAS</button>
-                <button type="button" data-act="setGreetingPreset" data-args='["FROHES FEST"]' data-chip="FROHES FEST" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">FROHES FEST</button>
-                <button type="button" data-act="setGreetingPreset" data-args='["STILLE NACHT"]' data-chip="STILLE NACHT" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">STILLE NACHT</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["FROHE WEIHNACHTEN"]' data-chip="FROHE WEIHNACHTEN" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">FROHE WEIHNACHTEN</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["HAPPY HOLIDAYS"]' data-chip="HAPPY HOLIDAYS" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">HAPPY HOLIDAYS</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["SILENT NIGHT"]' data-chip="SILENT NIGHT" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">SILENT NIGHT</button>
                 <button type="button" data-act="setGreetingPreset" data-args='["HO HO HO"]' data-chip="HO HO HO" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">HO HO HO</button>
-                <button type="button" data-act="setGreetingPreset" data-args='["WINTERZAUBER"]' data-chip="WINTERZAUBER" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">WINTERZAUBER</button>
+                <button type="button" data-act="setGreetingPreset" data-args='["WINTER MAGIC"]' data-chip="WINTER MAGIC" class="greeting-chip px-2.5 py-1 rounded-lg text-[11px] font-mono font-medium bg-studio-800 text-gray-300 hover:text-white border border-white/10 transition-all">WINTER MAGIC</button>
               </div>
             </div>
 
@@ -692,10 +702,10 @@
               <div class="flex justify-between text-xs">
                 <label for="param-greetingText" class="text-gray-300 font-medium">Custom text (max. 24 characters)</label>
               </div>
-              <input type="text" id="param-greetingText" maxlength="24" value="FROHE WEIHNACHTEN" data-on="onGreetingTextInput" data-arg="greetingText" class="select-text w-full px-3 py-2 rounded-xl bg-studio-800 border border-white/15 text-xs font-mono text-white focus:outline-none focus:border-amber-400/60" placeholder="FROHE WEIHNACHTEN" />
+              <input type="text" id="param-greetingText" maxlength="24" value="XMAS" data-on="onGreetingTextInput" data-arg="greetingText" class="select-text w-full px-3 py-2 rounded-xl bg-studio-800 border border-white/15 text-xs font-mono text-white focus:outline-none focus:border-amber-400/60" placeholder="XMAS" />
               <div class="flex items-center justify-between text-[11px] px-2.5 py-1.5 rounded-lg bg-studio-950/80 border border-white/10">
                 <span class="text-gray-400">Effective font size:</span>
-                <span id="val-greetingInfo" class="font-mono font-semibold text-amber-300">12.0 mm • 17/24 chars</span>
+                <span id="val-greetingInfo" class="font-mono font-semibold text-amber-300">13.0 mm • 4/24 chars</span>
               </div>
             </div>
 
@@ -703,37 +713,37 @@
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs">
                 <label class="text-gray-300 font-medium">Font size (cap height)</label>
-                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingSize">12</span> mm</span>
+                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingSize">13</span> mm</span>
               </div>
-              <input type="range" id="param-greetingSize" min="8" max="24" step="1" value="12" data-on="updateParam" data-arg="greetingSize" />
+              <input type="range" id="param-greetingSize" min="8" max="24" step="1" value="13" data-on="updateParam" data-arg="greetingSize" />
               <div class="flex justify-between text-[10px] text-gray-500">
                 <span>8 mm (compact)</span>
-                <span>12 mm (standard)</span>
+                <span>13 mm (XMAS standard)</span>
                 <span>24 mm (large)</span>
               </div>
             </div>
 
-            <!-- Relief Height above Band -->
+            <!-- Relief / Plaque Protrusion -->
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs">
-                <label class="text-gray-300 font-medium">Text relief height (above band)</label>
-                <span class="font-mono text-amber-400 font-semibold">+<span id="val-greetingRelief">1.8</span> mm</span>
+                <label class="text-gray-300 font-medium">Plaque / relief protrusion (in front of ribs)</label>
+                <span class="font-mono text-amber-400 font-semibold">+<span id="val-greetingRelief">0.6</span> mm</span>
               </div>
-              <input type="range" id="param-greetingRelief" min="1.2" max="2.6" step="0.1" value="1.8" data-on="updateParam" data-arg="greetingRelief" />
+              <input type="range" id="param-greetingRelief" min="0.2" max="2.6" step="0.1" value="0.6" data-on="updateParam" data-arg="greetingRelief" />
               <div class="flex justify-between text-[10px] text-gray-500">
-                <span>1.2 mm (subtle)</span>
-                <span>1.8 mm (optimal)</span>
-                <span>2.6 mm (bold)</span>
+                <span>0.2 mm (flush)</span>
+                <span>0.6 mm (plaque)</span>
+                <span>2.6 mm (relief)</span>
               </div>
             </div>
 
             <!-- Number of Greeting Bands around Circumference -->
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs">
-                <label class="text-gray-300 font-medium">Greeting bands around circumference</label>
-                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingCount">3</span>×</span>
+                <label class="text-gray-300 font-medium">Plaques / bands around circumference</label>
+                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingCount">1</span>×</span>
               </div>
-              <input type="range" id="param-greetingCount" min="1" max="6" step="1" value="3" data-on="updateParam" data-arg="greetingCount" />
+              <input type="range" id="param-greetingCount" min="1" max="6" step="1" value="1" data-on="updateParam" data-arg="greetingCount" />
               <div class="flex justify-between text-[10px] text-gray-500">
                 <span>1× (front)</span>
                 <span>3× (all around)</span>
@@ -744,13 +754,13 @@
             <!-- Vertical Height Position -->
             <div class="space-y-1.5">
               <div class="flex justify-between text-xs">
-                <label class="text-gray-300 font-medium">Vertical band position</label>
-                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingHeightRatio">62</span> %</span>
+                <label class="text-gray-300 font-medium">Vertical plaque / band position</label>
+                <span class="font-mono text-amber-400 font-semibold"><span id="val-greetingHeightRatio">48</span> %</span>
               </div>
-              <input type="range" id="param-greetingHeightRatio" min="30" max="72" step="1" value="62" data-on="updateParam" data-arg="greetingHeightRatio" />
+              <input type="range" id="param-greetingHeightRatio" min="30" max="72" step="1" value="48" data-on="updateParam" data-arg="greetingHeightRatio" />
               <div class="flex justify-between text-[10px] text-gray-500">
                 <span>30 % (lower)</span>
-                <span>62 % (upper third)</span>
+                <span>48 % (centre)</span>
                 <span>72 % (top)</span>
               </div>
             </div>
@@ -760,10 +770,10 @@
         <!-- Print Engineering Explanation Box -->
         <div class="p-3.5 rounded-2xl bg-amber-500/10 border border-amber-500/25 space-y-1.5">
           <div class="flex items-center gap-2 text-xs font-semibold text-amber-300">
-            <span>★ 2-layer 3D relief technique (100 % support-free):</span>
+            <span>★ Hollow-silhouette &amp; stencil cutout technique:</span>
           </div>
           <p class="text-[11px] text-gray-300 leading-relaxed">
-            So that the <strong>Christmas tree</strong> a real trunk and <strong>3 clearly recognisable branch tiers</strong> a support strut first grows in the rib plane between the ribs, while the <strong>42° support strut</strong> grows between the ribs, while the <strong>3D-faceted symbol (+2.4 mm)</strong> sits proudly in front of the ribs with a 45° under-chamfer!
+            Vertical ribs anchor into the outer border of <strong>stars, Christmas trees</strong> and the <strong>XMAS plaque</strong>, stopping cleanly before the openings so warm candlelight shines straight through!
           </p>
         </div>
       </div>
