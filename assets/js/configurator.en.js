@@ -234,6 +234,27 @@
       return inside;
     }
 
+    function isPointInCutoutExclusions(angle, yMm, halfW, rShell, cutoutExclusions) {
+      if (!Array.isArray(cutoutExclusions) || cutoutExclusions.length === 0) return false;
+      for (let i = 0; i < cutoutExclusions.length; i++) {
+        const ex = cutoutExclusions[i];
+        if (yMm < ex.yMin || yMm > ex.yMax) continue;
+        let dA = angle - ex.centerAngle;
+        while (dA > Math.PI) dA -= Math.PI * 2;
+        while (dA < -Math.PI) dA += Math.PI * 2;
+        const xMm = dA * rShell;
+        if (xMm + halfW < ex.xMin || xMm - halfW > ex.xMax) continue;
+        if (
+          pointInPoly2D(xMm, yMm, ex.polyCCW) ||
+          pointInPoly2D(xMm - halfW, yMm, ex.polyCCW) ||
+          pointInPoly2D(xMm + halfW, yMm, ex.polyCCW)
+        ) {
+          return true;
+        }
+      }
+      return false;
+    }
+
     function buildRibsGeometry(cutoutExclusions = []) {
       const numRibs = Math.round(state.ribCount);
       const H = state.height;
@@ -308,25 +329,13 @@
 
       function isExcludedAt(baseAngle, sample) {
         if (!hasExclusions) return false;
-        const angle = baseAngle + sample.phiTwist;
-        const halfW = sample.localRibW * 0.45;
-        for (let i = 0; i < cutoutExclusions.length; i++) {
-          const ex = cutoutExclusions[i];
-          if (sample.y < ex.yMin || sample.y > ex.yMax) continue;
-          let dA = angle - ex.centerAngle;
-          while (dA > Math.PI) dA -= Math.PI * 2;
-          while (dA < -Math.PI) dA += Math.PI * 2;
-          const xMm = dA * sample.rShell;
-          if (xMm + halfW < ex.xMin || xMm - halfW > ex.xMax) continue;
-          if (
-            pointInPoly2D(xMm, sample.y, ex.polyCCW) ||
-            pointInPoly2D(xMm - halfW, sample.y, ex.polyCCW) ||
-            pointInPoly2D(xMm + halfW, sample.y, ex.polyCCW)
-          ) {
-            return true;
-          }
-        }
-        return false;
+        return isPointInCutoutExclusions(
+          baseAngle + sample.phiTwist,
+          sample.y,
+          sample.localRibW * 0.45,
+          sample.rShell,
+          cutoutExclusions
+        );
       }
 
       function makeRingVerts(baseAngle, sample) {
@@ -454,7 +463,7 @@
     // 3. Angled Top-Down Lever Flange & Domino Flex Waist: The ring flares inward (`ringW`) with a sloped upper
     //    press surface (6.5x lever advantage relative to the thin V-notch neck) and features vertical Domino flex
     //    notches every `upperPinStep` ribs so pins peel sequentially like a zipper instead of all 48 at once!
-    function buildStabilizerRingsGeometry() {
+    function buildStabilizerRingsGeometry(cutoutExclusions = null) {
       if (state.stabilizerMode === 'none' || state.stabilizerCount <= 0) {
         return null;
       }
@@ -535,6 +544,14 @@
         };
       }
 
+      function isRibCutAtY(baseAngle, yMm) {
+        if (!Array.isArray(cutoutExclusions) || cutoutExclusions.length === 0) return false;
+        const tClamped = Math.max(0.02, Math.min(0.98, yMm / H));
+        const { r: rOuter } = evaluateOuterProfile(tClamped);
+        const rShell = Math.max(18, rOuter - ribD * 0.35);
+        return isPointInCutoutExclusions(baseAngle + twistRad * tClamped, yMm, ribW * 0.45, rShell, cutoutExclusions);
+      }
+
       const tLevels = getStabilizerNormalizedHeights(numRings);
       const dTheta = (Math.PI * 2) / numRibs;
 
@@ -590,30 +607,34 @@
             const aBev = baseAngle + vBev.phi;
             const a2   = baseAngle + vY2.phi;
 
-            // Domino Flex Notch: at the boundary of each 5-rib lever segment, dip the upper inner flange
-            // slightly in Z and radial width while keeping the bottom 1.2 mm belt 100% continuous for XY stiffness!
+            // Domino Flex Notch: at the boundary of each lever segment, dip the upper inner flange
+            // cleanly while keeping strictly monotonic section heights y1 < yBevelLocal < yTopInner < yTopOuter!
             const isDominoJoint = (k % dominoGroup === 0);
             const leverFlangeScale = isDominoJoint ? 0.72 : 1.08; // Wide lever paddle in between, flex waist at joint
-            const localTopDrop = isDominoJoint ? (y2 - y1) * 0.32 : 0.0;
+            const ringSpanH = Math.max(1.2, y2 - y1);
+            const localTopDrop = isDominoJoint ? Math.min(ringSpanH * 0.22, ringSpanH - 1.15) : 0.0;
 
             const rRingOut1   = Math.max(12, vY1.rRibIn - airGap);
-            const rRingOutBev = Math.max(12, vBev.rRibIn - airGap);
             const rRingOut2   = Math.max(12, vY2.rRibIn - airGap);
+            const yTopOuter   = Math.max(y1 + 0.95, y2 - localTopDrop * 0.45);
+            const yTopInner   = Math.max(y1 + 0.72, y2 - 0.38 - Math.max(0, localTopDrop));
+            const yBevelLocal = y1 + (yTopInner - y1) * 0.52;
+            const vBevLocal   = evalVaseInnerAtY(yBevelLocal);
+            const aBevLocal   = baseAngle + vBevLocal.phi;
+            const rRingOutBev = Math.max(12, vBevLocal.rRibIn - airGap);
 
             const rRingIn1   = Math.max(8, rRingOut1 - botChordW);
             const rRingInBev = Math.max(8, rRingOutBev - ringW * leverFlangeScale);
-            // Sloped Top-Down Lever Lip: inner top edge sits ~0.45 mm lower than outer top edge so pressing
+            // Sloped Top-Down Lever Lip: inner top edge sits below outer top edge so pressing
             // straight down from the top opening catches the angled lever paddle and tilts the ring downward!
             const rRingIn2   = Math.max(8, rRingOut2 - (ringW + 0.45) * leverFlangeScale);
-            const yTopOuter  = y2 - localTopDrop * 0.5;
-            const yTopInner  = y2 - 0.42 - localTopDrop;
 
             polyRingSections.push([
-              [rRingOut2  * Math.cos(a2),   yTopOuter, -rRingOut2  * Math.sin(a2)],   // V0: Top-Outer
-              [rRingOut1  * Math.cos(a1),   y1,        -rRingOut1  * Math.sin(a1)],   // V1: Bottom-Outer (rests on pad)
-              [rRingIn1   * Math.cos(a1),   y1,        -rRingIn1   * Math.sin(a1)],   // V2: Bottom-Inner (rests on pad)
-              [rRingInBev * Math.cos(aBev), yBevel,    -rRingInBev * Math.sin(aBev)], // V3: 45° Bevel-Inner
-              [rRingIn2   * Math.cos(a2),   yTopInner, -rRingIn2   * Math.sin(a2)]    // V4: Top-Inner (Sloped Lever Lip!)
+              [rRingOut2  * Math.cos(a2),        yTopOuter,   -rRingOut2  * Math.sin(a2)],        // V0: Top-Outer
+              [rRingOut1  * Math.cos(a1),        y1,          -rRingOut1  * Math.sin(a1)],        // V1: Bottom-Outer (rests on pad)
+              [rRingIn1   * Math.cos(a1),        y1,          -rRingIn1   * Math.sin(a1)],        // V2: Bottom-Inner (rests on pad)
+              [rRingInBev * Math.cos(aBevLocal), yBevelLocal, -rRingInBev * Math.sin(aBevLocal)], // V3: 45° Bevel-Inner
+              [rRingIn2   * Math.cos(a2),        yTopInner,   -rRingIn2   * Math.sin(a2)]         // V4: Top-Inner (Sloped Lever Lip!)
             ]);
           }
 
@@ -624,6 +645,8 @@
           // 2. Build the 48 Self-Supporting Lower 45° Lever-Notch Struts & Sparse (Every N-th) Upper Micro-Pins
           for (let k = 0; k < numRibs; k++) {
             const baseAngle = k * dTheta;
+            const skipLowerPin = isRibCutAtY(baseAngle, y0) || isRibCutAtY(baseAngle, y0 + pinHBot) || isRibCutAtY(baseAngle, y1);
+            if (!skipLowerPin) {
 
             // --- LOWER 45° CORBEL STRUT WITH TOP V-PEEL NOTCH & LEVER HINGE (Every Rib) ---
             const a0    = baseAngle + vY0.phi;
@@ -678,13 +701,15 @@
               )
             ];
             pushWatertightLoft(lowerStrutStations);
+            }
 
             // --- SPARSE 2ND UPPER 45° MICRO-PIN (ONLY every `upperPinStep`-th rib, e.g. every 5th rib!) ---
-            const hasUpperPin = (upperPinStep > 0) && (k % upperPinStep === 0);
+            const yUpperStart = y2 - upperClimbH;
+            const yUpperTouch = y2 - pinHTop * 0.65;
+            const yUpperEnd   = y2 + pinHTop * 0.35;
+            const skipUpperPin = isRibCutAtY(baseAngle, yUpperTouch) || isRibCutAtY(baseAngle, yUpperEnd);
+            const hasUpperPin = (upperPinStep > 0) && (k % upperPinStep === 0) && !skipUpperPin;
             if (hasUpperPin) {
-              const yUpperStart = y2 - upperClimbH;
-              const yUpperTouch = y2 - pinHTop * 0.65;
-              const yUpperEnd   = y2 + pinHTop * 0.35;
 
               const vUpStart = evalVaseInnerAtY(yUpperStart);
               const vUpTouch = evalVaseInnerAtY(yUpperTouch);
@@ -1437,7 +1462,7 @@
     // ============================================================================
     // 3D CHRISTMAS GREETING PLAQUE (CUTOUT STENCIL) & RELIEF TEXT ENGINE
     // ============================================================================
-    function buildGreetingGeometry(planArg = null, cutoutExclusions = null) {
+    function buildGreetingGeometry(planArg = null, cutoutExclusions = null, breakawayPositionsOut = null) {
       const plan = planArg || getGreetingPlacementPlan(true);
       if (!plan) return null;
 
@@ -1475,9 +1500,69 @@
         const exclCCW = ensureCCW2D(offsetPolygon2D(outerPlaqueCCW, insetDist));
         const exclBounds = polyBounds2D(exclCCW);
 
+        // Built-in breakaway micro-supports for downward-hanging V-tips inside cutout apertures (e.g. X, M)
+        const pinPolysCCW = [];
+        if (breakawayPositionsOut && state.stabilizerMode === 'breakaway') {
+          for (let hIdx = 0; hIdx < glyphHolesCW.length; hIdx++) {
+            const hole = glyphHolesCW[hIdx];
+            const nPts = hole.length;
+            if (nPts < 3) continue;
+            for (let v = 0; v < nPts; v++) {
+              const pCurr = hole[v];
+              const pPrev = hole[(v - 1 + nPts) % nPts];
+              const pNext = hole[(v + 1) % nPts];
+              if (pCurr[1] >= pPrev[1] - 0.15 || pCurr[1] >= pNext[1] - 0.15) continue;
+              const px = pCurr[0], py = pCurr[1];
+              if (!pointInPoly2D(px, py - 0.12, hole) || pointInPoly2D(px, py + 0.12, hole)) continue;
+
+              // Raycast straight down inside the hole to find highest solid floor edge directly below the tip
+              let yBelow = -Infinity;
+              for (let e = 0; e < nPts; e++) {
+                const a = hole[e];
+                const b = hole[(e + 1) % nPts];
+                if ((a[0] <= px && b[0] >= px) || (b[0] <= px && a[0] >= px)) {
+                  const dx = b[0] - a[0];
+                  if (Math.abs(dx) < 1e-6) continue;
+                  const f = (px - a[0]) / dx;
+                  if (f >= -1e-4 && f <= 1 + 1e-4) {
+                    const yHit = a[1] + f * (b[1] - a[1]);
+                    if (yHit < py - 0.15 && yHit > yBelow) {
+                      yBelow = yHit;
+                    }
+                  }
+                }
+              }
+              const gapH = py - yBelow;
+              if (!Number.isFinite(yBelow) || gapH < 0.35 || gapH > plan.effSize * 1.15) continue;
+
+              const yPinBot = yBelow - 0.18;
+              const yPinTop = py + 0.18;
+              const wNeck = 0.24; // 0.48 mm breakaway peel contact
+              const wShaft = 0.45; // 0.90 mm rigid micro-column for clean slicer wall generation
+              const flare = Math.min(0.45, Math.max(0.18, (yPinTop - yPinBot) * 0.22));
+              pinPolysCCW.push(ensureCCW2D([
+                [px - wNeck, yPinBot],
+                [px + wNeck, yPinBot],
+                [px + wShaft, yPinBot + flare],
+                [px + wShaft, yPinTop - flare],
+                [px + wNeck, yPinTop],
+                [px - wNeck, yPinTop],
+                [px - wShaft, yPinTop - flare],
+                [px - wShaft, yPinBot + flare]
+              ]));
+            }
+          }
+        }
+
+        const zPinFront = Math.max(zBack + 0.6, zFront - 0.25);
+        const zPinBack = Math.max(zBack + 0.18, zPinFront - 1.25);
+
         for (let bIdx = 0; bIdx < plan.bands.length; bIdx++) {
           const band = plan.bands[bIdx];
           extrudeCurvedShape(positions, band.centerRib, outerPlaqueCCW, glyphHolesCW, zFront, zBack, 2.5);
+          for (let pIdx = 0; pIdx < pinPolysCCW.length; pIdx++) {
+            extrudeCurvedShape(breakawayPositionsOut, band.centerRib, pinPolysCCW[pIdx], [], zPinFront, zPinBack, 2.0);
+          }
 
           if (cutoutExclusions) {
             const centerAngle = band.centerRib * dTheta + twistRad * (plan.yCenter / H);
@@ -1848,15 +1933,22 @@
 
       // 3. Collect cutout plaques & hollow motifs first so vertical ribs cleanly stop inside borders
       const cutoutExclusions = [];
+      const breakawayGreetingPositions = [];
       const greetingPlan = getGreetingPlacementPlan(true);
-      const greetingGeo = buildGreetingGeometry(greetingPlan, cutoutExclusions);
+      const greetingGeo = buildGreetingGeometry(greetingPlan, cutoutExclusions, breakawayGreetingPositions);
       const motifsGeo = buildMotifsGeometry(greetingPlan, cutoutExclusions);
 
       // 4. Curved Parametric Ribs (clipped cleanly at hollow motif / cutout interiors)
       const { geo: ribsGeo, maxOverhangAngleDeg } = buildRibsGeometry(cutoutExclusions);
 
-      // 5. Optional Anti-Vibration Stabilizer Rings (Breakaway or Permanent)
-      const stabGeo = buildStabilizerRingsGeometry();
+      // 5. Optional Anti-Vibration Stabilizer Rings (Breakaway or Permanent, skipping excluded cutout ribs)
+      const stabGeo = buildStabilizerRingsGeometry(cutoutExclusions);
+      let breakawayCutoutGeo = null;
+      if (breakawayGreetingPositions.length > 0) {
+        breakawayCutoutGeo = new THREE.BufferGeometry();
+        breakawayCutoutGeo.setAttribute('position', new THREE.Float32BufferAttribute(breakawayGreetingPositions, 3));
+        breakawayCutoutGeo.computeVertexNormals();
+      }
       let breakawayPreviewGeo = null;
       let motifsPreviewGeo = null;
 
@@ -1873,12 +1965,20 @@
       if (highlightGeos.length > 0) {
         motifsPreviewGeo = mergeBufferGeometries(highlightGeos);
       }
+      const breakawayHighlights = [];
       if (stabGeo) {
         if (state.stabilizerMode === 'breakaway') {
-          // Keep a clone for visual cyan highlight in the 3D viewport so user sees what gets snipped off
-          breakawayPreviewGeo = stabGeo.clone();
+          breakawayHighlights.push(stabGeo.clone());
         }
         geosToMerge.push(stabGeo);
+      }
+      if (breakawayCutoutGeo) {
+        breakawayHighlights.push(breakawayCutoutGeo.clone());
+        geosToMerge.push(breakawayCutoutGeo);
+      }
+      if (breakawayHighlights.length > 0) {
+        // Keep a clone for visual cyan highlight in the 3D viewport so user sees every breakaway support
+        breakawayPreviewGeo = mergeBufferGeometries(breakawayHighlights);
       }
 
       const fullGeo = mergeBufferGeometries(geosToMerge);
@@ -2488,7 +2588,12 @@
           ribDepth: 3.8,
           twistAngle: 0,
           topRingHeight: 3.2,
-          stabilizerMode: 'none',
+          stabilizerMode: 'breakaway',
+          stabilizerCount: 2,
+          stabilizerWidth: 3.0,
+          stabilizerThickness: 3.2,
+          stabilizerNeck: 0.60,
+          upperPinStep: 4,
           rootBoost: 15,
           baseThickness: 5.0,
           recessDepth: 2.0,
@@ -2502,14 +2607,14 @@
           motifSize: 22,
           motifWidthScale: 100,
           motifRelief: 0.6,
-          motifHeightRatio: 49,
+          motifHeightRatio: 47,
           greetingEnabled: true,
           greetingStyle: 'cutout',
           greetingText: 'XMAS',
           greetingSize: 13,
           greetingRelief: 0.6,
           greetingCount: 1,
-          greetingHeightRatio: 48,
+          greetingHeightRatio: 41,
           lanternColor: '#23262e'
         },
         lounge: {
@@ -2569,8 +2674,7 @@
         if (input) input.value = p[k];
         const label = document.getElementById(`val-${k}`);
         if (label && typeof p[k] === 'number') {
-          const decimals = ['ribWidth', 'ribDepth', 'topRingHeight', 'motifRelief', 'greetingRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(k) ? 1 : 0;
-          label.textContent = p[k].toFixed(decimals);
+          label.textContent = formatParamLabel(k, p[k]);
         }
       });
 
@@ -2607,6 +2711,13 @@
       rebuildAll();
     }
 
+    function formatParamLabel(k, val) {
+      if (k === 'upperPinStep') return formatUpperPinStepLabel(val);
+      if (k === 'stabilizerNeck') return val.toFixed(2);
+      const decimals = ['ribWidth', 'ribDepth', 'topRingHeight', 'stabilizerWidth', 'stabilizerThickness', 'motifRelief', 'greetingRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(k) ? 1 : 0;
+      return val.toFixed(decimals);
+    }
+
     function resetToDefaults() {
       Object.keys(defaultParams).forEach(k => {
         state[k] = defaultParams[k];
@@ -2615,15 +2726,7 @@
         if (input) input.value = defaultParams[k];
         const label = document.getElementById(`val-${k}`);
         if (label && typeof defaultParams[k] === 'number') {
-          if (k === 'upperPinStep') {
-            label.textContent = formatUpperPinStepLabel(defaultParams[k]);
-          } else if (k === 'stabilizerNeck') {
-            label.textContent = defaultParams[k].toFixed(2);
-          } else {
-            label.textContent = ['ribWidth', 'ribDepth', 'topRingHeight', 'stabilizerWidth', 'stabilizerThickness', 'motifRelief', 'greetingRelief', 'baseThickness', 'recessDepth', 'candleClearance', 'recessRimWidth'].includes(k)
-              ? defaultParams[k].toFixed(1)
-              : defaultParams[k];
-          }
+          label.textContent = formatParamLabel(k, defaultParams[k]);
         }
       });
       setGreetingEnabled(defaultParams.greetingEnabled, true);
@@ -2815,6 +2918,7 @@
       const hasCutoutFloatingTips = Boolean(
         gPlanCheck &&
         gPlanCheck.style === 'cutout' &&
+        state.stabilizerMode !== 'breakaway' &&
         /[MNTWXYEFPBRKSZ235789]/.test(gPlanCheck.cleanText || '')
       );
 
